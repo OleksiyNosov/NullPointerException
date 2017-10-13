@@ -16,5 +16,13 @@ Style/FrozenStringLiteralComment:
 Style/MethodDefParentheses:
   Enabled: false
 
+Style/PercentLiteralDelimiters:
+  PreferredDelimiters:
+    '%i': '[]'
+    '%I': '[]'
+    '%r': '{}'
+    '%w': '[]'
+    '%W': '[]'
+
 Metrics/LineLength:
   Max: 120

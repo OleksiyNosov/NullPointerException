@@ -1,4 +1,4 @@
-[![Code Climate](https://codeclimate.com/github/OleksiyNosov/NullPointerException/badges/gpa.svg)](https://codeclimate.com/github/OleksiyNosov/NullPointerException)
+[![Maintainability](https://api.codeclimate.com/v1/badges/daff366f0e0dc5868c97/maintainability)](https://codeclimate.com/github/OleksiyNosov/NullPointerException/maintainability)
 
 # NullPointerException
 It's main idea to provide easy and reliable api for programmers online community to learn, share their knowledge and build their careers:

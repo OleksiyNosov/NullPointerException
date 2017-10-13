@@ -18,8 +18,6 @@ group :development do
 end
 
 group :test do
-  gem 'rails-controller-testing'
-  gem 'rspec-activemodel-mocks'
   gem 'rspec-its'
   gem 'rubocop', require: false
   gem 'shoulda-matchers'

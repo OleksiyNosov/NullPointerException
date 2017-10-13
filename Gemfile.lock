@@ -91,10 +91,6 @@ GEM
       bundler (>= 1.3.0)
       railties (= 5.1.4)
       sprockets-rails (>= 2.0.0)
-    rails-controller-testing (1.0.2)
-      actionpack (~> 5.x, >= 5.0.1)
-      actionview (~> 5.x, >= 5.0.1)
-      activesupport (~> 5.x)
     rails-dom-testing (2.0.3)
       activesupport (>= 4.2.0)
       nokogiri (>= 1.6)
@@ -109,10 +105,6 @@ GEM
     rainbow (2.2.2)
       rake
     rake (12.1.0)
-    rspec-activemodel-mocks (1.0.3)
-      activemodel (>= 3.0)
-      activesupport (>= 3.0)
-      rspec-mocks (>= 2.99, < 4.0)
     rspec-core (3.6.0)
       rspec-support (~> 3.6.0)
     rspec-expectations (3.6.0)
@@ -172,8 +164,6 @@ DEPENDENCIES
   pry-rails
   puma
   rails
-  rails-controller-testing
-  rspec-activemodel-mocks
   rspec-its
   rspec-rails
   rubocop

@@ -5,7 +5,6 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
-gem 'bcrypt'
 gem 'pg'
 gem 'puma'
 gem 'rails'
@@ -15,7 +14,6 @@ group :development, :test do
 end
 
 group :development do
-  gem 'listen'
   gem 'pry-rails'
 end
 

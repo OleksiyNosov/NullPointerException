@@ -10,7 +10,7 @@ class Api::QuestionsController < ApplicationController
   def create
     @question = Question.new resource_params
 
-    @question.save!
+    resource.save!
 
     render json: resource
   end

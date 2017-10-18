@@ -1,6 +1,6 @@
 class Api::AnswersController < ApplicationController
   def index
-    render json: parent.answers
+    render json: Answer.all
   end
 
   def show
@@ -8,9 +8,9 @@ class Api::AnswersController < ApplicationController
   end
 
   def create
-    @answer = Answer.new resource_params.merge(question: parent)
+    @answer = Answer.new resource_params
 
-    @answer.save!
+    resource.save!
 
     render json: resource
   end
@@ -29,14 +29,10 @@ class Api::AnswersController < ApplicationController
 
   private
   def resource
-    @answer ||= parent.answers.find params[:id]
+    @answer ||= Answer.find params[:id]
   end
 
   def resource_params
-    params.require(:answer).permit(:body)
-  end
-
-  def parent
-    @parent ||= Question.find params[:question_id]
+    params.require(:answer).permit(:question_id, :body)
   end
 end

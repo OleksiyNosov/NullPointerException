@@ -8,6 +8,7 @@ end
 gem 'pg'
 gem 'puma'
 gem 'rails'
+gem 'wisper'
 
 group :development, :test do
   gem 'factory_girl_rails'

@@ -162,6 +162,7 @@ GEM
     websocket-driver (0.6.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.2)
+    wisper (2.0.0)
 
 PLATFORMS
   ruby
@@ -179,6 +180,7 @@ DEPENDENCIES
   shoulda-matchers
   simplecov
   tzinfo-data
+  wisper
 
 BUNDLED WITH
    1.15.4

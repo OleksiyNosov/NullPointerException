@@ -7,14 +7,6 @@ class Api::AnswersController < ApplicationController
     render json: resource
   end
 
-  def create
-    @answer = Answer.new resource_params
-
-    resource.save!
-
-    render json: resource
-  end
-
   def update
     resource.update! resource_params
 
@@ -34,5 +26,9 @@ class Api::AnswersController < ApplicationController
 
   def resource_params
     params.require(:answer).permit(:question_id, :body)
+  end
+
+  def run_resource_creator
+    AnswerCreator.new resource_params
   end
 end

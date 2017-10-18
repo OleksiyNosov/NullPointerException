@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   namespace :api do
-    resources :questions, except: %i[new edit] do
-      resources :answers, except: %i[new edit]
-    end
+    resources :questions, only: %i[index show create update destroy]
+
+    resources :answers, only: %i[index show create update destroy]
   end
 end

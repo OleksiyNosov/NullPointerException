@@ -3,10 +3,6 @@ class Api::QuestionsController < ApplicationController
     render json: Question.all
   end
 
-  def show
-    render json: resource
-  end
-
   def update
     resource.update! resource_params
 

@@ -1,4 +1,12 @@
 class ApplicationController < ActionController::API
+  rescue_from ActiveRecord::RecordNotFound do
+    head :not_found
+  end
+
+  def show
+    render json: resource
+  end
+
   def create
     run_resource_creator
       .on :succeeded do |resource|

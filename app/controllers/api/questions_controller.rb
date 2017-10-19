@@ -3,18 +3,6 @@ class Api::QuestionsController < ApplicationController
     render json: Question.all
   end
 
-  def update
-    resource.update! resource_params
-
-    render json: resource
-  end
-
-  def destroy
-    resource.destroy!
-
-    head :no_content
-  end
-
   private
   def resource
     @question ||= Question.find params[:id]
@@ -26,5 +14,13 @@ class Api::QuestionsController < ApplicationController
 
   def run_resource_creator
     QuestionCreator.new resource_params
+  end
+
+  def run_resource_updator
+    QuestionUpdator.new resource, resource_params
+  end
+
+  def run_resource_destroyer
+    QuestionDestroyer.new resource
   end
 end

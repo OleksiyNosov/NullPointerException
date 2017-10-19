@@ -1,0 +1,2 @@
+class AnswerDestroyer < ResourceDestroyer
+end

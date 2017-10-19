@@ -1,0 +1,2 @@
+class AnswerUpdator < ResourceUpdator
+end

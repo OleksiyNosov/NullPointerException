@@ -1,17 +1,11 @@
-class ResourceCreator
-  include Wisper::Publisher
-
+class ResourceCreator < ResourceCrudWorker
   def initialize params
     @params = params
   end
 
   def call
-    resource = resource_class.new @params
+    @resource = resource_class.new @params
 
-    if resource.save
-      broadcast :succeeded, resource
-    else
-      broadcast :failed, resource.errors
-    end
+    broadcast_resource
   end
 end

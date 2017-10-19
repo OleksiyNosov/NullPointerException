@@ -16,4 +16,24 @@ class ApplicationController < ActionController::API
         render json: errors, status: :unprocessable_entity
       end.call
   end
+
+  def update
+    run_resource_updator
+      .on :succeeded do |resource|
+        render json: resource, status: :ok
+      end
+      .on :failed do |errors|
+        render json: errors, status: :unprocessable_entity
+      end.call
+  end
+
+  def destroy
+    run_resource_destroyer
+      .on :succeeded do
+        head :no_content
+      end
+      .on :failed do |errors|
+        render json: errors, status: :unprocessable_entity
+      end.call
+  end
 end

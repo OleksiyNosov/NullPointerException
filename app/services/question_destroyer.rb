@@ -1,2 +1,0 @@
-class QuestionDestroyer < ResourceDestroyer
-end

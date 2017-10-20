@@ -4,7 +4,7 @@ class ResourceCrudWorker
   private
   def broadcast_resource
     if @resource.errors.empty?
-      broadcast :succceeded, @resource
+      broadcast :succeeded, @resource
     else
       broadcast :failed, @resource.errors
     end

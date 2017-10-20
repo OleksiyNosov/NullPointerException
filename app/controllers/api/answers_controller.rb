@@ -15,12 +15,4 @@ class Api::AnswersController < ApplicationController
   def run_resource_creator
     AnswerCreator.new resource_params
   end
-
-  def run_resource_updator
-    AnswerUpdator.new resource, resource_params
-  end
-
-  def run_resource_destroyer
-    AnswerDestroyer.new resource
-  end
 end

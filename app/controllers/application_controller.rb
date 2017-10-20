@@ -36,4 +36,13 @@ class ApplicationController < ActionController::API
         render json: errors, status: :unprocessable_entity
       end.call
   end
+
+  private
+  def run_resource_updator
+    ResourceUpdator.new resource, resource_params
+  end
+
+  def run_resource_destroyer
+    ResourceDestroyer.new resource
+  end
 end

@@ -6,6 +6,8 @@ class ResourceCreator < ResourceCrudWorker
   def call
     @resource = resource_class.new @params
 
+    @resource.save
+
     broadcast_resource
   end
 end

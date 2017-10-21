@@ -15,6 +15,6 @@ class Api::QuestionsController < ApplicationController
   end
 
   def run_resource_creator
-    QuestionCreator.new resource_params
+    ResourceCreator.new Question, resource_params
   end
 end

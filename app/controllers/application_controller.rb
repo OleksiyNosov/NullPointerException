@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::API
   rescue_from ActiveRecord::RecordNotFound do
-    head :not_found
+    head 404
   end
 
   def show
@@ -10,10 +10,10 @@ class ApplicationController < ActionController::API
   def create
     run_resource_creator
       .on :succeeded do |resource|
-        render json: resource, status: :created
+        render json: resource, status: 201
       end
       .on :failed do |errors|
-        render json: errors, status: :unprocessable_entity
+        render json: errors, status: 422
       end.call
   end
 
@@ -23,17 +23,17 @@ class ApplicationController < ActionController::API
         render json: resource
       end
       .on :failed do |errors|
-        render json: errors, status: :unprocessable_entity
+        render json: errors, status: 422
       end.call
   end
 
   def destroy
     run_resource_destroyer
       .on :succeeded do
-        head :no_content
+        head 204
       end
       .on :failed do |errors|
-        render json: errors, status: :unprocessable_entity
+        render json: errors, status: 422
       end.call
   end
 

@@ -4,15 +4,11 @@ class Api::AnswersController < ApplicationController
   end
 
   private
-  def resource
-    @answer ||= Answer.find params[:id]
+  def resource_class
+    Answer
   end
 
   def resource_params
     params.require(:answer).permit(:question_id, :body)
-  end
-
-  def run_resource_creator
-    ResourceCreator.new Answer, resource_params
   end
 end

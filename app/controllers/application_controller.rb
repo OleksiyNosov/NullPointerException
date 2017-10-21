@@ -8,7 +8,7 @@ class ApplicationController < ActionController::API
   end
 
   def create
-    run_resource_creator
+    ResourceCreator.new(resource_class, resource_params)
       .on :succeeded do |resource|
         render json: resource, status: 201
       end
@@ -18,7 +18,7 @@ class ApplicationController < ActionController::API
   end
 
   def update
-    run_resource_updator
+    ResourceUpdator.new(resource, resource_params)
       .on :succeeded do |resource|
         render json: resource
       end
@@ -28,7 +28,7 @@ class ApplicationController < ActionController::API
   end
 
   def destroy
-    run_resource_destroyer
+    ResourceDestroyer.new(resource)
       .on :succeeded do
         head 204
       end
@@ -38,11 +38,7 @@ class ApplicationController < ActionController::API
   end
 
   private
-  def run_resource_updator
-    ResourceUpdator.new resource, resource_params
-  end
-
-  def run_resource_destroyer
-    ResourceDestroyer.new resource
+  def resource
+    @resource ||= resource_class.find params[:id]
   end
 end

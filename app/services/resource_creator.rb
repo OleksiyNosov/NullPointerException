@@ -1,13 +1,13 @@
 class ResourceCreator < ResourceCrudWorker
-  def initialize params
+  def initialize resource_class, params
+    @resource_class = resource_class
     @params = params
   end
 
-  def call
-    @resource = resource_class.new @params
+  private
+  def assemble_resource
+    @resource = @resource_class.new @params
 
-    @resource.save
-
-    broadcast_resource
+    resource.save
   end
 end

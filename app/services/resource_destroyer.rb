@@ -3,9 +3,8 @@ class ResourceDestroyer < ResourceCrudWorker
     @resource = resource
   end
 
-  def call
-    @resource.destroy
-
-    broadcast_resource
+  private
+  def assemble_resource
+    resource.destroy
   end
 end

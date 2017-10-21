@@ -4,9 +4,8 @@ class ResourceUpdator < ResourceCrudWorker
     @params = params
   end
 
-  def call
-    @resource.update @params
-
-    broadcast_resource
+  private
+  def assemble_resource
+    resource.update @params
   end
 end

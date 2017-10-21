@@ -9,10 +9,10 @@ class ResourceCrudWorker
 
   def call
     assemble_resource
-    
+
     broadcast_resource
   end
-  
+
   private
   def broadcast_resource
     if resource.valid?

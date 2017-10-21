@@ -1,5 +1,10 @@
 inherit_from: ../../.rubocop.yml
 
+Layout/MultilineMethodCallIndentation:
+  Exclude:
+    - application_controller.rb
+
 Style/MultilineBlockChain:
   Exclude:
     - application_controller.rb
+

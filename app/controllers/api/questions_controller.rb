@@ -1,6 +1,4 @@
 class Api::QuestionsController < ApplicationController
-  before_action -> { use_serializer QuestionSerializer }, only: %i[index show create update]
-
   def index
     render json: Question.all
   end

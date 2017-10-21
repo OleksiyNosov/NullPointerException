@@ -1,6 +1,4 @@
 class Api::AnswersController < ApplicationController
-  before_action -> { use_serializer AnswerSerializer }, only: %i[index show create update]
-
   def index
     render json: Answer.all
   end

@@ -16,12 +16,12 @@ RSpec.describe Api::AnswersController, type: :controller do
 
     describe 'answer exist' do
       before { expect(subject).to receive(:resource).and_return answer }
-      
+
       before { get :show, params: params, format: :json }
 
       it('returns status 200') { expect(response).to have_http_status 200 }
 
-      it('returns answer') { expect(response_body).to eq serialized_attributes }  
+      it('returns answer') { expect(response_body).to eq serialized_attributes }
     end
 
     describe 'answer not exist' do
@@ -40,7 +40,7 @@ RSpec.describe Api::AnswersController, type: :controller do
 
     before { expect(resource_class).to receive(:new).with(permit! attributes).and_return answer }
 
-    before { expect(answer).to receive(:save) }    
+    before { expect(answer).to receive(:save) }
 
     context 'answer created' do
       before { expect(answer).to receive(:valid?).and_return true }

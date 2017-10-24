@@ -17,13 +17,9 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
       before { get :show, params: { id: question.id }, format: :json }
 
-      it 'returns status 200' do
-        expect(response).to have_http_status 200
-      end
+      it('returns status 200') { expect(response).to have_http_status 200 }
 
-      it 'returns question' do
-        expect(response_body).to eq serialized_attributes
-      end
+      it('returns question') { expect(response_body).to eq serialized_attributes }
     end
 
     # TODO: context 'question is not exist'
@@ -41,13 +37,9 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
       before { post :create, params: { question: attributes }, format: :json }
 
-      it 'returns status 201' do
-        expect(response).to have_http_status 201
-      end
+      it('returns status 201') { expect(response).to have_http_status 201 }
 
-      it 'returns question' do
-        expect(response_body).to eq serialized_attributes
-      end
+      it('returns question') { expect(response_body).to eq serialized_attributes }
     end
 
     context 'question was not created' do

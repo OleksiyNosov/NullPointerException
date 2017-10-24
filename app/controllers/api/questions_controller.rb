@@ -9,6 +9,6 @@ class Api::QuestionsController < ApplicationController
   end
 
   def resource_params
-    params.require(:question).permit(:title, :body)
+    params.require(:question).permit(:title, :body, tags: [])
   end
 end

@@ -22,7 +22,13 @@ RSpec.describe Api::QuestionsController, type: :controller do
       it('returns question') { expect(response_body).to eq serialized_attributes }
     end
 
-    # TODO: context 'question is not exist'
+    context 'question is not exist' do
+      before { expect(subject).to receive(:resource).and_raise ActiveRecord::RecordNotFound }
+
+      before { get :show, params: { id: question.id }, format: :json }
+
+      it('returns status 404') { expect(response).to have_http_status 404 }
+    end
   end
 
   describe 'POST #create' do

@@ -122,4 +122,8 @@ RSpec.describe Api::AnswersController, type: :controller do
       it('returns errors') { expect(response_body).to eq 'errors' }
     end
   end
+
+  describe '#resource_class' do
+    its(:resource_class) { is_expected.to eq Answer }
+  end
 end

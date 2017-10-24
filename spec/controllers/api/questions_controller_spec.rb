@@ -57,13 +57,65 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
       before { post :create, params: { question: attributes }, format: :json }
 
-      it 'returns status 422' do
-        expect(response).to have_http_status 422
-      end
+      it('returns status 422') { expect(response).to have_http_status 422 }
 
-      it 'returns errors' do
-        expect(response_body).to eq 'errors'
-      end
+      it('returns errors') { expect(response_body).to eq 'errors' }
+    end
+  end
+
+  describe 'PATCH #update' do
+    let(:params) { { id: question.id, question: attributes } }
+
+    before { expect(subject).to receive(:resource).and_return question }
+
+    before { expect(question).to receive(:update).with(permit! attributes).and_return question }
+
+    context 'question was updated' do
+      before { expect(question).to receive(:valid?).and_return true }
+
+      before { patch :update, params: params, format: :json }
+
+      it('returns status 200') { expect(response).to have_http_status 200 }
+
+      it('returns updated question') { expect(response_body).to eq serialized_attributes }
+    end
+
+    context 'question was not updated' do
+      before { expect(question).to receive(:valid?).and_return false }
+
+      before { expect(question).to receive(:errors).and_return :errors }
+
+      before { patch :update, params: params, format: :json }
+
+      it('returns status 422') { expect(response).to have_http_status 422 }
+
+      it('returns errors') { expect(response_body).to eq 'errors' }
+    end
+  end
+
+  describe 'DELETE #destroy' do
+    before { expect(subject).to receive(:resource).and_return question }
+
+    before { expect(question).to receive(:destroy) }
+
+    context 'question destroyed' do
+      before { expect(question).to receive(:valid?).and_return true }
+
+      before { delete :destroy, params: { id: question.id }, format: :json }
+
+      it('returns status 204') { expect(response).to have_http_status 204 }
+    end
+
+    context 'question do not destroyed' do
+      before { expect(question).to receive(:valid?).and_return false }
+
+      before { expect(question).to receive(:errors).and_return :errors }
+
+      before { delete :destroy, params: { id: question.id }, format: :json }
+
+      it('returns status 422') { expect(response).to have_http_status 422 }
+
+      it('returns errors') { expect(response_body).to eq 'errors' }
     end
   end
 end

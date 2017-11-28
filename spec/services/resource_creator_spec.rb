@@ -11,14 +11,6 @@ RSpec.describe ResourceCreator do
 
   it { is_expected.to be_an ResourceCrudWorker }
 
-  describe '#initialize' do
-    before { subject.instance_variable_set(:@resource_class, resource_class) }
-
-    before { subject.instance_variable_set(:@params, resource_attributes) }
-
-    it { expect { ResourceCreator.new resource_class, resource_attributes }.to_not raise_error }
-  end
-
   describe '#assemble_resource' do
     before { expect(resource_class).to receive(:new).with(resource_attributes).and_return resource }
 

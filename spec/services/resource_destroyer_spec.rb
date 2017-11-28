@@ -7,12 +7,6 @@ RSpec.describe ResourceDestroyer do
 
   it { is_expected.to be_an ResourceCrudWorker }
 
-  describe '#initialize' do
-    before { expect(subject).instance_variable_set(:@resource, resource) }
-
-    it { expect { ResourceDestroyer.new resource }.to_not raise_error }
-  end
-
   describe 'call' do
     before { expect(subject).to receive(:assemble_resource) }
 

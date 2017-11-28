@@ -15,6 +15,7 @@
 
 # Ignore config files
 config/database.yml
+config/secrets.yml
 
 # Ignore test coverage info dir
 /coverage

@@ -5,7 +5,7 @@ class ResourceUpdator < ResourceCrudWorker
   end
 
   private
-  def assemble_resource
+  def process_action
     resource.update @params
   end
 end

@@ -8,7 +8,7 @@ class ResourceCrudWorker
   end
 
   def call
-    assemble_resource
+    process_action
 
     broadcast_resource
   end

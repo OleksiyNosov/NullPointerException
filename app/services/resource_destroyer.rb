@@ -4,7 +4,7 @@ class ResourceDestroyer < ResourceCrudWorker
   end
 
   private
-  def assemble_resource
+  def process_action
     resource.destroy
   end
 end

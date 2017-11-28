@@ -11,16 +11,16 @@ RSpec.describe ResourceCreator do
 
   it { is_expected.to be_an ResourceCrudWorker }
 
-  describe '#assemble_resource' do
+  describe '#process_action' do
     before { allow(resource_class).to receive(:new).with(resource_attributes).and_return resource }
 
     before { allow(resource).to receive(:save).and_return true }
 
-    its(:assemble_resource) { is_expected.to eq true }
+    its(:process_action) { is_expected.to eq true }
   end
 
   describe '#call' do
-    before { expect(subject).to receive(:assemble_resource) }
+    before { expect(subject).to receive(:process_action) }
 
     before { expect(subject).to receive(:broadcast_resource) }
 

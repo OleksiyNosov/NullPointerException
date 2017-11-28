@@ -5,7 +5,7 @@ class ResourceCreator < ResourceCrudWorker
   end
 
   private
-  def assemble_resource
+  def process_action
     @resource = @resource_class.new @params
 
     resource.save

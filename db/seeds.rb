@@ -1,7 +1,11 @@
 puts 'Creating seeds'
 
+users_length = 100
 questions_length = 100
 answers_length = 1000
+
+puts "Generating #{ users_length } users"
+FactoryGirl.create_list(:user, users_length)
 
 puts "Generating #{ questions_length } questions"
 questions = FactoryGirl.create_list(:question, questions_length)

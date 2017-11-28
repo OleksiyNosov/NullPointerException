@@ -5,6 +5,6 @@ class ResourceDestroyer < ResourceCrudWorker
 
   private
   def process_action
-    resource.destroy
+    @resource.destroy
   end
 end

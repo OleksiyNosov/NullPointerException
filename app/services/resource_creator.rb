@@ -8,6 +8,6 @@ class ResourceCreator < ResourceCrudWorker
   def process_action
     @resource = @resource_class.new @params
 
-    resource.save
+    @resource.save
   end
 end

@@ -12,7 +12,7 @@ RSpec.describe ResourceCreator do
   it { is_expected.to be_an ResourceCrudWorker }
 
   describe '#process_action' do
-    before { expect(resource_class).to receive(:new).with(resource_attributes) }
+    before { allow(resource_class).to receive(:new).with(resource_attributes).and_return resource }
 
     before { expect(resource).to receive(:save) }
 

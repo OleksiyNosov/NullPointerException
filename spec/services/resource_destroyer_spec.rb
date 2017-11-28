@@ -8,9 +8,9 @@ RSpec.describe ResourceDestroyer do
   it { is_expected.to be_an ResourceCrudWorker }
 
   describe 'process_action' do
-    before { allow(resource).to receive(:destroy).and_return resource }
+    before { expect(resource).to receive(:destroy) }
 
-    its(:process_action) { is_expected.to eq resource }
+    it { expect { subject.send :process_action }.to_not raise_error }
   end
 
   describe 'call' do

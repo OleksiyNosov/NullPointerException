@@ -24,6 +24,6 @@ RSpec.describe ResourceCreator do
 
     before { expect(subject).to receive(:broadcast_resource) }
 
-    it { expect { subject.send(:call) }.to_not raise_error }
+    it { expect { subject.call }.to_not raise_error }
   end
 end

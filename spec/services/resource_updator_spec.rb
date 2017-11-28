@@ -10,9 +10,9 @@ RSpec.describe ResourceUpdator do
   it { is_expected.to be_an ResourceCrudWorker }
 
   describe '#assemble_resource' do
-    before { expect(resource).to receive(:update).with(resource_attributes) }
+    before { allow(resource).to receive(:update).with(resource_attributes).and_return resource }
 
-    it { expect { subject.send(:assemble_resource) }.to_not raise_error }
+    its(:assemble_resource) { is_expected.to eq resource }
   end
 
   describe '#call' do

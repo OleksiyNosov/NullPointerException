@@ -1,6 +1,6 @@
 inherit_from: ../.rubocop.yml
 
-Style/NumericLiterals:
+Layout/EmptyLinesAroundBlockBody:
   Exclude:
     - schema.rb
 
@@ -9,3 +9,11 @@ Metrics/BlockLength:
 
 Metrics/MethodLength:
   Enabled: false
+
+Style/NumericLiterals:
+  Exclude:
+    - schema.rb
+
+Style/StringLiterals:
+  Exclude:
+    - schema.rb

@@ -3,3 +3,9 @@ inherit_from: ../.rubocop.yml
 Style/NumericLiterals:
   Exclude:
     - schema.rb
+
+Metrics/BlockLength:
+  Enabled: false
+
+Metrics/MethodLength:
+  Enabled: false

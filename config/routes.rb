@@ -1,7 +1,13 @@
 Rails.application.routes.draw do
   namespace :api do
-    resources :questions
+    resources :questions, only: %i[index show create update destroy]
 
-    resources :answers
+    resources :answers, only: %i[index show create update destroy]
+
+    resources :user, only: %i[index show]
+
+    resource :profile, only: %i[show create update]
+
+    resources :sessions, only: %i[index show create destroy]
   end
 end

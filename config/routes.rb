@@ -4,7 +4,7 @@ Rails.application.routes.draw do
 
     resources :answers, only: %i[index show create update destroy]
 
-    resources :user, only: %i[index show]
+    resources :users, only: %i[index show]
 
     resource :profile, only: %i[show create update]
 

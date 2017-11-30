@@ -12,6 +12,8 @@ RSpec.describe Api::QuestionsController, type: :controller do
   let(:resource_class) { Question }
 
   describe 'GET #show' do
+    before { sign_in }
+
     context 'question exist' do
       before { expect(subject).to receive(:resource).and_return question }
 
@@ -32,6 +34,8 @@ RSpec.describe Api::QuestionsController, type: :controller do
   end
 
   describe 'POST #create' do
+    before { sign_in }
+
     before { expect(subject).to receive(:resource_class).and_return resource_class }
 
     before { expect(resource_class).to receive(:new).with(permit! attributes).and_return question }
@@ -64,6 +68,8 @@ RSpec.describe Api::QuestionsController, type: :controller do
   describe 'PATCH #update' do
     let(:params) { { id: question.id, question: attributes } }
 
+    before { sign_in }
+
     before { expect(subject).to receive(:resource).and_return question }
 
     before { expect(question).to receive(:update).with(permit! attributes).and_return question }
@@ -92,6 +98,8 @@ RSpec.describe Api::QuestionsController, type: :controller do
   end
 
   describe 'DELETE #destroy' do
+    before { sign_in }
+
     before { expect(subject).to receive(:resource).and_return question }
 
     before { expect(question).to receive(:destroy) }

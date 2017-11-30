@@ -14,6 +14,8 @@ RSpec.describe Api::AnswersController, type: :controller do
   describe 'GET #show' do
     let(:params) { { id: answer.id } }
 
+    before { sign_in }
+
     describe 'answer exist' do
       before { expect(subject).to receive(:resource).and_return answer }
 
@@ -35,6 +37,8 @@ RSpec.describe Api::AnswersController, type: :controller do
 
   describe 'POST #create' do
     let(:params) { { answer: attributes } }
+
+    before { sign_in }
 
     before { expect(subject).to receive(:resource_class).and_return resource_class }
 
@@ -68,6 +72,8 @@ RSpec.describe Api::AnswersController, type: :controller do
   describe 'PATCH #update' do
     let(:params) { { id: answer.id, answer: attributes } }
 
+    before { sign_in }
+
     before { expect(subject).to receive(:resource).and_return answer }
 
     before { expect(answer).to receive(:update).with(permit! attributes).and_return answer }
@@ -97,6 +103,8 @@ RSpec.describe Api::AnswersController, type: :controller do
 
   describe 'DELETE #destroy' do
     let(:params) { { id: answer.id } }
+
+    before { sign_in }
 
     before { expect(subject).to receive(:resource).and_return answer }
 

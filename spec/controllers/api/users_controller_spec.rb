@@ -52,4 +52,8 @@ RSpec.describe Api::UsersController, type: :controller do
       it('returns status 404') { expect(response).to have_http_status 404 }
     end
   end
+
+  describe '#resource_class' do
+    its(:resource_class) { is_expected.to eq User }
+  end
 end

@@ -9,10 +9,8 @@ class SessionCreator < ResourceCrudWorker
   def process_action
     user = User.find_by email: @email
 
-    @resource = Session.new user: user, token: SecureRandom.base64(64)
+    @resource = Session.new user: user, token: SecureRandom.base64(64), password: @password
 
-    @resource.errors.add :password, 'is invalid' unless user.authenticate @password
-
-    @resource.save if @resource.errors.count.zero?
+    @resource.save
   end
 end

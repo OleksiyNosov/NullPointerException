@@ -1,3 +1,6 @@
+AllCops:
+  TargetRubyVersion: "2.4.2"
+
 Layout/EmptyLinesAroundAccessModifier:
   Enabled: false
 

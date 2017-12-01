@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::API
-  include ActionController::HttpAuthentication
+  include Authenticatable
 
   rescue_from ActiveRecord::RecordNotFound do
     head 404
@@ -44,14 +44,6 @@ class ApplicationController < ActionController::API
   end
 
   private
-  def authenticate_with_token
-    token, _options = ActionController::HttpAuthentication::Token.token_and_options(request)
-
-    @current_user = Session.find_by(token: token)&.user
-
-    render status: 401 unless @current_user
-  end
-
   def resource
     @resource ||= resource_class.find params[:id]
   end

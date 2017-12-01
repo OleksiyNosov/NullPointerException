@@ -3,22 +3,18 @@ require 'rails_helper'
 RSpec.describe SessionCreator do
   it { is_expected.to be_an ResourceCrudWorker }
 
-  let(:password) { SecureRandom.base64(32) }
-
-  let(:user) { FactoryGirl.create(:user, password: password) }
+  let(:user) { FactoryGirl.create(:user) }
 
   let(:token) { SecureRandom.base64(64) }
 
-  let(:resource) { Session.new user: user, token: token, password: password }
+  let(:resource) { Session.new user: user, token: token }
 
-  subject { SessionCreator.new email: user.email, password: password }
+  subject { SessionCreator.new user: user }
 
   describe '#process_action' do
-    before { allow(User).to receive(:find_by).with(email: user.email).and_return user }
-
     before { allow(SecureRandom).to receive(:base64).with(64).and_return token }
 
-    before { allow(Session).to receive(:new).with(user: user, token: token, password: password).and_return resource }
+    before { allow(Session).to receive(:new).with(user: user, token: token).and_return resource }
 
     before { expect(resource).to receive(:save) }
 

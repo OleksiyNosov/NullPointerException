@@ -1,4 +1,5 @@
 module Authenticatable
+  private
   def authenticate_with_token
     token, _options = ActionController::HttpAuthentication::Token.token_and_options(request)
 

@@ -3,9 +3,9 @@ require 'rails_helper'
 RSpec.describe Api::SessionsController, type: :controller do
   it { is_expected.to be_an ApplicationController }
 
-  let(:user_password) { 'password' }
+  let(:password) { 'password' }
 
-  let(:user) { FactoryGirl.create(:user, password: user_password) }
+  let(:user) { FactoryGirl.create(:user, password: password) }
 
   let(:token) { SecureRandom.base64(64) }
 
@@ -15,7 +15,7 @@ RSpec.describe Api::SessionsController, type: :controller do
 
   let(:resource) { instance_double Session, id: 7, as_json: attributes, **attributes }
 
-  let(:resource_create_attibutes) { { email: user.email, password: user_password } }
+  let(:resource_create_attibutes) { { email: user.email, password: password } }
 
   describe 'GET #show' do
     before { sign_in }
@@ -42,7 +42,7 @@ RSpec.describe Api::SessionsController, type: :controller do
   describe 'POST #create' do
     before { allow(SecureRandom).to receive(:base64).with(64).and_return token }
 
-    before { expect(Session).to receive(:new).with(user: user, token: token, password: user_password).and_return resource }
+    before { expect(Session).to receive(:new).with(user: user, token: token, password: password).and_return resource }
 
     before { expect(resource).to receive(:save) }
 

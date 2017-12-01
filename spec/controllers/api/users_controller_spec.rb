@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::UsersController, type: :controller do
-  it { is_expected.to be_an ApplicationController  }
+  it { is_expected.to be_an ApplicationController }
 
   let(:attributes) { attributes_for(:user) }
 

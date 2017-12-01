@@ -51,4 +51,8 @@ class ApplicationController < ActionController::API
   def resource_creator
     ResourceCreator.new(resource_class, resource_params)
   end
+
+  def resource_class
+    raise NotImplementedError
+  end
 end

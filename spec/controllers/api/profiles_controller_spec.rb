@@ -60,6 +60,15 @@ RSpec.describe Api::ProfilesController, type: :controller do
 
     before { expect(resource).to receive(:update).with(permit! attributes) }
 
+    before do
+      #
+      # => resource.sessions.destroy_all
+      #
+      expect(resource).to receive(:sessions) do
+        double.tap { |sessions| expect(sessions).to receive(:destroy_all) }
+      end
+    end
+
     describe 'user profile was updated' do
       before { allow(resource).to receive(:valid?).and_return true }
 

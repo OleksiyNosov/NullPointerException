@@ -5,10 +5,13 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
+gem 'rails'
+
 gem 'active_model_serializers'
+gem 'bcrypt'
+gem 'email_validator'
 gem 'pg'
 gem 'puma'
-gem 'rails'
 gem 'wisper'
 
 group :development, :test do

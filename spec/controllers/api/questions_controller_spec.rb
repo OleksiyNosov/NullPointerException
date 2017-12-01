@@ -11,7 +11,31 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
   let(:resource_class) { Question }
 
+  describe 'GET #index' do
+    before { sign_in }
+
+    describe 'questions exist' do
+      before { expect(Question).to receive(:all).and_return [serialized_attributes] }
+
+      before { get :index, format: :json }
+
+      it('returns status 200') { expect(response).to have_http_status 200 }
+
+      it('returns questions') { expect(response_body).to eq [serialized_attributes] }
+    end
+
+    describe 'questions dont exist' do
+      before { expect(Question).to receive(:all).and_raise ActiveRecord::RecordNotFound }
+
+      before { get :index, format: :json }
+
+      it('returns status 404') { expect(response).to have_http_status 404 }
+    end
+  end
+
   describe 'GET #show' do
+    before { sign_in }
+
     context 'question exist' do
       before { expect(subject).to receive(:resource).and_return question }
 
@@ -32,6 +56,8 @@ RSpec.describe Api::QuestionsController, type: :controller do
   end
 
   describe 'POST #create' do
+    before { sign_in }
+
     before { expect(subject).to receive(:resource_class).and_return resource_class }
 
     before { expect(resource_class).to receive(:new).with(permit! attributes).and_return question }
@@ -64,6 +90,8 @@ RSpec.describe Api::QuestionsController, type: :controller do
   describe 'PATCH #update' do
     let(:params) { { id: question.id, question: attributes } }
 
+    before { sign_in }
+
     before { expect(subject).to receive(:resource).and_return question }
 
     before { expect(question).to receive(:update).with(permit! attributes).and_return question }
@@ -92,6 +120,8 @@ RSpec.describe Api::QuestionsController, type: :controller do
   end
 
   describe 'DELETE #destroy' do
+    before { sign_in }
+
     before { expect(subject).to receive(:resource).and_return question }
 
     before { expect(question).to receive(:destroy) }

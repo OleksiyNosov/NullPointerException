@@ -28,3 +28,6 @@ config/secrets.yml
 # Ignore gemsets
 .ruby-gemset
 .ruby-version
+
+# Ignore macOS system files
+.DS_Store

@@ -10,25 +10,43 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171024043302) do
+ActiveRecord::Schema.define(version: 20171128155047) do
+
   # These are extensions that must be enabled in order to support this database
-  enable_extension 'plpgsql'
+  enable_extension "plpgsql"
 
-  create_table 'answers', force: :cascade do |t|
-    t.text 'body'
-    t.bigint 'question_id'
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.index ['question_id'], name: 'index_answers_on_question_id'
+  create_table "answers", force: :cascade do |t|
+    t.text "body"
+    t.bigint "question_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["question_id"], name: "index_answers_on_question_id"
   end
 
-  create_table 'questions', force: :cascade do |t|
-    t.string 'title'
-    t.text 'body'
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.string 'tags', default: [], array: true
+  create_table "questions", force: :cascade do |t|
+    t.string "title"
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "tags", default: [], array: true
   end
 
-  add_foreign_key 'answers', 'questions'
+  create_table "sessions", force: :cascade do |t|
+    t.string "token", default: "f"
+    t.bigint "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["token"], name: "index_sessions_on_token", unique: true
+    t.index ["user_id"], name: "index_sessions_on_user_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "email"
+    t.string "password_digest"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_foreign_key "answers", "questions"
+  add_foreign_key "sessions", "users"
 end

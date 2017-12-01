@@ -1,14 +1,20 @@
 class ApplicationController < ActionController::API
+  include Authenticatable
+
   rescue_from ActiveRecord::RecordNotFound do
     head 404
   end
+
+  attr_reader :current_user
+
+  before_action :authenticate_with_token
 
   def show
     render json: resource
   end
 
   def create
-    ResourceCreator.new(resource_class, resource_params)
+    resource_creator
       .on :succeeded do |resource|
         render json: resource, status: 201
       end
@@ -18,7 +24,7 @@ class ApplicationController < ActionController::API
   end
 
   def update
-    ResourceUpdator.new(resource, resource_params)
+    resource_updator
       .on :succeeded do |resource|
         render json: resource
       end
@@ -40,5 +46,17 @@ class ApplicationController < ActionController::API
   private
   def resource
     @resource ||= resource_class.find params[:id]
+  end
+
+  def resource_creator
+    ResourceCreator.new resource_class, resource_params
+  end
+
+  def resource_updator
+    ResourceUpdator.new resource, resource_params
+  end
+
+  def resource_class
+    raise NotImplementedError
   end
 end

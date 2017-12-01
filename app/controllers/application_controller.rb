@@ -24,7 +24,7 @@ class ApplicationController < ActionController::API
   end
 
   def update
-    ResourceUpdator.new(resource, resource_params)
+    resource_updator
       .on :succeeded do |resource|
         render json: resource
       end
@@ -49,7 +49,11 @@ class ApplicationController < ActionController::API
   end
 
   def resource_creator
-    ResourceCreator.new(resource_class, resource_params)
+    ResourceCreator.new resource_class, resource_params
+  end
+
+  def resource_updator
+    ResourceUpdator.new resource, resource_params
   end
 
   def resource_class

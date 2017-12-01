@@ -6,6 +6,10 @@ class Api::ProfilesController < ApplicationController
     User
   end
 
+  def resource_updator
+    ProfileUpdator.new resource, resource_params
+  end
+
   def resource_params
     params.require(:user).permit(:email, :password, :password_confirmation)
   end

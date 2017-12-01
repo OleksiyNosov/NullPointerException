@@ -40,9 +40,11 @@ RSpec.describe Api::SessionsController, type: :controller do
   end
 
   describe 'POST #create' do
+    before { sign_in_with_password user }
+
     before { allow(SecureRandom).to receive(:base64).with(64).and_return token }
 
-    before { expect(Session).to receive(:new).with(user: user, token: token, password: password).and_return resource }
+    before { expect(Session).to receive(:new).with(user: user, token: token).and_return resource }
 
     before { expect(resource).to receive(:save) }
 

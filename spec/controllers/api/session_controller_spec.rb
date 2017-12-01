@@ -122,4 +122,8 @@ RSpec.describe Api::SessionsController, type: :controller do
 
     its(:resource) { is_expected.to eq resource }
   end
+
+  describe '#resource_class' do
+    its(:resource_class) { is_expected.to eq Session }
+  end
 end

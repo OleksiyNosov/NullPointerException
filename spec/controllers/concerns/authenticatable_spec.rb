@@ -55,10 +55,14 @@ RSpec.describe Authenticatable do
   describe '#authenticate_with_password' do
     before do
       #
-      # => params[:email]
+      # => params[:session][:email]
       #
       expect(subject).to receive(:params) do
-        double.tap { |params| expect(params).to receive(:[]).with(:email).and_return email }
+        double.tap do |params|
+          expect(params).to receive(:[]).with(:session) do
+            double.tap { |session| expect(session).to receive(:[]).with(:email).and_return email }
+          end
+        end
       end
     end
 
@@ -67,10 +71,14 @@ RSpec.describe Authenticatable do
 
       before do
         #
-        # => params[:password]
+        # => params[:session][:password]
         #
         expect(subject).to receive(:params) do
-          double.tap { |params| expect(params).to receive(:[]).with(:password).and_return password }
+          double.tap do |params|
+            expect(params).to receive(:[]).with(:session) do
+              double.tap { |session| expect(session).to receive(:[]).with(:password).and_return password }
+            end
+          end
         end
       end
 

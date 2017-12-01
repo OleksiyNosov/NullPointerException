@@ -9,9 +9,9 @@ module Authenticatable
   end
 
   def authenticate_with_password
-    user = User.find_by email: params[:email]
+    user = User.find_by email: params[:session][:email]
 
-    @current_user = user if user&.authenticate params[:password]
+    @current_user = user if user&.authenticate params[:session][:password]
 
     render status: 401 unless @current_user
   end

@@ -17,6 +17,28 @@ RSpec.describe Api::SessionsController, type: :controller do
 
   let(:resource_create_attibutes) { { email: user.email, password: password } }
 
+  describe 'GET #index' do
+    before { sign_in user }
+
+    describe 'sessions exist' do
+      before { expect(user).to receive(:sessions).and_return [serialized_attributes] }
+
+      before { get :index, format: :json }
+
+      it('returns status 200') { expect(response).to have_http_status 200 }
+
+      it('returns sessions') { expect(response_body).to eq [serialized_attributes] }
+    end
+
+    describe 'sessions dont exist' do
+      before { expect(user).to receive(:sessions).and_raise ActiveRecord::RecordNotFound }
+
+      before { get :index, format: :json }
+
+      it('returns status 404') { expect(response).to have_http_status 404 }
+    end
+  end
+
   describe 'GET #show' do
     before { sign_in }
 

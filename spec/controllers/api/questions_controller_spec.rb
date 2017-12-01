@@ -11,6 +11,28 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
   let(:resource_class) { Question }
 
+  describe 'GET #index' do
+    before { sign_in }
+
+    describe 'questions exist' do
+      before { expect(Question).to receive(:all).and_return [serialized_attributes] }
+
+      before { get :index, format: :json }
+
+      it('returns status 200') { expect(response).to have_http_status 200 }
+
+      it('returns questions') { expect(response_body).to eq [serialized_attributes] }
+    end
+
+    describe 'questions dont exist' do
+      before { expect(Question).to receive(:all).and_raise ActiveRecord::RecordNotFound }
+
+      before { get :index, format: :json }
+
+      it('returns status 404') { expect(response).to have_http_status 404 }
+    end
+  end
+
   describe 'GET #show' do
     before { sign_in }
 

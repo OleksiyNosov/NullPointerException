@@ -1,5 +1,5 @@
 class Api::SessionsController < ApplicationController
-  skip_before_action :authenticate, only: :create
+  skip_before_action :authenticate_with_token, only: :create
 
   def index
     render json: current_user.sessions

@@ -1,5 +1,5 @@
 class Api::ProfilesController < ApplicationController
-  skip_before_action :authenticate, only: :create
+  skip_before_action :authenticate_with_token, only: :create
 
   private
   def resource_class

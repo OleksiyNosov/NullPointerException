@@ -7,7 +7,7 @@ class ApplicationController < ActionController::API
 
   attr_reader :current_user
 
-  before_action :authenticate
+  before_action :authenticate_with_token
 
   def show
     render json: resource
@@ -44,7 +44,7 @@ class ApplicationController < ActionController::API
   end
 
   private
-  def authenticate
+  def authenticate_with_token
     token, _options = ActionController::HttpAuthentication::Token.token_and_options(request)
 
     @current_user = Session.find_by(token: token)&.user

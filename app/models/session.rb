@@ -3,10 +3,10 @@ class Session < ApplicationRecord
 
   attr_accessor :password
 
-  validate :authenticate
+  validate :authenticate_with_token
 
   private
-  def authenticate
+  def authenticate_with_token
     errors.add :password, 'is invalid' unless user&.authenticate password
   end
 end

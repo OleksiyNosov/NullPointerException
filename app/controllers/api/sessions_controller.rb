@@ -1,6 +1,8 @@
 class Api::SessionsController < ApplicationController
   skip_before_action :authenticate_with_token, only: :create
 
+  before_action :authenticate_with_password, only: :create
+
   def index
     render json: current_user.sessions
   end
@@ -10,12 +12,8 @@ class Api::SessionsController < ApplicationController
     Session
   end
 
-  def resource_params
-    params.require(:session).permit(:email, :password)
-  end
-
   def resource_creator
-    SessionCreator.new resource_params
+    SessionCreator.new user: current_user
   end
 
   def resource

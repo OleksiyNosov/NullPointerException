@@ -53,6 +53,8 @@ RSpec.describe Authenticatable do
   end
 
   describe '#authenticate_with_password' do
+    let(:errors_message) { { json: { errors: { base: ['email or password is invalid'] } }, status: 422 } }
+
     before do
       #
       # => params[:session][:email]
@@ -91,7 +93,7 @@ RSpec.describe Authenticatable do
       context 'User was not authenticated' do
         before { allow(user).to receive(:authenticate).with(password).and_return false }
 
-        before { expect(subject).to receive(:render).with(status: 401) }
+        before { expect(subject).to receive(:render).with(errors_message) }
 
         it { expect { subject.send :authenticate_with_password }.to_not raise_error }
       end
@@ -100,7 +102,7 @@ RSpec.describe Authenticatable do
     context 'User was not found' do
       before { expect(User).to receive(:find_by).with(email: email).and_return nil }
 
-      before { expect(subject).to receive(:render).with(status: 401) }
+      before { expect(subject).to receive(:render).with(errors_message) }
 
       it { expect { subject.send :authenticate_with_password }.to_not raise_error }
     end

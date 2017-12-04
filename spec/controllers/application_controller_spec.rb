@@ -30,6 +30,10 @@ RSpec.describe ApplicationController, type: :controller do
   end
 
   describe '#resource_class' do
-    it { expect { subject.send :resource_class }.to raise_error NotImplementedError }
+    before { allow(controller).to receive_message_chain(:class, :controller_name).and_return 'fake_classes' }
+
+    before { class FakeClass end }
+
+    its(:resource_class) { is_expected.to eq FakeClass }
   end
 end

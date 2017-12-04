@@ -65,6 +65,6 @@ class ApplicationController < ActionController::API
   end
 
   def resource_class
-    @resource_class ||= self.class.controller_name.singularize.capitalize.constantize
+    @resource_class ||= self.class.controller_name.singularize.camelize.constantize
   end
 end

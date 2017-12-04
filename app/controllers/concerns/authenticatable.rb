@@ -13,6 +13,6 @@ module Authenticatable
 
     @current_user = user if user&.authenticate params[:session][:password]
 
-    render status: 401 unless @current_user
+    render json: { errors: { base: ['email or password is invalid'] } }, status: 422 unless @current_user
   end
 end

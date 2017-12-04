@@ -9,6 +9,10 @@ class ApplicationController < ActionController::API
 
   before_action :authenticate_with_token
 
+  def index
+    render json: collection
+  end
+
   def show
     render json: resource
   end
@@ -48,6 +52,10 @@ class ApplicationController < ActionController::API
     @resource ||= resource_class.find params[:id]
   end
 
+  def collection
+    resource_class.all
+  end
+
   def resource_creator
     ResourceCreator.new resource_class, resource_params
   end
@@ -57,6 +65,6 @@ class ApplicationController < ActionController::API
   end
 
   def resource_class
-    raise NotImplementedError
+    @resource_class ||= self.class.controller_name.singularize.capitalize.constantize
   end
 end

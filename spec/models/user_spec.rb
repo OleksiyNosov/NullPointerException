@@ -13,10 +13,6 @@ RSpec.describe User, type: :model do
 
   it { is_expected.not_to allow_value('test@test.').for(:email) }
 
-  it { is_expected.not_to allow_value('test@test.x').for(:email) }
-
-  it { is_expected.not_to allow_value('t@t.a').for(:email) }
-
   it { is_expected.not_to allow_value('test@.com').for(:email) }
 
   it { is_expected.not_to allow_value('@a.com').for(:email) }

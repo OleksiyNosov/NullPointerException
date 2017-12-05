@@ -6,7 +6,7 @@ module EmailValidations
 
   private
   def email_check
-    errors.add :email, 'is invalid' unless email =~ email_regex
+    errors.add :email, 'is invalid' unless email&.match?(email_regex)
   end
 
   def email_regex

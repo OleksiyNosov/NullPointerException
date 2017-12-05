@@ -1,7 +1,7 @@
 module Resourceable
   private
   def resource_class
-    @resource_class ||= self.class.controller_name.singularize.camelize.constantize
+    @resource_class ||= resource_class_name.constantize
   end
 
     def resource
@@ -10,5 +10,9 @@ module Resourceable
 
   def collection
     @collection ||= resource_class.all
+  end
+
+  def resource_class_name
+    controller_name.singularize.camelize
   end
 end

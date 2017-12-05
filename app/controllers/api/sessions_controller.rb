@@ -1,8 +1,6 @@
 class Api::SessionsController < ApplicationController
   skip_before_action :authenticate_with_token, only: :create
 
-  before_action :authenticate_with_password, only: :create
-
   private
   def resource_creator
     SessionCreator.new user: current_user

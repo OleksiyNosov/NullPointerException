@@ -5,8 +5,6 @@ class ApplicationController < ActionController::API
     head 404
   end
 
-  attr_reader :current_user
-
   before_action :authenticate_with_token
 
   def index

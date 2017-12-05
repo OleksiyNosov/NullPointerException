@@ -1,5 +1,13 @@
 module Resourceable
   private
+  def resource_creator
+    ResourceCreator.new resource_class, resource_params
+  end
+
+  def resource_updator
+    ResourceUpdator.new resource, resource_params
+  end
+
   def resource_class
     @resource_class ||= resource_class_name.constantize
   end

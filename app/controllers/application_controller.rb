@@ -43,13 +43,4 @@ class ApplicationController < ActionController::API
         render json: errors, status: 422
       end.call
   end
-
-  private
-  def resource_creator
-    ResourceCreator.new resource_class, resource_params
-  end
-
-  def resource_updator
-    ResourceUpdator.new resource, resource_params
-  end
 end

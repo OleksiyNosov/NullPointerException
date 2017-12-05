@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::API
   include Authenticatable
+  include Resourceable
 
   rescue_from ActiveRecord::RecordNotFound do
     head 404
@@ -46,23 +47,11 @@ class ApplicationController < ActionController::API
   end
 
   private
-  def resource
-    @resource ||= resource_class.find params[:id]
-  end
-
-  def collection
-    resource_class.all
-  end
-
   def resource_creator
     ResourceCreator.new resource_class, resource_params
   end
 
   def resource_updator
     ResourceUpdator.new resource, resource_params
-  end
-
-  def resource_class
-    @resource_class ||= self.class.controller_name.singularize.camelize.constantize
   end
 end

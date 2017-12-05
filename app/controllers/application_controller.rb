@@ -6,8 +6,6 @@ class ApplicationController < ActionController::API
     head 404
   end
 
-  before_action :authenticate_with_token
-
   def index
     render json: collection
   end

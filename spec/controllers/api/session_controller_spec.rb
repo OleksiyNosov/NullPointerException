@@ -62,8 +62,6 @@ RSpec.describe Api::SessionsController, type: :controller do
   end
 
   describe 'POST #create' do
-    before { sign_in_with_password user }
-
     before { allow(SecureRandom).to receive(:base64).with(64).and_return token }
 
     before { expect(Session).to receive(:new).with(user: user, token: token).and_return resource }
@@ -71,6 +69,15 @@ RSpec.describe Api::SessionsController, type: :controller do
     before { expect(resource).to receive(:save) }
 
     context 'session was created' do
+      before do
+        #
+        # => resource.errors.empty?
+        #
+        expect(resource).to receive(:errors) do
+          double.tap { |errors| expect(errors).to receive(:empty?).and_return true }
+        end
+      end
+
       before { expect(resource).to receive(:valid?).and_return true }
 
       before { post :create, params: { session: resource_create_attibutes }, format: :json }
@@ -81,6 +88,15 @@ RSpec.describe Api::SessionsController, type: :controller do
     end
 
     context 'session was not created' do
+      before do
+        #
+        # => resource.errors.empty?
+        #
+        expect(resource).to receive(:errors) do
+          double.tap { |errors| expect(errors).to receive(:empty?).and_return true }
+        end
+      end
+
       before { expect(resource).to receive(:valid?).and_return false }
 
       before { expect(resource).to receive(:errors).and_return :errors }
@@ -101,6 +117,15 @@ RSpec.describe Api::SessionsController, type: :controller do
     before { expect(resource).to receive(:destroy) }
 
     context 'session was destroyed' do
+      before do
+        #
+        # => resource.errors.empty?
+        #
+        expect(resource).to receive(:errors) do
+          double.tap { |errors| expect(errors).to receive(:empty?).and_return true }
+        end
+      end
+
       before { allow(resource).to receive(:valid?).and_return true }
 
       before { delete :destroy, params: { id: resource.id }, format: :json }
@@ -109,6 +134,15 @@ RSpec.describe Api::SessionsController, type: :controller do
     end
 
     context 'session was not destroyed' do
+      before do
+        #
+        # => resource.errors.empty?
+        #
+        expect(resource).to receive(:errors) do
+          double.tap { |errors| expect(errors).to receive(:empty?).and_return true }
+        end
+      end
+
       before { allow(resource).to receive(:valid?).and_return false }
 
       before { expect(resource).to receive(:errors) }

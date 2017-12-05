@@ -3,7 +3,7 @@ class Api::SessionsController < ApplicationController
 
   private
   def resource_creator
-    SessionCreator.new user: current_user
+    SessionCreator.new resource_params
   end
 
   def resource
@@ -12,5 +12,9 @@ class Api::SessionsController < ApplicationController
 
   def collection
     current_user.sessions
+  end
+
+  def resource_params
+    params.require(:session).permit(:email, :password)
   end
 end

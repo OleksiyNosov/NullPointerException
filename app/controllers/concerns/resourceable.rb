@@ -4,7 +4,7 @@ module Resourceable
     @resource_class ||= resource_class_name.constantize
   end
 
-    def resource
+  def resource
     @resource ||= resource_class.find params[:id]
   end
 

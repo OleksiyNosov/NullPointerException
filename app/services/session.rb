@@ -2,23 +2,23 @@ class Session
   include ActiveModel::Validations
   include ActiveModel::Serialization
 
+  SECRET_KEY = Rails.application.secrets.secret_key_base
+  ALGORITHM = 'HS256'.freeze
+
   def initialize params
     @user = params[:user]
   end
 
   def token
-    @token ||= JWT.encode payload, secret_key_base, algorithm, headers
+    @token ||= JWT.encode payload, SECRET_KEY, ALGORITHM, headers
   end
 
   private
-  def secret_key_base
-    Rails.application.secrets.secret_key_base
-  end
-
   def headers
     {
       typ: 'JWT',
-      alg: algorithm,
+      alg: ALGORITHM,
+      exp: Time.zone.now.to_i + 7.days.to_i
     }
   end
 
@@ -26,9 +26,5 @@ class Session
     {
       id: @user.id
     }
-  end
-
-  def algorithm
-    'HS256'
   end
 end

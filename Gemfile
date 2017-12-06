@@ -9,6 +9,7 @@ gem 'rails'
 
 gem 'active_model_serializers'
 gem 'bcrypt'
+gem 'jwt'
 gem 'pg'
 gem 'puma'
 gem 'wisper'

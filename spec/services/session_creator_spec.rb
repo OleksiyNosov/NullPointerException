@@ -16,14 +16,10 @@ RSpec.describe SessionCreator do
   describe '#process_action' do
     before { allow(User).to receive(:find_by).with(email: user.email).and_return user }
 
-    before { allow(SecureRandom).to receive(:base64).with(64).and_return token }
-
-    before { allow(Session).to receive(:new).with(user: user, token: token).and_return resource }
+    before { allow(Session).to receive(:new).with(user: user).and_return resource }
 
     context 'was authenticated' do
       before { expect(user).to receive(:authenticate).with(password).and_return true }
-
-      before { expect(resource).to receive(:save) }
 
       it { expect { subject.send :process_action }.to_not raise_error }
     end
@@ -39,8 +35,6 @@ RSpec.describe SessionCreator do
           double.tap { |errors| expect(errors).to receive(:add).with(:password, 'is invalid') }
         end
       end
-
-      before { expect(resource).to receive(:save) }
 
       it { expect { subject.send :process_action }.to_not raise_error }
     end

@@ -21,8 +21,8 @@ group :development, :test do
 end
 
 group :development do
-  gem 'pry-rails'
   gem 'pry-byebug'
+  gem 'pry-rails'
 end
 
 group :test do

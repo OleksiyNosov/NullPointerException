@@ -31,7 +31,7 @@ class Session
   end
 
   validate do |model|
-    model.errors.add :email, 'not found' unless @email
+    model.errors.add :email, 'not found' unless user
     model.errors.add :password, 'is invalid' unless user&.authenticate @password
   end
 

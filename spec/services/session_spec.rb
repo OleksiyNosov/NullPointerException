@@ -1,9 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe Session do
-  let(:user) { FactoryGirl.create :user }
+  let(:password) { SecureRandom.base64(32) }
 
-  subject { Session.new user: user }
+  let(:user) { FactoryGirl.create :user, password: password }
+
+  let(:email) { user.email }
+
+  subject { Session.new email: email, password: password }
 
   let(:token) { subject.token }
 
@@ -27,5 +31,11 @@ RSpec.describe Session do
 
   describe '#payload' do
     its(:payload) { is_expected.to eq payload }
+  end
+
+  describe '#user' do
+    before { allow(User).to receive(:find_by).with(email: user.email).and_return user }
+
+    its(:user) { is_expected.to eq user }
   end
 end

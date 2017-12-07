@@ -68,16 +68,7 @@ RSpec.describe Api::AnswersController, type: :controller do
 
     before { expect(answer).to receive(:save) }
 
-    context 'answer created' do
-      before do
-        #
-        # => answer.errors.empty?
-        #
-        expect(answer).to receive(:errors) do
-          double.tap { |errors| expect(errors).to receive(:empty?).and_return true }
-        end
-      end
-
+    context 'answer valid' do
       before { expect(answer).to receive(:valid?).and_return true }
 
       before { post :create, params: params, format: :json }
@@ -87,35 +78,7 @@ RSpec.describe Api::AnswersController, type: :controller do
       it('returns created answer') { expect(response_body).to eq serialized_attributes }
     end
 
-    context 'answer have errors' do
-      before do
-        #
-        # => answer.errors.empty?
-        #
-        expect(answer).to receive(:errors) do
-          double.tap { |errors| expect(errors).to receive(:empty?).and_return false }
-        end
-      end
-
-      before { expect(answer).to receive(:errors).and_return :errors }
-
-      before { post :create, params: params, format: :json }
-
-      it('returns status 422') { expect(response).to have_http_status 422 }
-
-      it('returns errors') { expect(response_body).to eq 'errors' }
-    end
-
     context 'answer not valid' do
-      before do
-        #
-        # => answer.errors.empty?
-        #
-        expect(answer).to receive(:errors) do
-          double.tap { |errors| expect(errors).to receive(:empty?).and_return true }
-        end
-      end
-
       before { expect(answer).to receive(:valid?).and_return false }
 
       before { expect(answer).to receive(:errors).and_return :errors }
@@ -138,15 +101,6 @@ RSpec.describe Api::AnswersController, type: :controller do
     before { expect(answer).to receive(:update).with(permit! attributes).and_return answer }
 
     context 'answer updated' do
-      before do
-        #
-        # => answer.errors.empty?
-        #
-        expect(answer).to receive(:errors) do
-          double.tap { |errors| expect(errors).to receive(:empty?).and_return true }
-        end
-      end
-
       before { expect(answer).to receive(:valid?).and_return true }
 
       before { patch :update, params: params, format: :json }
@@ -156,35 +110,7 @@ RSpec.describe Api::AnswersController, type: :controller do
       it('returns updated answer') { expect(response_body).to eq serialized_attributes }
     end
 
-    context 'answer have errors' do
-      before do
-        #
-        # => answer.errors.empty?
-        #
-        expect(answer).to receive(:errors) do
-          double.tap { |errors| expect(errors).to receive(:empty?).and_return false }
-        end
-      end
-
-      before { expect(answer).to receive(:errors).and_return :errors }
-
-      before { patch :update, params: params, format: :json }
-
-      it('returns status 422') { expect(response).to have_http_status 422 }
-
-      it('returns errors') { expect(response_body).to eq 'errors' }
-    end
-
     context 'answer not valid' do
-      before do
-        #
-        # => answer.errors.empty?
-        #
-        expect(answer).to receive(:errors) do
-          double.tap { |errors| expect(errors).to receive(:empty?).and_return true }
-        end
-      end
-
       before { expect(answer).to receive(:valid?).and_return false }
 
       before { expect(answer).to receive(:errors).and_return :errors }
@@ -207,15 +133,6 @@ RSpec.describe Api::AnswersController, type: :controller do
     before { expect(answer).to receive(:destroy) }
 
     context 'answer destroyed' do
-      before do
-        #
-        # => answer.errors.empty?
-        #
-        expect(answer).to receive(:errors) do
-          double.tap { |errors| expect(errors).to receive(:empty?).and_return true }
-        end
-      end
-
       before { expect(answer).to receive(:valid?).and_return true }
 
       before { delete :destroy, params: params, format: :json }
@@ -223,35 +140,7 @@ RSpec.describe Api::AnswersController, type: :controller do
       it('returns status 204') { expect(response).to have_http_status 204 }
     end
 
-    context 'answer not destroyed' do
-      before do
-        #
-        # => answer.errors.empty?
-        #
-        expect(answer).to receive(:errors) do
-          double.tap { |errors| expect(errors).to receive(:empty?).and_return false }
-        end
-      end
-
-      before { expect(answer).to receive(:errors).and_return :errors }
-
-      before { delete :destroy, params: params, format: :json }
-
-      it('returns status 422') { expect(response).to have_http_status 422 }
-
-      it('returns errors') { expect(response_body).to eq 'errors' }
-    end
-
     context 'answer not valid' do
-      before do
-        #
-        # => answer.errors.empty?
-        #
-        expect(answer).to receive(:errors) do
-          double.tap { |errors| expect(errors).to receive(:empty?).and_return true }
-        end
-      end
-
       before { expect(answer).to receive(:valid?).and_return false }
 
       before { expect(answer).to receive(:errors).and_return :errors }

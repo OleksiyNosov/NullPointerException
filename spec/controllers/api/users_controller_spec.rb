@@ -63,15 +63,6 @@ RSpec.describe Api::UsersController, type: :controller do
     before { expect(user).to receive(:save) }
 
     context 'new user was created' do
-      before do
-        #
-        # => user.errors.empty?
-        #
-        expect(user).to receive(:errors) do
-          double.tap { |errors| expect(errors).to receive(:empty?).and_return true }
-        end
-      end
-
       before { allow(user).to receive(:valid?).and_return true }
 
       before { post :create, params: { user: attributes }, format: :json }
@@ -82,15 +73,6 @@ RSpec.describe Api::UsersController, type: :controller do
     end
 
     context 'new user was not created' do
-      before do
-        #
-        # => user.errors.empty?
-        #
-        expect(user).to receive(:errors) do
-          double.tap { |errors| expect(errors).to receive(:empty?).and_return false }
-        end
-      end
-
       before { allow(user).to receive(:valid?).and_return false }
 
       before { expect(user).to receive(:errors).and_return :errors }
@@ -111,15 +93,6 @@ RSpec.describe Api::UsersController, type: :controller do
     before { expect(user).to receive(:update).with(permit! attributes) }
 
     describe 'user profile was updated' do
-      before do
-        #
-        # => user.errors.empty?
-        #
-        expect(user).to receive(:errors) do
-          double.tap { |errors| expect(errors).to receive(:empty?).and_return true }
-        end
-      end
-
       before { allow(user).to receive(:valid?).and_return true }
 
       before { patch :update, params: { id: user.id, user: attributes }, format: :json }
@@ -130,15 +103,6 @@ RSpec.describe Api::UsersController, type: :controller do
     end
 
     describe 'user profile was not updated' do
-      before do
-        #
-        # => user.errors.empty?
-        #
-        expect(user).to receive(:errors) do
-          double.tap { |errors| expect(errors).to receive(:empty?).and_return false }
-        end
-      end
-
       before { allow(user).to receive(:valid?).and_return false }
 
       before { expect(user).to receive(:errors).and_return :errors }

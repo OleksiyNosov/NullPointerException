@@ -65,15 +65,6 @@ RSpec.describe Api::QuestionsController, type: :controller do
     before { expect(question).to receive(:save) }
 
     context 'question was created' do
-      before do
-        #
-        # => question.errors.empty?
-        #
-        expect(question).to receive(:errors) do
-          double.tap { |errors| expect(errors).to receive(:empty?).and_return true }
-        end
-      end
-
       before { expect(question).to receive(:valid?).and_return true }
 
       before { post :create, params: { question: attributes }, format: :json }
@@ -84,15 +75,6 @@ RSpec.describe Api::QuestionsController, type: :controller do
     end
 
     context 'question was not created' do
-      before do
-        #
-        # => question.errors.empty?
-        #
-        expect(question).to receive(:errors) do
-          double.tap { |errors| expect(errors).to receive(:empty?).and_return true }
-        end
-      end
-
       before { expect(question).to receive(:valid?).and_return false }
 
       before { expect(question).to receive(:errors).and_return :errors }
@@ -115,15 +97,6 @@ RSpec.describe Api::QuestionsController, type: :controller do
     before { expect(question).to receive(:update).with(permit! attributes).and_return question }
 
     context 'question was updated' do
-      before do
-        #
-        # => question.errors.empty?
-        #
-        expect(question).to receive(:errors) do
-          double.tap { |errors| expect(errors).to receive(:empty?).and_return true }
-        end
-      end
-
       before { expect(question).to receive(:valid?).and_return true }
 
       before { patch :update, params: params, format: :json }
@@ -134,15 +107,6 @@ RSpec.describe Api::QuestionsController, type: :controller do
     end
 
     context 'question was not updated' do
-      before do
-        #
-        # => question.errors.empty?
-        #
-        expect(question).to receive(:errors) do
-          double.tap { |errors| expect(errors).to receive(:empty?).and_return true }
-        end
-      end
-
       before { expect(question).to receive(:valid?).and_return false }
 
       before { expect(question).to receive(:errors).and_return :errors }
@@ -163,15 +127,6 @@ RSpec.describe Api::QuestionsController, type: :controller do
     before { expect(question).to receive(:destroy) }
 
     context 'question destroyed' do
-      before do
-        #
-        # => question.errors.empty?
-        #
-        expect(question).to receive(:errors) do
-          double.tap { |errors| expect(errors).to receive(:empty?).and_return true }
-        end
-      end
-
       before { expect(question).to receive(:valid?).and_return true }
 
       before { delete :destroy, params: { id: question.id }, format: :json }
@@ -180,15 +135,6 @@ RSpec.describe Api::QuestionsController, type: :controller do
     end
 
     context 'question do not destroyed' do
-      before do
-        #
-        # => question.errors.empty?
-        #
-        expect(question).to receive(:errors) do
-          double.tap { |errors| expect(errors).to receive(:empty?).and_return true }
-        end
-      end
-
       before { expect(question).to receive(:valid?).and_return false }
 
       before { expect(question).to receive(:errors).and_return :errors }

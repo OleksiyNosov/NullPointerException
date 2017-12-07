@@ -9,25 +9,16 @@ RSpec.describe Api::SessionsController, type: :controller do
 
   let(:attributes) { { email: user.email, password: password } }
 
-  let(:session) { Session.new user: user }
+  let(:session) { Session.new attributes }
 
   let(:token) { session.token }
 
   let(:result) { { token: token }.stringify_keys }
 
   describe 'POST #create' do
-    before { expect(Session).to receive(:new).with(user: user).and_return session }
+    before { expect(Session).to receive(:new).with(attributes).and_return session }
 
     context 'session was created' do
-      before do
-        #
-        # => session.errors.empty?
-        #
-        expect(session).to receive(:errors) do
-          double.tap { |errors| expect(errors).to receive(:empty?).and_return true }
-        end
-      end
-
       before { expect(session).to receive(:valid?).and_return true }
 
       before { post :create, params: { session: attributes }, format: :json }
@@ -38,15 +29,6 @@ RSpec.describe Api::SessionsController, type: :controller do
     end
 
     context 'session was not created' do
-      before do
-        #
-        # => session.errors.empty?
-        #
-        expect(session).to receive(:errors) do
-          double.tap { |errors| expect(errors).to receive(:empty?).and_return true }
-        end
-      end
-
       before { expect(session).to receive(:valid?).and_return false }
 
       before { expect(session).to receive(:errors).and_return :errors }

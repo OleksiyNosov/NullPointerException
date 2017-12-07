@@ -6,7 +6,8 @@ class Session
   ALGORITHM = 'HS256'.freeze
 
   def initialize params
-    @user = params[:user]
+    @email = params[:email]
+    @password = params[:password]
     @exp = params[:exp] || 7.days.from_now.to_i
   end
 
@@ -24,8 +25,17 @@ class Session
 
   def payload
     {
-      id: @user.id,
+      id: user&.id,
       exp: @exp
     }
+  end
+
+  validate do |model|
+    model.errors.add :email, 'not found' unless @email
+    model.errors.add :password, 'is invalid' unless user&.authenticate @password
+  end
+
+  def user
+    @user ||= User.find_by email: @email
   end
 end

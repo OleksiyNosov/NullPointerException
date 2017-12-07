@@ -3,19 +3,19 @@ require 'rails_helper'
 RSpec.describe Authenticatable do
   subject { ApplicationController.new }
 
-  let(:password) { SecureRandom.base64(64) }
+  let(:user) { FactoryGirl.create :user }
 
-  let(:email) { 'test@example.com' }
+  let(:session) { Session.new user: user }
 
-  let(:user) { instance_double User, id: 5, email: email }
+  let(:token) { session.token }
 
-  describe '#authenticate_with_token' do
-    let(:request) { double }
+  let(:decoded_token) { JWT.decode token, Session::SECRET_KEY, true, algorithm: Session::ALGORITHM }
 
-    let(:token) { SecureRandom.base64(64) }
+  let(:request) { double }
 
-    let(:_options) { double }
+  let(:_options) { double }
 
+  describe '#authenticate' do
     before { expect(subject).to receive(:request).and_return request }
 
     before do
@@ -23,32 +23,65 @@ RSpec.describe Authenticatable do
         receive(:token_and_options).with(request).and_return [token, _options]
     end
 
-    context 'User was found' do
+    context 'token decoded' do
+      before { expect(subject).to receive(:decode_token).with(token).and_return decoded_token }
+
       before do
         #
-        # => Session.find_by(token: token).user
+        # => decoded_token[0]['id']
         #
-        expect(Session).to receive(:find_by).with(token: token) do
-          double.tap { |session| expect(session).to receive(:user).and_return user }
+        expect(decoded_token).to receive(:[]).with(0) do
+          double.tap { |data| expect(data).to receive(:[]).with('id').and_return user.id }
         end
       end
 
-      it { expect { subject.send :authenticate_with_token }.to_not raise_error }
+      context 'User was found' do
+        before { expect(User).to receive(:find).with(user.id).and_return user }
+
+        it { expect { subject.send :authenticate }.to_not raise_error }
+      end
+
+      context 'User was not found' do
+        before { expect(User).to receive(:find).with(user.id).and_return nil }
+
+        before { expect(subject).to receive(:render).with(status: 401) }
+
+        it { expect { subject.send :authenticate }.to_not raise_error }
+      end
     end
 
-    context 'User was not found' do
-      before do
-        #
-        # => Session.find_by(token: token).user
-        #
-        expect(Session).to receive(:find_by).with(token: token) do
-          double.tap { |session| expect(session).to receive(:user).and_return nil }
-        end
-      end
+    context 'token was not decoded' do
+      before { expect(subject).to receive(:decode_token).with(token).and_return nil }
 
       before { expect(subject).to receive(:render).with(status: 401) }
 
-      it { expect { subject.send :authenticate_with_token }.to_not raise_error }
+      it { expect { subject.send :authenticate }.to_not raise_error }
+    end
+  end
+
+  describe '#decode_token' do
+    let(:jwt_decode_args) { [token, Session::SECRET_KEY, true, algorithm: Session::ALGORITHM] }
+
+    context 'token decoded' do
+      before { allow(JWT).to receive(:decode).with(*jwt_decode_args).and_return decoded_token }
+
+      it { expect(subject.send :decode_token, token).to eq decoded_token }
+    end
+
+    context 'decode error' do
+      let(:token) { 'сссссс' }
+
+      before { allow(JWT).to receive(:decode).with(*jwt_decode_args).and_raise JWT::DecodeError }
+
+      it { expect(subject.send :decode_token, token).to eq nil }
+    end
+
+    context 'token expired' do
+      let(:session) { Session.new user: user, exp: (Time.zone.now.to_i - 1.days.to_i) }
+
+      before { allow(JWT).to receive(:decode).with(*jwt_decode_args).and_raise JWT::ExpiredSignature }
+
+      it { expect(subject.send :decode_token, token).to eq nil }
     end
   end
 end

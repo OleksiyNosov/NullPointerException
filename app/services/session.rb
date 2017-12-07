@@ -7,6 +7,7 @@ class Session
 
   def initialize params
     @user = params[:user]
+    @exp = params[:exp] || 7.days.from_now.to_i
   end
 
   def token
@@ -18,13 +19,13 @@ class Session
     {
       typ: 'JWT',
       alg: ALGORITHM,
-      exp: Time.zone.now.to_i + 7.days.to_i
     }
   end
 
   def payload
     {
-      id: @user.id
+      id: @user.id,
+      exp: @exp
     }
   end
 end

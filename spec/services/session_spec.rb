@@ -14,9 +14,9 @@ RSpec.describe Session do
   let(:payload) { { id: user.id, exp: exp } }
 
   describe '#token' do
-    before {
+    before do
       allow(JWT).to receive(:encode).with(payload, Session::SECRET_KEY, Session::ALGORITHM, headers).and_return token
-    }
+    end
 
     its(:token) { is_expected.to eq token }
   end

@@ -77,7 +77,7 @@ RSpec.describe Authenticatable do
     end
 
     context 'token expired' do
-      let(:session) { Session.new user: user, exp: (Time.zone.now.to_i - 1.days.to_i) }
+      let(:session) { Session.new user: user, exp: (Time.zone.now.to_i - 1.day.to_i) }
 
       before { allow(JWT).to receive(:decode).with(*jwt_decode_args).and_raise JWT::ExpiredSignature }
 

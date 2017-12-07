@@ -18,7 +18,7 @@ class Session
   def headers
     {
       typ: 'JWT',
-      alg: ALGORITHM,
+      alg: ALGORITHM
     }
   end
 

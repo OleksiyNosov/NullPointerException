@@ -15,7 +15,7 @@ class ResourceCrudWorker
 
   private
   def broadcast_resource
-    if resource.errors.empty? && resource.valid?
+    if resource.valid?
       broadcast :succeeded, resource
     else
       broadcast :failed, resource.errors

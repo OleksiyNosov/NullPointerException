@@ -6,10 +6,6 @@ class SessionCreator < ResourceCrudWorker
 
   private
   def process_action
-    user = User.find_by email: @email
-
-    @resource = Session.new user: user
-
-    @resource.errors.add :password, 'is invalid' unless user&.authenticate @password
+    @resource = Session.new email: @email, password: @password
   end
 end

@@ -51,11 +51,43 @@ RSpec.describe Session do
     end
 
     context 'password is wrong' do
-      let(:user) { instance_double User, email: 'test@example.com', password: 'password' }
+      let(:user) { FactoryGirl.create :user, password: 'password' }
 
       let(:password) { 'wrong password' }
 
       it('returns false') { expect(subject.valid?).to eq false }
+    end
+  end
+
+  describe '#errors' do
+    context 'all is good' do
+      let(:errors_hash) { {} }
+
+      before { subject.valid? }
+
+      it('returns emty hash') { expect(subject.errors.to_h).to eq errors_hash }
+    end
+
+    context 'user is nil' do
+      let(:errors_hash) { { email: 'not found', password: 'is invalid' } }
+
+      let(:user) { nil }
+
+      before { subject.valid? }
+
+      it('returns email and password error') { expect(subject.errors.to_h).to eq errors_hash }
+    end
+
+    context 'password is wrong' do
+      let(:errors_hash) { { password: 'is invalid' } }
+
+      let(:user) { FactoryGirl.create :user, password: 'password' }
+
+      let(:password) { 'wrong password' }
+
+      before { subject.valid? }
+
+      it('returns password errors') { expect(subject.errors.to_h).to eq errors_hash }
     end
   end
 end

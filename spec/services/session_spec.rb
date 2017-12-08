@@ -5,7 +5,7 @@ RSpec.describe Session do
 
   let(:user) { FactoryGirl.create :user, password: password }
 
-  let(:email) { user.email }
+  let(:email) { user&.email }
 
   subject { Session.new email: email, password: password }
 
@@ -34,8 +34,28 @@ RSpec.describe Session do
   end
 
   describe '#user' do
-    before { allow(User).to receive(:find_by).with(email: user.email).and_return user }
+    before { allow(User).to receive(:find_by).with(email: email).and_return user }
 
     its(:user) { is_expected.to eq user }
+  end
+
+  describe '#valid?' do
+    context 'all is good' do
+      it('returns true') { expect(subject.valid?).to eq true }
+    end
+
+    context 'user is nil' do
+      let(:user) { nil }
+
+      it('returns false') { expect(subject.valid?).to eq false }
+    end
+
+    context 'password is wrong' do
+      let(:user) { instance_double User, email: 'test@example.com', password: 'password' }
+
+      let(:password) { 'wrong password' }
+
+      it('returns false') { expect(subject.valid?).to eq false }
+    end
   end
 end

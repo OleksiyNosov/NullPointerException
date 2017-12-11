@@ -8,6 +8,6 @@ Rails.application.routes.draw do
 
     resource :profile, only: %i[show]
 
-    resources :sessions, only: %i[create]
+    resources :auth_tokens, only: %i[create]
   end
 end

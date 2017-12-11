@@ -1,4 +1,4 @@
-class AuthTokensController < ActionController::API
+class Api::AuthTokensController < ActionController::API
   def create
     if user&.authenticate params[:password]
       render json: { token: new_token }, status: 201

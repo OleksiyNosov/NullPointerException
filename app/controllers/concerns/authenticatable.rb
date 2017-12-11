@@ -18,9 +18,7 @@ module Authenticatable
 
   def decode_token token
     JWT.decode token, Session::SECRET_KEY, true, algorithm: Session::ALGORITHM
-  rescue JWT::ExpiredSignature
-    nil
-  rescue JWT::DecodeError
-    nil
+  rescue JWT::ExpiredSignature, JWT::DecodeError
+    false
   end
 end

@@ -1,4 +1,6 @@
 module Authenticatable
+  include ActionController::HttpAuthentication::Token::ControllerMethods
+
   attr_reader :current_user
 
   def self.included(base)
@@ -7,16 +9,18 @@ module Authenticatable
 
   private
   def authenticate
-    @current_user = User.find decoded_token.first['user_id'] if decoded_token
+    authenticate_or_request_with_http_token do |token, options|
+      @decoded_token = JwtWorker.decode token
 
-    render header: 'WWW-Authenticate', status: 401 unless current_user
+      if @decoded_token && user_from_token_data
+        @current_user = user_from_token_data
+      else
+        false
+      end
+    end
   end
 
-  def decoded_token
-    @decoded_token ||= JwtWorker.decode token
-  end
-
-  def token
-    ActionController::HttpAuthentication::Token.token_and_options(request).first
+  def user_from_token_data
+    @user_from_token_data ||= User.find @decoded_token.first['user_id']
   end
 end

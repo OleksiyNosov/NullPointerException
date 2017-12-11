@@ -1,6 +1,6 @@
 class JwtWorker
   ALGORITHM = 'HS256'.freeze
-  HEADERS = { typ: 'JWT', alg: ALGORITHM }
+  HEADERS = { typ: 'JWT', alg: ALGORITHM }.freeze
   SECRET_KEY = Rails.application.secrets.secret_key_base
 
   private_constant :ALGORITHM, :HEADERS, :SECRET_KEY

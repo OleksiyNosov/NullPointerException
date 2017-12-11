@@ -17,9 +17,9 @@ gem 'wisper'
 group :development, :test do
   gem 'factory_bot_rails'
   gem 'faker'
-  gem 'rspec-rails'
   gem 'pry-byebug'
   gem 'pry-rails'
+  gem 'rspec-rails'
 end
 
 group :test do

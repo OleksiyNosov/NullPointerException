@@ -13,7 +13,7 @@ module Authenticatable
 
     @current_user = User.find decoded_token[0]['id'] if decoded_token
 
-    render status: 401 unless current_user
+    render header: 'WWW-Authenticate', status: 401 unless current_user
   end
 
   def decode_token token

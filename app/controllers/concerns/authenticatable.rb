@@ -7,18 +7,16 @@ module Authenticatable
 
   private
   def authenticate
-    token, _options = ActionController::HttpAuthentication::Token.token_and_options(request)
-
-    decoded_token = decode_token token
-
-    @current_user = User.find decoded_token[0]['id'] if decoded_token
+    @current_user = User.find decoded_token.first[:user_id] if decoded_token
 
     render header: 'WWW-Authenticate', status: 401 unless current_user
   end
 
-  def decode_token token
-    JWT.decode token, Session::SECRET_KEY, true, algorithm: Session::ALGORITHM
-  rescue JWT::ExpiredSignature, JWT::DecodeError
-    false
+  def decoded_token
+    @decoded_token ||= JwtWorker.decode token
+  end
+
+  def token
+    ActionController::HttpAuthentication::Token.token_and_options(request).first
   end
 end

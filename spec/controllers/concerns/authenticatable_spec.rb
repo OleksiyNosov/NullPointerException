@@ -5,83 +5,55 @@ RSpec.describe Authenticatable do
 
   let(:user) { FactoryGirl.create :user }
 
-  let(:session) { Session.new user: user }
+  let(:payload) { { user_id: user.id, exp: 7.days.from_now.to_i } }
 
-  let(:token) { session.token }
+  let(:headers) { { alg: 'HS256', typ: 'JWT' } }
 
-  let(:decoded_token) { JWT.decode token, Session::SECRET_KEY, true, algorithm: Session::ALGORITHM }
+  let(:token) { JwtWorker.encode payload }
 
   let(:request) { double }
 
-  let(:_options) { double }
+  let(:decode_token) { [payload.stringify_keys, headers.stringify_keys] }
 
   describe '#authenticate' do
-    before { expect(subject).to receive(:request).and_return request }
+    before { expect(subject).to receive(:token).and_return token }
 
-    before do
-      allow(ActionController::HttpAuthentication::Token).to \
-        receive(:token_and_options).with(request).and_return [token, _options]
+    context 'email and password is valid' do
+      before { subject.send :authenticate }
+
+      it('sets current_user') { expect(subject.current_user).to eq user }
+
+      it { expect { subject.send :authenticate }.to_not raise_error }
     end
 
-    context 'token decoded' do
-      before { expect(subject).to receive(:decode_token).with(token).and_return decoded_token }
+    context 'token is invalid' do
+      let(:token) { 'wrong_token' }
 
-      before do
-        #
-        # => decoded_token[0]['id']
-        #
-        expect(decoded_token).to receive(:[]).with(0) do
-          double.tap { |data| expect(data).to receive(:[]).with('id').and_return user.id }
-        end
-      end
-
-      context 'User was found' do
-        before { expect(User).to receive(:find).with(user.id).and_return user }
-
-        it { expect { subject.send :authenticate }.to_not raise_error }
-      end
-
-      context 'User was not found' do
-        before { expect(User).to receive(:find).with(user.id).and_return nil }
-
-        before { expect(subject).to receive(:render).with(status: 401) }
-
-        it { expect { subject.send :authenticate }.to_not raise_error }
-      end
-    end
-
-    context 'token was not decoded' do
-      before { expect(subject).to receive(:decode_token).with(token).and_return nil }
-
-      before { expect(subject).to receive(:render).with(status: 401) }
+      before { expect(subject).to receive(:render).with(header: 'WWW-Authenticate', status: 401) }
 
       it { expect { subject.send :authenticate }.to_not raise_error }
     end
   end
 
-  describe '#decode_token' do
-    let(:jwt_decode_args) { [token, Session::SECRET_KEY, true, algorithm: Session::ALGORITHM] }
+  describe '#decoded_token' do
+    before { expect(subject).to receive(:token).and_return token }
 
-    context 'token decoded' do
-      before { allow(JWT).to receive(:decode).with(*jwt_decode_args).and_return decoded_token }
+    it('returns decoded token') { expect(subject.send :decoded_token).to eq decode_token }
+  end
 
-      it { expect(subject.send :decode_token, token).to eq decoded_token }
+  describe '#token' do
+    before { expect(subject).to receive(:request).and_return request }
+
+    before do
+      #
+      # => ActionController::HttpAuthentication::Token.token_and_options(:request).first
+      #
+      allow(ActionController::HttpAuthentication::Token).to \
+        receive(:token_and_options).with(request) do
+        double.tap { |token_and_options| expect(token_and_options).to receive(:first).and_return token }
+      end
     end
 
-    context 'decode error' do
-      let(:token) { 'сссссс' }
-
-      before { allow(JWT).to receive(:decode).with(*jwt_decode_args).and_raise JWT::DecodeError }
-
-      it { expect(subject.send :decode_token, token).to eq nil }
-    end
-
-    context 'token expired' do
-      let(:session) { Session.new user: user, exp: (Time.zone.now.to_i - 1.day.to_i) }
-
-      before { allow(JWT).to receive(:decode).with(*jwt_decode_args).and_raise JWT::ExpiredSignature }
-
-      it { expect(subject.send :decode_token, token).to eq nil }
-    end
+    it('returns token') { expect(subject.send :token).to eq token }
   end
 end

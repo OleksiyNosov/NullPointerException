@@ -5,12 +5,12 @@ questions_length = 100
 answers_length = 1000
 
 puts "Generating #{ users_length } users"
-FactoryGirl.create_list(:user, users_length)
+FactoryBot.create_list(:user, users_length)
 
 puts "Generating #{ questions_length } questions"
-questions = FactoryGirl.create_list(:question, questions_length)
+questions = FactoryBot.create_list(:question, questions_length)
 
 puts "Generating #{ answers_length } answers"
-Array.new(answers_length) { FactoryGirl.create(:answer, question: questions.sample) }
+Array.new(answers_length) { FactoryBot.create(:answer, question: questions.sample) }
 
 puts 'Done'

@@ -5,7 +5,7 @@ RSpec.describe Api::AuthTokensController, type: :controller do
 
   let(:email) { 'test@example.com' }
 
-  let(:user) { FactoryGirl.create(:user, email: 'test@example.com', password: 'user_password') }
+  let(:user) { FactoryBot.create(:user, email: 'test@example.com', password: 'user_password') }
 
   let(:exp) { 7.days.from_now.to_i }
 

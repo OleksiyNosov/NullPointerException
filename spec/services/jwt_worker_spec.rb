@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe JwtWorker do
-  let(:user) { FactoryGirl.create(:user) }
+  let(:user) { FactoryBot.create(:user) }
 
   let(:exp) { 7.day.from_now.to_i }
 

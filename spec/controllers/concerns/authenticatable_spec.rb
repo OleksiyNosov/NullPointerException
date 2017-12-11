@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Authenticatable do
   subject { ApplicationController.new }
 
-  let(:user) { FactoryGirl.create :user }
+  let(:user) { FactoryBot.create :user }
 
   let(:payload) { { user_id: user.id, exp: 7.days.from_now.to_i } }
 

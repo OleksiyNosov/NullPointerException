@@ -1,18 +1,16 @@
 class Api::AuthTokensController < ActionController::API
   def create
-    if user&.authenticate params[:password]
-      render json: { token: new_token }, status: 201
+    user = User.find_by email: resource_params[:email]
+
+    if user&.authenticate resource_params[:password]
+      render json: { token: JwtWorker.encode(user_id: user.id) }, status: 201
     else
-      render json: { errors: 'email or password is invalid' }, status: 422
+      render json: { errors: { message: 'email or password is invalid' } }, status: 422
     end
   end
 
   private
-  def new_token
-    JwtWorker.encode user_id: user.id
-  end
-
-  def user
-    @user ||= User.find_by email: params[:email]
+  def resource_params
+    params.require(:auth_token).permit(:email, :password)
   end
 end

@@ -72,6 +72,9 @@ Style/MissingElse:
   Enabled: true
   EnforcedStyle: case
 
+Style/MutableConstant:
+  Enabled: false
+
 Style/NegatedIf:
   Enabled: false
 

@@ -12,9 +12,9 @@ RSpec.describe Api::AuthTokensController, type: :controller do
   let(:token) { JwtWorker.encode user_id: user.id, exp: exp }
 
   describe 'POST #create' do
-    let(:stringified_errors) { { errors: 'email or password is invalid' }.stringify_keys }
+    let(:stringified_errors) { { 'errors' => { 'message' => 'email or password is invalid' } } }
 
-    let(:params) { { email: email, password: password } }
+    let(:params) { { auth_token: { email: email, password: password } } }
 
     before { allow(user).to receive(:email).and_return email }
 
@@ -43,24 +43,5 @@ RSpec.describe Api::AuthTokensController, type: :controller do
 
       it('returns errors') { expect(response_body).to eq stringified_errors }
     end
-  end
-
-  describe '#new_token' do
-    before { expect(subject).to receive(:user).and_return user }
-
-    it('returns new token') { expect(subject.send :new_token).to eq token }
-  end
-
-  describe '#user' do
-    before do
-      #
-      # => params[:email]
-      #
-      allow(subject).to receive(:params) do
-        double.tap { |params| allow(params).to receive(:[]).with(:email).and_return user.email }
-      end
-    end
-
-    it('returns user') { expect(subject.send :user).to eq user }
   end
 end

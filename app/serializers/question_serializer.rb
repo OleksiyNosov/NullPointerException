@@ -1,3 +1,3 @@
 class QuestionSerializer < ActiveModel::Serializer
-  attributes :id, :title, :body, :tags
+  attributes :id, :title, :body
 end

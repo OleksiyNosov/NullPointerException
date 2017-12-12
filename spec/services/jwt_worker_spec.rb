@@ -11,9 +11,9 @@ RSpec.describe JwtWorker do
 
   let(:algorithm) { 'HS256' }
 
-  let(:headers) { { typ: 'JWT', alg: 'HS256' } }
+  let(:headers) { { alg: algorithm } }
 
-  let(:token) { JWT.encode payload, secret, algorithm, headers }
+  let(:token) { JWT.encode payload, secret, algorithm }
 
   let(:decoded_token) { [payload.stringify_keys, headers.stringify_keys] }
 

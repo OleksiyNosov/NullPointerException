@@ -16,31 +16,22 @@ class ApplicationController < ActionController::API
 
   def create
     resource_creator
-      .on :succeeded do |resource|
-        render json: resource, status: 201
-      end
-      .on :failed do |errors|
-        render json: errors, status: 422
-      end.call
+      .on(:succeeded) { |resource| render json: resource, status: 201 }
+      .on(:failed) { |errors| render json: errors, status: 422 }
+      .call
   end
 
   def update
     resource_updator
-      .on :succeeded do |resource|
-        render json: resource
-      end
-      .on :failed do |errors|
-        render json: errors, status: 422
-      end.call
+      .on(:succeeded) { |resource| render json: resource }
+      .on(:failed) { |errors| render json: errors, status: 422 }
+      .call
   end
 
   def destroy
     ResourceDestroyer.new(resource)
-      .on :succeeded do
-        head 204
-      end
-      .on :failed do |errors|
-        render json: errors, status: 422
-      end.call
+      .on(:succeeded) { head 204 }
+      .on(:failed) { |errors| render json: errors, status: 422 }
+      .call
   end
 end

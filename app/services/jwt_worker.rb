@@ -1,13 +1,12 @@
 class JwtWorker
-  ALGORITHM = 'HS256'.freeze
-  HEADERS = { typ: 'JWT', alg: ALGORITHM }.freeze
+  ALGORITHM = 'HS256'
   SECRET_KEY = Rails.application.secrets.secret_key_base
-
-  private_constant :ALGORITHM, :HEADERS, :SECRET_KEY
 
   class << self
     def encode payload
-      JWT.encode payload, SECRET_KEY, ALGORITHM, HEADERS
+      payload[:exp] ||= 7.days.from_now.to_i
+
+      JWT.encode payload, SECRET_KEY, ALGORITHM
     end
 
     def decode token

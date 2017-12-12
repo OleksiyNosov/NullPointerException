@@ -9,7 +9,7 @@ class Api::AuthTokensController < ActionController::API
 
   private
   def new_token
-    JwtWorker.encode user_id: user.id, exp: 7.days.from_now.to_i
+    JwtWorker.encode user_id: user.id
   end
 
   def user

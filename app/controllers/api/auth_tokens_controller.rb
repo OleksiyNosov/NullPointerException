@@ -11,6 +11,6 @@ class Api::AuthTokensController < ActionController::API
 
   private
   def resource_params
-    params.require(:auth_token).permit(:email, :password)
+    params.require(:sign_in).permit(:email, :password)
   end
 end

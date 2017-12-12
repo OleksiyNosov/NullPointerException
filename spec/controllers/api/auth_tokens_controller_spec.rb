@@ -14,7 +14,7 @@ RSpec.describe Api::AuthTokensController, type: :controller do
   describe 'POST #create' do
     let(:stringified_errors) { { 'errors' => { 'message' => 'email or password is invalid' } } }
 
-    let(:params) { { auth_token: { email: email, password: password } } }
+    let(:params) { { sign_in: { email: email, password: password } } }
 
     before { allow(user).to receive(:email).and_return email }
 

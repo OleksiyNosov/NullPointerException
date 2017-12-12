@@ -5,7 +5,9 @@ RSpec.describe 'Authentication', type: :request do
 
   let(:serialized_user) { UserSerializer.new(user).to_h.stringify_keys }
 
-  let(:token) { JwtWorker.encode(user_id: user.id) }
+  let(:user_id) { user.id }
+
+  let(:token) { JwtWorker.encode(user_id: user_id) }
 
   let(:headers) { { 'Authorization' => "Bearer #{ token }", 'Content-type' => 'application/json' } }
 
@@ -20,6 +22,14 @@ RSpec.describe 'Authentication', type: :request do
   context 'with invalid params' do
     let(:token) { 'invalid token' }
 
+    it { expect(response.body).to eq "HTTP Token: Access denied.\n" }
+
     it { expect(response).to have_http_status 401 }
+  end
+
+  context 'with invalid params' do
+    let(:user_id) { -1 }
+
+    it { expect(response).to have_http_status 404 }
   end
 end

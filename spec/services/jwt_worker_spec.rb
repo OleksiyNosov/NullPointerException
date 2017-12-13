@@ -7,15 +7,13 @@ RSpec.describe JWTWorker do
 
   let(:payload) { { user_id: user.id, exp: exp } }
 
-  let(:headers) { { alg: 'HS256' } }
-
   let(:token) { JWTWorker.encode payload }
 
-  let(:decoded_token) { [payload.stringify_keys, headers.stringify_keys] }
+  let(:decoded_payload) { payload.stringify_keys }
 
   describe '.decode' do
     context 'all is good' do
-      it('returns decoded token') { expect(JWTWorker.decode token).to eq decoded_token }
+      it('returns decoded token') { expect(JWTWorker.decode(token).first).to eq decoded_payload }
     end
 
     context 'token expired' do

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe JWTWorker do
-  let(:user) { FactoryBot.create(:user) }
+  let(:user) { instance_double User, id: 7 }
 
   let(:exp) { 7.days.from_now.to_i }
 

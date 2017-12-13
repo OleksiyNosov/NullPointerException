@@ -5,7 +5,7 @@ RSpec.describe Api::AuthTokensController, type: :controller do
 
   let(:email) { 'test@example.com' }
 
-  let(:user) { FactoryBot.create(:user, email: 'test@example.com', password: 'user_password') }
+  let(:user) { instance_double User, id: 7, email: 'test@example.com', password: 'user_password' }
 
   let(:exp) { 7.days.from_now.to_i }
 
@@ -16,12 +16,14 @@ RSpec.describe Api::AuthTokensController, type: :controller do
 
     let(:params) { { sign_in: { email: email, password: password } } }
 
-    before { allow(user).to receive(:email).and_return email }
-
-    before { post :create, params: params, format: :json }
-
     context 'email and params is valid' do
       let(:stringified_token) { { token: token }.stringify_keys }
+
+      before { allow(User).to receive(:find_by).with(email: email).and_return user }
+
+      before { allow(user).to receive(:authenticate).and_return true }
+
+      before { post :create, params: params, format: :json }
 
       it('returns status 201') { expect(response).to have_http_status 201 }
 
@@ -31,6 +33,8 @@ RSpec.describe Api::AuthTokensController, type: :controller do
     context 'email is invalid' do
       let(:email) { 'wrong_user_email' }
 
+      before { post :create, params: params, format: :json }
+
       it('returns status 422') { expect(response).to have_http_status 422 }
 
       it('returns errors') { expect(response_body).to eq stringified_errors }
@@ -38,6 +42,8 @@ RSpec.describe Api::AuthTokensController, type: :controller do
 
     context 'password is invalid' do
       let(:password) { 'wrong_user_password' }
+
+      before { post :create, params: params, format: :json }
 
       it('returns status 422') { expect(response).to have_http_status 422 }
 

@@ -1,4 +1,4 @@
-require 'rails_helper'
+require 'acceptance_helper'
 
 RSpec.describe 'Authentication', type: :request do
   let(:user) { FactoryBot.create(:user) }

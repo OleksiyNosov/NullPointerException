@@ -3,6 +3,10 @@ require 'rails_helper'
 RSpec.describe Api::UsersController, type: :controller do
   it { is_expected.to be_an ApplicationController }
 
+  it { is_expected.to be_kind_of Authenticatable }
+
+  it { is_expected.to be_kind_of Resourceable }
+
   let(:attributes) { attributes_for(:user) }
 
   let(:serialized_attributes) { attributes.stringify_keys }

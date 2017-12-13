@@ -3,6 +3,10 @@ require 'rails_helper'
 RSpec.describe Api::AnswersController, type: :controller do
   it { is_expected.to be_an ApplicationController }
 
+  it { is_expected.to be_kind_of Authenticatable }
+
+  it { is_expected.to be_kind_of Resourceable }
+
   let(:user) { instance_double User }
 
   let(:attributes) { attributes_for(:answer) }

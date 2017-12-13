@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe 'Authentication', type: :request do
   let(:user) { FactoryBot.create(:user) }
 
-  let(:serialized_user) { UserSerializer.new(user).to_h.stringify_keys }
+  let(:json_user) { { id: user.id, email: user.email }.to_h.stringify_keys }
 
   let(:user_id) { user.id }
 
@@ -14,7 +14,7 @@ RSpec.describe 'Authentication', type: :request do
   before { get '/api/profile', params: {}, headers: headers }
 
   context 'with valid params' do
-    it { expect(response_body).to eq serialized_user }
+    it { expect(response_body).to eq json_user }
 
     it { expect(response).to have_http_status 200 }
   end
@@ -28,7 +28,7 @@ RSpec.describe 'Authentication', type: :request do
   end
 
   context 'with invalid params' do
-    let(:user_id) { -1 }
+    let(:user_id) { user.id - 1 }
 
     it { expect(response).to have_http_status 404 }
   end

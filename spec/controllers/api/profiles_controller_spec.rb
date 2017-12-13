@@ -18,7 +18,7 @@ RSpec.describe Api::ProfilesController, type: :controller do
   describe 'GET #show' do
     before { sign_in resource }
 
-    before { expect(subject).to receive(:current_user).and_return resource }
+    before { allow(subject).to receive(:current_user).and_return resource }
 
     before { get :show, format: :json }
 

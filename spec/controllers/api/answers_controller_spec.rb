@@ -19,7 +19,7 @@ RSpec.describe Api::AnswersController, type: :controller do
 
   describe 'GET #index' do
     describe 'answers exist' do
-      before { expect(Answer).to receive(:all).and_return [serialized_attributes] }
+      before { allow(Answer).to receive(:all).and_return [serialized_attributes] }
 
       before { get :index, format: :json }
 
@@ -41,7 +41,7 @@ RSpec.describe Api::AnswersController, type: :controller do
     let(:params) { { id: answer.id } }
 
     describe 'answer exist' do
-      before { expect(subject).to receive(:resource).and_return answer }
+      before { allow(subject).to receive(:resource).and_return answer }
 
       before { get :show, params: params, format: :json }
 
@@ -51,7 +51,7 @@ RSpec.describe Api::AnswersController, type: :controller do
     end
 
     describe 'answer not exist' do
-      before { expect(subject).to receive(:resource).and_raise ActiveRecord::RecordNotFound }
+      before { allow(subject).to receive(:resource).and_raise ActiveRecord::RecordNotFound }
 
       before { get :show, params: params, format: :json }
 
@@ -65,9 +65,9 @@ RSpec.describe Api::AnswersController, type: :controller do
     describe 'POST #create' do
       let(:params) { { answer: attributes } }
 
-      before { expect(subject).to receive(:resource_class).and_return resource_class }
+      before { allow(subject).to receive(:resource_class).and_return resource_class }
 
-      before { expect(resource_class).to receive(:new).with(permit! attributes).and_return answer }
+      before { allow(resource_class).to receive(:new).with(permit! attributes).and_return answer }
 
       before { expect(answer).to receive(:save) }
 
@@ -82,9 +82,9 @@ RSpec.describe Api::AnswersController, type: :controller do
       end
 
       context 'answer not valid' do
-        before { expect(answer).to receive(:valid?).and_return false }
+        before { allow(answer).to receive(:valid?).and_return false }
 
-        before { expect(answer).to receive(:errors).and_return :errors }
+        before { allow(answer).to receive(:errors).and_return :errors }
 
         before { post :create, params: params, format: :json }
 
@@ -97,12 +97,12 @@ RSpec.describe Api::AnswersController, type: :controller do
     describe 'PATCH #update' do
       let(:params) { { id: answer.id, answer: attributes } }
 
-      before { expect(subject).to receive(:resource).and_return answer }
+      before { allow(subject).to receive(:resource).and_return answer }
 
-      before { expect(answer).to receive(:update).with(permit! attributes).and_return answer }
+      before { allow(answer).to receive(:update).with(permit! attributes).and_return answer }
 
       context 'answer updated' do
-        before { expect(answer).to receive(:valid?).and_return true }
+        before { allow(answer).to receive(:valid?).and_return true }
 
         before { patch :update, params: params, format: :json }
 
@@ -112,9 +112,9 @@ RSpec.describe Api::AnswersController, type: :controller do
       end
 
       context 'answer not valid' do
-        before { expect(answer).to receive(:valid?).and_return false }
+        before { allow(answer).to receive(:valid?).and_return false }
 
-        before { expect(answer).to receive(:errors).and_return :errors }
+        before { allow(answer).to receive(:errors).and_return :errors }
 
         before { patch :update, params: params, format: :json }
 
@@ -127,12 +127,12 @@ RSpec.describe Api::AnswersController, type: :controller do
     describe 'DELETE #destroy' do
       let(:params) { { id: answer.id } }
 
-      before { expect(subject).to receive(:resource).and_return answer }
+      before { allow(subject).to receive(:resource).and_return answer }
 
       before { expect(answer).to receive(:destroy) }
 
       context 'answer destroyed' do
-        before { expect(answer).to receive(:valid?).and_return true }
+        before { allow(answer).to receive(:valid?).and_return true }
 
         before { delete :destroy, params: params, format: :json }
 
@@ -140,9 +140,9 @@ RSpec.describe Api::AnswersController, type: :controller do
       end
 
       context 'answer not valid' do
-        before { expect(answer).to receive(:valid?).and_return false }
+        before { allow(answer).to receive(:valid?).and_return false }
 
-        before { expect(answer).to receive(:errors).and_return :errors }
+        before { allow(answer).to receive(:errors).and_return :errors }
 
         before { delete :destroy, params: params, format: :json }
 

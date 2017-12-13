@@ -17,7 +17,7 @@ RSpec.describe ApplicationController, type: :controller do
       # => params[:id]
       #
       expect(subject).to receive(:params) do
-        double.tap { |params| expect(params).to receive(:[]).with(:id).and_return id }
+        double.tap { |params| allow(params).to receive(:[]).with(:id).and_return id }
       end
     end
 
@@ -26,7 +26,7 @@ RSpec.describe ApplicationController, type: :controller do
       # => resource_class.find
       #
       expect(subject).to receive(:resource_class) do
-        double.tap { |resource_class| expect(resource_class).to receive(:find).with(id).and_return resource }
+        double.tap { |resource_class| allow(resource_class).to receive(:find).with(id).and_return resource }
       end
     end
 

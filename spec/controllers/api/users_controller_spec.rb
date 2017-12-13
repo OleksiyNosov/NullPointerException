@@ -16,9 +16,9 @@ RSpec.describe Api::UsersController, type: :controller do
   let(:resource_class) { User }
 
   describe 'POST #create' do
-    before { expect(subject).to receive(:resource_class).and_return resource_class }
+    before { allow(subject).to receive(:resource_class).and_return resource_class }
 
-    before { expect(resource_class).to receive(:new).with(permit! attributes).and_return user }
+    before { allow(resource_class).to receive(:new).with(permit! attributes).and_return user }
 
     before { expect(user).to receive(:save) }
 
@@ -35,7 +35,7 @@ RSpec.describe Api::UsersController, type: :controller do
     context 'new user was not created' do
       before { allow(user).to receive(:valid?).and_return false }
 
-      before { expect(user).to receive(:errors).and_return :errors }
+      before { allow(user).to receive(:errors).and_return :errors }
 
       before { post :create, params: { user: attributes }, format: :json }
 
@@ -50,7 +50,7 @@ RSpec.describe Api::UsersController, type: :controller do
 
     describe 'GET #index' do
       context 'users exist' do
-        before { expect(User).to receive(:all).and_return [user] }
+        before { allow(User).to receive(:all).and_return [user] }
 
         before { get :index, format: :json }
 
@@ -60,7 +60,7 @@ RSpec.describe Api::UsersController, type: :controller do
       end
 
       context 'user not exist' do
-        before { expect(subject).to receive(:resource).and_raise ActiveRecord::RecordNotFound }
+        before { allow(subject).to receive(:resource).and_raise ActiveRecord::RecordNotFound }
 
         before { get :show, params: { id: user.id }, format: :json }
 
@@ -70,7 +70,7 @@ RSpec.describe Api::UsersController, type: :controller do
 
     describe 'GET #show' do
       context 'user exist' do
-        before { expect(subject).to receive(:resource).and_return user }
+        before { allow(subject).to receive(:resource).and_return user }
 
         before { get :show, params: { id: user.id }, format: :json }
 
@@ -80,7 +80,7 @@ RSpec.describe Api::UsersController, type: :controller do
       end
 
       context 'user not exist' do
-        before { expect(subject).to receive(:resource).and_raise ActiveRecord::RecordNotFound }
+        before { allow(subject).to receive(:resource).and_raise ActiveRecord::RecordNotFound }
 
         before { get :show, params: { id: user.id }, format: :json }
 
@@ -89,7 +89,7 @@ RSpec.describe Api::UsersController, type: :controller do
     end
 
     describe 'PATCH $update' do
-      before { expect(subject).to receive(:resource).and_return user }
+      before { allow(subject).to receive(:resource).and_return user }
 
       before { expect(user).to receive(:update).with(permit! attributes) }
 
@@ -106,7 +106,7 @@ RSpec.describe Api::UsersController, type: :controller do
       describe 'user profile was not updated' do
         before { allow(user).to receive(:valid?).and_return false }
 
-        before { expect(user).to receive(:errors).and_return :errors }
+        before { allow(user).to receive(:errors).and_return :errors }
 
         before { patch :update, params: { id: user.id, user: attributes }, format: :json }
 

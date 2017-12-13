@@ -19,7 +19,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
   describe 'GET #index' do
     describe 'questions exist' do
-      before { expect(Question).to receive(:all).and_return [serialized_attributes] }
+      before { allow(Question).to receive(:all).and_return [serialized_attributes] }
 
       before { get :index, format: :json }
 
@@ -29,7 +29,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
     end
 
     describe 'questions dont exist' do
-      before { expect(Question).to receive(:all).and_raise ActiveRecord::RecordNotFound }
+      before { allow(Question).to receive(:all).and_raise ActiveRecord::RecordNotFound }
 
       before { get :index, format: :json }
 
@@ -39,7 +39,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
   describe 'GET #show' do
     context 'question exist' do
-      before { expect(subject).to receive(:resource).and_return question }
+      before { allow(subject).to receive(:resource).and_return question }
 
       before { get :show, params: { id: question.id }, format: :json }
 
@@ -49,7 +49,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
     end
 
     context 'question is not exist' do
-      before { expect(subject).to receive(:resource).and_raise ActiveRecord::RecordNotFound }
+      before { allow(subject).to receive(:resource).and_raise ActiveRecord::RecordNotFound }
 
       before { get :show, params: { id: question.id }, format: :json }
 
@@ -61,14 +61,14 @@ RSpec.describe Api::QuestionsController, type: :controller do
     describe 'POST #create' do
       before { sign_in user }
 
-      before { expect(subject).to receive(:resource_class).and_return resource_class }
+      before { allow(subject).to receive(:resource_class).and_return resource_class }
 
-      before { expect(resource_class).to receive(:new).with(permit! attributes).and_return question }
+      before { allow(resource_class).to receive(:new).with(permit! attributes).and_return question }
 
       before { expect(question).to receive(:save) }
 
       context 'question was created' do
-        before { expect(question).to receive(:valid?).and_return true }
+        before { allow(question).to receive(:valid?).and_return true }
 
         before { post :create, params: { question: attributes }, format: :json }
 
@@ -78,9 +78,9 @@ RSpec.describe Api::QuestionsController, type: :controller do
       end
 
       context 'question was not created' do
-        before { expect(question).to receive(:valid?).and_return false }
+        before { allow(question).to receive(:valid?).and_return false }
 
-        before { expect(question).to receive(:errors).and_return :errors }
+        before { allow(question).to receive(:errors).and_return :errors }
 
         before { post :create, params: { question: attributes }, format: :json }
 
@@ -95,12 +95,12 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
       before { sign_in user }
 
-      before { expect(subject).to receive(:resource).and_return question }
+      before { allow(subject).to receive(:resource).and_return question }
 
-      before { expect(question).to receive(:update).with(permit! attributes).and_return question }
+      before { allow(question).to receive(:update).with(permit! attributes).and_return question }
 
       context 'question was updated' do
-        before { expect(question).to receive(:valid?).and_return true }
+        before { allow(question).to receive(:valid?).and_return true }
 
         before { patch :update, params: params, format: :json }
 
@@ -110,9 +110,9 @@ RSpec.describe Api::QuestionsController, type: :controller do
       end
 
       context 'question was not updated' do
-        before { expect(question).to receive(:valid?).and_return false }
+        before { allow(question).to receive(:valid?).and_return false }
 
-        before { expect(question).to receive(:errors).and_return :errors }
+        before { allow(question).to receive(:errors).and_return :errors }
 
         before { patch :update, params: params, format: :json }
 
@@ -125,12 +125,12 @@ RSpec.describe Api::QuestionsController, type: :controller do
     describe 'DELETE #destroy' do
       before { sign_in user }
 
-      before { expect(subject).to receive(:resource).and_return question }
+      before { allow(subject).to receive(:resource).and_return question }
 
       before { expect(question).to receive(:destroy) }
 
       context 'question destroyed' do
-        before { expect(question).to receive(:valid?).and_return true }
+        before { allow(question).to receive(:valid?).and_return true }
 
         before { delete :destroy, params: { id: question.id }, format: :json }
 
@@ -138,9 +138,9 @@ RSpec.describe Api::QuestionsController, type: :controller do
       end
 
       context 'question do not destroyed' do
-        before { expect(question).to receive(:valid?).and_return false }
+        before { allow(question).to receive(:valid?).and_return false }
 
-        before { expect(question).to receive(:errors).and_return :errors }
+        before { allow(question).to receive(:errors).and_return :errors }
 
         before { delete :destroy, params: { id: question.id }, format: :json }
 

@@ -29,7 +29,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
     end
 
     describe 'questions dont exist' do
-      before { allow(Question).to receive(:all).and_raise ActiveRecord::RecordNotFound }
+      before { expect(Question).to receive(:all).and_raise ActiveRecord::RecordNotFound }
 
       before { get :index, format: :json }
 
@@ -49,7 +49,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
     end
 
     context 'question is not exist' do
-      before { allow(subject).to receive(:resource).and_raise ActiveRecord::RecordNotFound }
+      before { expect(subject).to receive(:resource).and_raise ActiveRecord::RecordNotFound }
 
       before { get :show, params: { id: question.id }, format: :json }
 

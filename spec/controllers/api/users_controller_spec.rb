@@ -60,7 +60,7 @@ RSpec.describe Api::UsersController, type: :controller do
       end
 
       context 'user not exist' do
-        before { allow(subject).to receive(:resource).and_raise ActiveRecord::RecordNotFound }
+        before { expect(subject).to receive(:resource).and_raise ActiveRecord::RecordNotFound }
 
         before { get :show, params: { id: user.id }, format: :json }
 
@@ -80,7 +80,7 @@ RSpec.describe Api::UsersController, type: :controller do
       end
 
       context 'user not exist' do
-        before { allow(subject).to receive(:resource).and_raise ActiveRecord::RecordNotFound }
+        before { expect(subject).to receive(:resource).and_raise ActiveRecord::RecordNotFound }
 
         before { get :show, params: { id: user.id }, format: :json }
 

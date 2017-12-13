@@ -7,19 +7,11 @@ RSpec.describe JWTWorker do
 
   let(:payload) { { user_id: user.id, exp: exp } }
 
-  let(:secret) { Rails.application.secrets.secret_key_base }
+  let(:headers) { { alg: 'HS256' } }
 
-  let(:algorithm) { 'HS256' }
-
-  let(:headers) { { alg: algorithm } }
-
-  let(:token) { JWT.encode payload, secret, algorithm }
+  let(:token) { JWTWorker.encode payload }
 
   let(:decoded_token) { [payload.stringify_keys, headers.stringify_keys] }
-
-  describe '.encode' do
-    it('returns encoded token') { expect(JWTWorker.encode payload).to eq token }
-  end
 
   describe '.decode' do
     context 'all is good' do

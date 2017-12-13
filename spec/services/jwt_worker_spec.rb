@@ -19,7 +19,7 @@ RSpec.describe JWTWorker do
     end
 
     context 'token expired' do
-      let(:exp) { - 5.minutes.from_now.to_i }
+      let(:exp) { Time.zone.now.to_i - 5.minutes.to_i }
 
       it('returns decoded token') { expect(JWTWorker.decode token).to eq false }
     end

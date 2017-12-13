@@ -11,9 +11,9 @@ RSpec.describe Api::UsersController, type: :controller do
 
   let(:resource_class) { User }
 
-  describe 'GET #index' do
-    before { sign_in }
+  before { sign_in }
 
+  describe 'GET #index' do
     context 'users exist' do
       before { expect(User).to receive(:all).and_return [user] }
 
@@ -34,8 +34,6 @@ RSpec.describe Api::UsersController, type: :controller do
   end
 
   describe 'GET #show' do
-    before { sign_in }
-
     context 'user exist' do
       before { expect(subject).to receive(:resource).and_return user }
 

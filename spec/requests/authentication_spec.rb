@@ -3,7 +3,7 @@ require 'acceptance_helper'
 RSpec.describe 'Authentication', type: :request do
   let(:user) { FactoryBot.create(:user) }
 
-  let(:json_user) { { id: user.id, email: user.email }.to_h.stringify_keys }
+  let(:user_json) { { id: user.id, email: user.email }.stringify_keys }
 
   let(:user_id) { user.id }
 
@@ -14,7 +14,7 @@ RSpec.describe 'Authentication', type: :request do
   before { get '/api/profile', params: {}, headers: headers }
 
   context 'with valid params' do
-    it { expect(response_body).to eq json_user }
+    it { expect(response_body).to eq user_json }
 
     it { expect(response).to have_http_status 200 }
   end
@@ -23,6 +23,8 @@ RSpec.describe 'Authentication', type: :request do
     let(:token) { 'invalid token' }
 
     it { expect(response.body).to eq "HTTP Token: Access denied.\n" }
+
+    it { expect(response.header['WWW-Authenticate']).to eq 'Token realm="Application"' }
 
     it { expect(response).to have_http_status 401 }
   end

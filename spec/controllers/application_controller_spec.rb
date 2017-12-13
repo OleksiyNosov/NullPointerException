@@ -12,9 +12,17 @@ RSpec.describe ApplicationController, type: :controller do
 
     let(:resource_class) { double }
 
-    before { allow(subject).to receive_message_chain(:params, :[]).with(:id).and_return id }
+    before do
+      expect(subject).to receive(:params) do
+        double.tap { |params| expect(params).to receive(:[]).with(:id).and_return id }
+      end
+    end
 
-    before { allow(subject).to receive_message_chain(:resource_class, :find).with(id).and_return resource }
+    before do
+      expect(subject).to receive(:resource_class) do
+        double.tap { |resource_class| expect(resource_class).to receive(:find).with(id).and_return resource }
+      end
+    end
 
     its(:resource) { is_expected.to eq resource }
   end

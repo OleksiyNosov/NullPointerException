@@ -3,7 +3,7 @@ class Api::AuthTokensController < ActionController::API
     user = User.find_by email: resource_params[:email]
 
     if user&.authenticate resource_params[:password]
-      render json: { token: JwtWorker.encode(user_id: user.id) }, status: 201
+      render json: { token: JWTWorker.encode(user_id: user.id) }, status: 201
     else
       render json: { errors: { message: 'email or password is invalid' } }, status: 422
     end

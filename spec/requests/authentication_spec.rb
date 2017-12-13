@@ -7,7 +7,7 @@ RSpec.describe 'Authentication', type: :request do
 
   let(:user_id) { user.id }
 
-  let(:token) { JwtWorker.encode(user_id: user_id) }
+  let(:token) { JWTWorker.encode(user_id: user_id) }
 
   let(:headers) { { 'Authorization' => "Bearer #{ token }", 'Content-type' => 'application/json' } }
 

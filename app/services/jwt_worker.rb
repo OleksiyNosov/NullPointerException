@@ -1,4 +1,4 @@
-class JwtWorker
+class JWTWorker
   SECRET_KEY = Rails.application.secrets.secret_key_base
 
   class << self

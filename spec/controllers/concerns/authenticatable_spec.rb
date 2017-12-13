@@ -11,7 +11,7 @@ RSpec.describe Authenticatable do
 
   let(:headers) { { alg: 'HS256' } }
 
-  let(:token) { JwtWorker.encode payload }
+  let(:token) { JWTWorker.encode payload }
 
   let(:decoded_token) { [payload.stringify_keys, headers.stringify_keys] }
 

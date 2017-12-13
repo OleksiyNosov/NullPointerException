@@ -9,7 +9,7 @@ RSpec.describe Api::AuthTokensController, type: :controller do
 
   let(:exp) { 7.days.from_now.to_i }
 
-  let(:token) { JwtWorker.encode user_id: user.id, exp: exp }
+  let(:token) { JWTWorker.encode user_id: user.id, exp: exp }
 
   describe 'POST #create' do
     let(:stringified_errors) { { 'errors' => { 'message' => 'email or password is invalid' } } }

@@ -1,5 +1,5 @@
 class Api::AnswersController < ApplicationController
-  skip_before_action :authenticate, only: %i[index show]
+  skip_before_action :authenticate, only: %i[index]
 
   private
   def resource_params

@@ -37,28 +37,6 @@ RSpec.describe Api::AnswersController, type: :controller do
     end
   end
 
-  describe 'GET #show' do
-    let(:params) { { id: answer.id } }
-
-    describe 'answer exist' do
-      before { allow(subject).to receive(:resource).and_return answer }
-
-      before { get :show, params: params, format: :json }
-
-      it('returns status 200') { expect(response).to have_http_status 200 }
-
-      it('returns answer') { expect(response_body).to eq serialized_attributes }
-    end
-
-    describe 'answer not exist' do
-      before { allow(subject).to receive(:resource).and_raise ActiveRecord::RecordNotFound }
-
-      before { get :show, params: params, format: :json }
-
-      it('returns status 404') { expect(response).to have_http_status 404 }
-    end
-  end
-
   context 'with authentication' do
     before { sign_in user }
 

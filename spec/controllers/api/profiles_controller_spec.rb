@@ -12,7 +12,7 @@ RSpec.describe Api::ProfilesController, type: :controller do
   let(:resource_class) { User }
 
   describe 'GET #show' do
-    before { sign_in }
+    before { sign_in resource }
 
     before { expect(subject).to receive(:current_user).and_return resource }
 

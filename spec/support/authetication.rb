@@ -1,8 +1,6 @@
 module Authentication
-  def sign_in user = nil
-    user ||= User.new
-
-    allow(controller).to receive(:authenticate).and_return user
+  def sign_in user
+    expect(controller).to receive(:authenticate)
 
     allow(controller).to receive(:current_user).and_return user
   end

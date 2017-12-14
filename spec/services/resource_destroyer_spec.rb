@@ -10,7 +10,7 @@ RSpec.describe ResourceDestroyer do
   describe 'process_action' do
     before { expect(resource).to receive(:destroy) }
 
-    it { expect { subject.send :process_action }.to_not raise_error }
+    it('executes resource destroy logic') { expect { subject.send :process_action }.to_not raise_error }
   end
 
   describe 'call' do
@@ -18,6 +18,6 @@ RSpec.describe ResourceDestroyer do
 
     before { expect(subject).to receive(:broadcast_resource) }
 
-    it { expect { subject.call }.to_not raise_error }
+    it('executes all methods') { expect { subject.call }.to_not raise_error }
   end
 end

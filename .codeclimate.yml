@@ -9,7 +9,7 @@ ratings:
 
 engines:
   duplication:
-    enabled: false
-    config:
-      languages:
-      - ruby:
+    enabled: true
+    checks:
+      Similar code:
+        enabled: false

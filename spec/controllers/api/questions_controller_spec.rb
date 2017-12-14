@@ -140,26 +140,4 @@ RSpec.describe Api::QuestionsController, type: :controller do
       end
     end
   end
-
-  describe '#resource' do
-    let(:id) { 2 }
-
-    before do
-      allow(subject).to receive(:params) do
-        double.tap { |params| allow(params).to receive(:[]).with(:id).and_return id }
-      end
-    end
-
-    before { allow(Question).to receive(:find).with(id).and_return question }
-
-    it('returns question') { expect(subject.send :resource).to eq question }
-  end
-
-  describe '#collection' do
-    let(:questions) { double }
-
-    before { allow(Question).to receive(:all).and_return questions }
-
-    it('returns collection of questions') { expect(subject.send :collection).to eq questions }
-  end
 end

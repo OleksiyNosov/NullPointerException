@@ -6,8 +6,8 @@ Rails.application.routes.draw do
 
     resources :users, only: %i[index show create update]
 
-    resource :profile, only: %i[show]
+    resource :profile, only: :show
 
-    resources :auth_tokens, only: %i[create]
+    resources :auth_tokens, only: :create
   end
 end

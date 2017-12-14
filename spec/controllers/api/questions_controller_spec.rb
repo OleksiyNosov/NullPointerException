@@ -144,7 +144,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
   describe '#resource' do
     let(:id) { 2 }
 
-    before  do
+    before do
       allow(subject).to receive(:params) do
         double.tap { |params| allow(params).to receive(:[]).with(:id).and_return id }
       end

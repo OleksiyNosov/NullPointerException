@@ -114,7 +114,7 @@ RSpec.describe Api::UsersController, type: :controller do
   describe '#resource' do
     let(:id) { 5 }
 
-    before  do
+    before do
       allow(subject).to receive(:params) do
         double.tap { |params| allow(params).to receive(:[]).with(:id).and_return id }
       end

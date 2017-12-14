@@ -1,3 +1,10 @@
+engines:
+  duplication:
+    enabled: true
+    checks:
+      Similar code:
+        enabled: false
+
 plugins:
   rubocop:
     enabled: true
@@ -6,10 +13,3 @@ plugins:
 ratings:
    paths:
    - "**.rb"
-
-engines:
-  duplication:
-    enabled: true
-    checks:
-      Similar code:
-        enabled: false

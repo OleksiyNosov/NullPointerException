@@ -5,20 +5,16 @@ RSpec.describe Api::ProfilesController, type: :controller do
 
   it { is_expected.to be_kind_of Authenticatable }
 
-  it { is_expected.to be_kind_of Resourceable }
-
   let(:attributes) { attributes_for(:user) }
 
   let(:serialized_attributes) { attributes.stringify_keys }
 
-  let(:resource) { instance_double User, id: 5, as_json: attributes, **attributes }
-
-  let(:resource_class) { User }
+  let(:user) { instance_double User, id: 5, as_json: attributes, **attributes }
 
   describe 'GET #show' do
-    before { sign_in resource }
+    before { sign_in user }
 
-    before { allow(subject).to receive(:current_user).and_return resource }
+    before { allow(subject).to receive(:current_user).and_return user }
 
     before { get :show, format: :json }
 
@@ -28,8 +24,8 @@ RSpec.describe Api::ProfilesController, type: :controller do
   end
 
   describe '#resource' do
-    before { allow(subject).to receive(:current_user).and_return resource }
+    before { allow(subject).to receive(:current_user).and_return user }
 
-    its(:resource) { is_expected.to eq resource }
+    it('returns current user profile') { expect(subject.send :resource).to eq user }
   end
 end

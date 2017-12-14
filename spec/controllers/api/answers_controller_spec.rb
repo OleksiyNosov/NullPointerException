@@ -5,8 +5,6 @@ RSpec.describe Api::AnswersController, type: :controller do
 
   it { is_expected.to be_kind_of Authenticatable }
 
-  it { is_expected.to be_kind_of Resourceable }
-
   let(:user) { instance_double User }
 
   let(:attributes) { attributes_for(:answer) }
@@ -15,11 +13,9 @@ RSpec.describe Api::AnswersController, type: :controller do
 
   let(:answer) { instance_double Answer, id: 3, as_json: attributes, **attributes }
 
-  let(:resource_class) { Answer }
-
   describe 'GET #index' do
     describe 'answers exist' do
-      before { allow(Answer).to receive(:all).and_return [serialized_attributes] }
+      before { allow(subject).to receive(:collection).and_return [serialized_attributes] }
 
       before { get :index, format: :json }
 
@@ -29,7 +25,7 @@ RSpec.describe Api::AnswersController, type: :controller do
     end
 
     describe 'answers dont exist' do
-      before { expect(Answer).to receive(:all).and_raise ActiveRecord::RecordNotFound }
+      before { expect(subject).to receive(:collection).and_raise ActiveRecord::RecordNotFound }
 
       before { get :index, format: :json }
 
@@ -43,9 +39,7 @@ RSpec.describe Api::AnswersController, type: :controller do
     describe 'POST #create' do
       let(:params) { { answer: attributes } }
 
-      before { allow(subject).to receive(:resource_class).and_return resource_class }
-
-      before { allow(resource_class).to receive(:new).with(permit! attributes).and_return answer }
+      before { allow(Answer).to receive(:new).with(permit! attributes).and_return answer }
 
       before { expect(answer).to receive(:save) }
 
@@ -77,7 +71,7 @@ RSpec.describe Api::AnswersController, type: :controller do
 
       before { allow(subject).to receive(:resource).and_return answer }
 
-      before { allow(answer).to receive(:update).with(permit! attributes).and_return answer }
+      before { expect(answer).to receive(:update).with(permit! attributes) }
 
       context 'answer updated' do
         before { allow(answer).to receive(:valid?).and_return true }
@@ -131,7 +125,25 @@ RSpec.describe Api::AnswersController, type: :controller do
     end
   end
 
-  describe '#resource_class' do
-    its(:resource_class) { is_expected.to eq Answer }
+  describe '#resource' do
+    let(:id) { 3 }
+
+    before  do
+      allow(subject).to receive(:params) do
+        double.tap { |params| allow(params).to receive(:[]).with(:id).and_return id }
+      end
+    end
+
+    before { allow(Answer).to receive(:find).with(id).and_return answer }
+
+    it('returns answer') { expect(subject.send :resource).to eq answer }
+  end
+
+  describe '#collection' do
+    let(:answers) { double }
+
+    before { allow(Answer).to receive(:all).and_return answers }
+
+    it('returns collection of answers') { expect(subject.send :collection).to eq answers }
   end
 end

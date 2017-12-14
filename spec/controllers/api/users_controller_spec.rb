@@ -5,20 +5,14 @@ RSpec.describe Api::UsersController, type: :controller do
 
   it { is_expected.to be_kind_of Authenticatable }
 
-  it { is_expected.to be_kind_of Resourceable }
-
   let(:attributes) { attributes_for(:user) }
 
   let(:serialized_attributes) { attributes.stringify_keys }
 
   let(:user) { instance_double User, id: 5, as_json: attributes, **attributes }
 
-  let(:resource_class) { User }
-
   describe 'POST #create' do
-    before { allow(subject).to receive(:resource_class).and_return resource_class }
-
-    before { allow(resource_class).to receive(:new).with(permit! attributes).and_return user }
+    before { allow(User).to receive(:new).with(permit! attributes).and_return user }
 
     before { expect(user).to receive(:save) }
 
@@ -50,7 +44,7 @@ RSpec.describe Api::UsersController, type: :controller do
 
     describe 'GET #index' do
       context 'users exist' do
-        before { allow(User).to receive(:all).and_return [user] }
+        before { allow(subject).to receive(:collection).and_return [user] }
 
         before { get :index, format: :json }
 
@@ -59,10 +53,10 @@ RSpec.describe Api::UsersController, type: :controller do
         it('returns users') { expect(response_body).to eq [serialized_attributes] }
       end
 
-      context 'user not exist' do
-        before { expect(subject).to receive(:resource).and_raise ActiveRecord::RecordNotFound }
+      context 'users not exist' do
+        before { expect(subject).to receive(:collection).and_raise ActiveRecord::RecordNotFound }
 
-        before { get :show, params: { id: user.id }, format: :json }
+        before { get :index, format: :json }
 
         it('returns status 404') { expect(response).to have_http_status 404 }
       end
@@ -117,7 +111,25 @@ RSpec.describe Api::UsersController, type: :controller do
     end
   end
 
-  describe '#resource_class' do
-    its(:resource_class) { is_expected.to eq User }
+  describe '#resource' do
+    let(:id) { 5 }
+
+    before  do
+      allow(subject).to receive(:params) do
+        double.tap { |params| allow(params).to receive(:[]).with(:id).and_return id }
+      end
+    end
+
+    before { allow(User).to receive(:find).with(id).and_return user }
+
+    it('returns user') { expect(subject.send :resource).to eq user }
+  end
+
+  describe '#collection' do
+    let(:users) { double }
+
+    before { allow(User).to receive(:all).and_return users }
+
+    it('returns collection of users') { expect(subject.send :collection).to eq users }
   end
 end

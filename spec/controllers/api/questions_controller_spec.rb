@@ -5,8 +5,6 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
   it { is_expected.to be_kind_of Authenticatable }
 
-  it { is_expected.to be_kind_of Resourceable }
-
   let(:user) { instance_double User }
 
   let(:attributes) { attributes_for(:question) }
@@ -15,11 +13,9 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
   let(:question) { instance_double(Question, id: 2, as_json: attributes, **attributes) }
 
-  let(:resource_class) { Question }
-
   describe 'GET #index' do
     describe 'questions exist' do
-      before { allow(Question).to receive(:all).and_return [serialized_attributes] }
+      before { allow(subject).to receive(:collection).and_return [serialized_attributes] }
 
       before { get :index, format: :json }
 
@@ -29,7 +25,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
     end
 
     describe 'questions dont exist' do
-      before { expect(Question).to receive(:all).and_raise ActiveRecord::RecordNotFound }
+      before { expect(subject).to receive(:collection).and_raise ActiveRecord::RecordNotFound }
 
       before { get :index, format: :json }
 
@@ -58,12 +54,10 @@ RSpec.describe Api::QuestionsController, type: :controller do
   end
 
   context 'with authentication' do
+    before { sign_in user }
+
     describe 'POST #create' do
-      before { sign_in user }
-
-      before { allow(subject).to receive(:resource_class).and_return resource_class }
-
-      before { allow(resource_class).to receive(:new).with(permit! attributes).and_return question }
+      before { allow(Question).to receive(:new).with(permit! attributes).and_return question }
 
       before { expect(question).to receive(:save) }
 
@@ -93,11 +87,9 @@ RSpec.describe Api::QuestionsController, type: :controller do
     describe 'PATCH #update' do
       let(:params) { { id: question.id, question: attributes } }
 
-      before { sign_in user }
-
       before { allow(subject).to receive(:resource).and_return question }
 
-      before { allow(question).to receive(:update).with(permit! attributes).and_return question }
+      before { expect(question).to receive(:update).with(permit! attributes) }
 
       context 'question was updated' do
         before { allow(question).to receive(:valid?).and_return true }
@@ -123,8 +115,6 @@ RSpec.describe Api::QuestionsController, type: :controller do
     end
 
     describe 'DELETE #destroy' do
-      before { sign_in user }
-
       before { allow(subject).to receive(:resource).and_return question }
 
       before { expect(question).to receive(:destroy) }
@@ -151,7 +141,25 @@ RSpec.describe Api::QuestionsController, type: :controller do
     end
   end
 
-  describe '#resource_class' do
-    its(:resource_class) { is_expected.to eq Question }
+  describe '#resource' do
+    let(:id) { 2 }
+
+    before  do
+      allow(subject).to receive(:params) do
+        double.tap { |params| allow(params).to receive(:[]).with(:id).and_return id }
+      end
+    end
+
+    before { allow(Question).to receive(:find).with(id).and_return question }
+
+    it('returns question') { expect(subject.send :resource).to eq question }
+  end
+
+  describe '#collection' do
+    let(:questions) { double }
+
+    before { allow(Question).to receive(:all).and_return questions }
+
+    it('returns collection of questions') { expect(subject.send :collection).to eq questions }
   end
 end

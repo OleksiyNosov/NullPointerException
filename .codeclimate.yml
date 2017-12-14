@@ -6,3 +6,7 @@ plugins:
 ratings:
    paths:
    - "**.rb"
+
+engines:
+  duplication:
+    enabled: false

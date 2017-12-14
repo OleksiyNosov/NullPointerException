@@ -28,10 +28,4 @@ RSpec.describe 'Authentication', type: :request do
 
     it { expect(response).to have_http_status 401 }
   end
-
-  context 'with invalid params' do
-    let(:user_id) { user.id - 1 }
-
-    it { expect(response).to have_http_status 404 }
-  end
 end

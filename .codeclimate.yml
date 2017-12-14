@@ -1,11 +1,6 @@
 engines:
   duplication:
-    enabled: true
-    checks:
-      Similar code:
-        enabled: false
-
-plugins:
+    enabled: false
   rubocop:
     enabled: true
     channel: rubocop-0-50

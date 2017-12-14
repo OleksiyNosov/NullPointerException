@@ -27,6 +27,6 @@ class Api::UsersController < ApplicationController
   end
 
   def collection
-    User.all
+    @collection ||= User.all
   end
 end

@@ -35,6 +35,6 @@ class Api::QuestionsController < ApplicationController
   end
 
   def collection
-    Question.all
+    @collection ||= Question.all
   end
 end

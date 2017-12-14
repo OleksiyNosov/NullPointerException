@@ -35,6 +35,6 @@ class Api::AnswersController < ApplicationController
   end
 
   def collection
-    Answer.all
+    @collection ||= Answer.all
   end
 end

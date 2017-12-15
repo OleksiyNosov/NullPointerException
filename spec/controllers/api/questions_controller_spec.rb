@@ -23,14 +23,6 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
       it('returns questions') { expect(response_body).to eq [serialized_attributes] }
     end
-
-    describe 'questions dont exist' do
-      before { expect(subject).to receive(:collection).and_raise ActiveRecord::RecordNotFound }
-
-      before { get :index, format: :json }
-
-      it('returns status 404') { expect(response).to have_http_status 404 }
-    end
   end
 
   describe 'GET #show' do

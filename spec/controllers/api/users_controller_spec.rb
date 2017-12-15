@@ -52,14 +52,6 @@ RSpec.describe Api::UsersController, type: :controller do
 
         it('returns users') { expect(response_body).to eq [serialized_attributes] }
       end
-
-      context 'users not exist' do
-        before { expect(subject).to receive(:collection).and_raise ActiveRecord::RecordNotFound }
-
-        before { get :index, format: :json }
-
-        it('returns status 404') { expect(response).to have_http_status 404 }
-      end
     end
 
     describe 'GET #show' do

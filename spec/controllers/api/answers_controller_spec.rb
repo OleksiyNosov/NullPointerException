@@ -13,6 +13,8 @@ RSpec.describe Api::AnswersController, type: :controller do
 
   let(:answer) { instance_double Answer, id: 3, as_json: attributes, **attributes }
 
+  let(:permitted_attributes) { ActionController::Parameters.new(attributes).permit! }
+
   describe 'GET #index' do
     describe 'answers exist' do
       before { allow(subject).to receive(:collection).and_return [serialized_attributes] }
@@ -31,7 +33,7 @@ RSpec.describe Api::AnswersController, type: :controller do
     describe 'POST #create' do
       let(:params) { { answer: attributes } }
 
-      before { allow(Answer).to receive(:new).with(permit! attributes).and_return answer }
+      before { allow(Answer).to receive(:new).with(permitted_attributes).and_return answer }
 
       before { expect(answer).to receive(:save) }
 
@@ -63,7 +65,7 @@ RSpec.describe Api::AnswersController, type: :controller do
 
       before { allow(subject).to receive(:resource).and_return answer }
 
-      before { expect(answer).to receive(:update).with(permit! attributes) }
+      before { expect(answer).to receive(:update).with(permitted_attributes) }
 
       context 'answer updated' do
         before { allow(answer).to receive(:valid?).and_return true }

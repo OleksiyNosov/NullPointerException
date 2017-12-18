@@ -11,8 +11,10 @@ RSpec.describe Api::UsersController, type: :controller do
 
   let(:user) { instance_double User, id: 5, as_json: attributes, **attributes }
 
+  let(:permitted_attributes) { ActionController::Parameters.new(attributes).permit! }
+
   describe 'POST #create' do
-    before { allow(User).to receive(:new).with(permit! attributes).and_return user }
+    before { allow(User).to receive(:new).with(permitted_attributes).and_return user }
 
     before { expect(user).to receive(:save) }
 
@@ -77,7 +79,7 @@ RSpec.describe Api::UsersController, type: :controller do
     describe 'PATCH $update' do
       before { allow(subject).to receive(:resource).and_return user }
 
-      before { expect(user).to receive(:update).with(permit! attributes) }
+      before { expect(user).to receive(:update).with(permitted_attributes) }
 
       describe 'user profile was updated' do
         before { allow(user).to receive(:valid?).and_return true }

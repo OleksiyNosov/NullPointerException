@@ -13,6 +13,8 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
   let(:question) { instance_double(Question, id: 2, as_json: attributes, **attributes) }
 
+  let(:permitted_attributes) { ActionController::Parameters.new(attributes).permit! }
+
   describe 'GET #index' do
     describe 'questions exist' do
       before { allow(subject).to receive(:collection).and_return [serialized_attributes] }
@@ -49,7 +51,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
     before { sign_in user }
 
     describe 'POST #create' do
-      before { allow(Question).to receive(:new).with(permit! attributes).and_return question }
+      before { allow(Question).to receive(:new).with(permitted_attributes).and_return question }
 
       before { expect(question).to receive(:save) }
 
@@ -81,7 +83,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
       before { allow(subject).to receive(:resource).and_return question }
 
-      before { expect(question).to receive(:update).with(permit! attributes) }
+      before { expect(question).to receive(:update).with(permitted_attributes) }
 
       context 'question was updated' do
         before { allow(question).to receive(:valid?).and_return true }

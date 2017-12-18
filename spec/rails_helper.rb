@@ -25,8 +25,6 @@ RSpec.configure do |config|
 
   config.include JsonResposeBodyParser
 
-  config.include Permitter
-
   config.include Authentication
 end
 

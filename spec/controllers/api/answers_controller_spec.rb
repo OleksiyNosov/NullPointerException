@@ -7,23 +7,27 @@ RSpec.describe Api::AnswersController, type: :controller do
 
   let(:user) { instance_double User }
 
-  let(:attributes) { attributes_for(:answer) }
+  let(:attributes) { answer.attributes }
 
-  let(:serialized_attributes) { attributes.stringify_keys }
+  let(:invalid_attributes) { attributes.merge('body' => '') }
 
-  let(:answer) { instance_double Answer, id: 3, as_json: attributes, **attributes }
+  let(:errors) { { 'body' => ["can't be blank"] }.to_json }
 
-  let(:permitted_attributes) { ActionController::Parameters.new(attributes).permit! }
+  let(:answer) { FactoryBot.create(:answer) }
+
+  let(:serialized_answer) { AnswerSerializer.new(answer) }
+
+  let(:serialized_answer_json) { serialized_answer.to_json }
 
   describe 'GET #index' do
     describe 'answers exist' do
-      before { allow(subject).to receive(:collection).and_return [serialized_attributes] }
+      before { allow(subject).to receive(:collection).and_return :collection }
 
       before { get :index, format: :json }
 
       it('returns status 200') { expect(response).to have_http_status 200 }
 
-      it('returns answers') { expect(response_body).to eq [serialized_attributes] }
+      it('returns answers') { expect(response.body).to eq :collection.to_json }
     end
   end
 
@@ -31,90 +35,48 @@ RSpec.describe Api::AnswersController, type: :controller do
     before { sign_in user }
 
     describe 'POST #create' do
-      let(:params) { { answer: attributes } }
-
-      before { allow(Answer).to receive(:new).with(permitted_attributes).and_return answer }
-
-      before { expect(answer).to receive(:save) }
-
       context 'answer valid' do
-        before { expect(answer).to receive(:valid?).and_return true }
+        let(:serialized_attributes) { serialized_answer.to_h.without(:id).stringify_keys }
 
-        before { post :create, params: params, format: :json }
+        before { post :create, params: { answer: attributes }, format: :json }
 
         it('returns status 201') { expect(response).to have_http_status 201 }
 
-        it('returns created answer') { expect(response_body).to eq serialized_attributes }
+        it('returns created answer') { expect(JSON.parse response.body).to include serialized_attributes }
       end
 
       context 'answer not valid' do
-        before { allow(answer).to receive(:valid?).and_return false }
-
-        before { allow(answer).to receive(:errors).and_return :errors }
-
-        before { post :create, params: params, format: :json }
+        before { post :create, params: { answer: invalid_attributes }, format: :json }
 
         it('returns status 422') { expect(response).to have_http_status 422 }
 
-        it('returns errors') { expect(response_body).to eq 'errors' }
+        it('returns errors') { expect(response.body).to eq errors }
       end
     end
 
     describe 'PATCH #update' do
-      let(:params) { { id: answer.id, answer: attributes } }
-
-      before { allow(subject).to receive(:resource).and_return answer }
-
-      before { expect(answer).to receive(:update).with(permitted_attributes) }
-
       context 'answer updated' do
-        before { allow(answer).to receive(:valid?).and_return true }
-
-        before { patch :update, params: params, format: :json }
+        before { patch :update, params: { id: answer.id, answer: attributes }, format: :json }
 
         it('returns status 200') { expect(response).to have_http_status 200 }
 
-        it('returns updated answer') { expect(response_body).to eq serialized_attributes }
+        it('returns updated answer') { expect(response.body).to eq serialized_answer_json }
       end
 
       context 'answer not valid' do
-        before { allow(answer).to receive(:valid?).and_return false }
-
-        before { allow(answer).to receive(:errors).and_return :errors }
-
-        before { patch :update, params: params, format: :json }
+        before { patch :update, params: { id: answer.id, answer: invalid_attributes }, format: :json }
 
         it('returns status 422') { expect(response).to have_http_status 422 }
 
-        it('returns errors') { expect(response_body).to eq 'errors' }
+        it('returns errors') { expect(response.body).to eq errors }
       end
     end
 
     describe 'DELETE #destroy' do
-      let(:params) { { id: answer.id } }
-
-      before { allow(subject).to receive(:resource).and_return answer }
-
-      before { expect(answer).to receive(:destroy) }
-
       context 'answer destroyed' do
-        before { allow(answer).to receive(:valid?).and_return true }
-
-        before { delete :destroy, params: params, format: :json }
+        before { delete :destroy, params: { id: answer.id }, format: :json }
 
         it('returns status 204') { expect(response).to have_http_status 204 }
-      end
-
-      context 'answer not valid' do
-        before { allow(answer).to receive(:valid?).and_return false }
-
-        before { allow(answer).to receive(:errors).and_return :errors }
-
-        before { delete :destroy, params: params, format: :json }
-
-        it('returns status 422') { expect(response).to have_http_status 422 }
-
-        it('returns errors') { expect(response_body).to eq 'errors' }
       end
     end
   end

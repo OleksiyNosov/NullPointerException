@@ -9,39 +9,35 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
   let(:attributes) { attributes_for(:question) }
 
-  let(:serialized_attributes) { attributes.stringify_keys }
+  let(:question) { FactoryBot.create(:question, **attributes) }
 
-  let(:question) { instance_double(Question, id: 2, as_json: attributes, **attributes) }
+  let(:serialized_question) { QuestionSerializer.new(question) }
 
-  let(:permitted_attributes) { ActionController::Parameters.new(attributes).permit! }
+  let(:serialized_question_json) { serialized_question.to_json }
 
   describe 'GET #index' do
     describe 'questions exist' do
-      before { allow(subject).to receive(:collection).and_return [serialized_attributes] }
+      before { expect(subject).to receive(:collection).and_return :collection }
 
       before { get :index, format: :json }
 
       it('returns status 200') { expect(response).to have_http_status 200 }
 
-      it('returns questions') { expect(response_body).to eq [serialized_attributes] }
+      it('returns questions') { expect(response.body).to eq :collection.to_json }
     end
   end
 
   describe 'GET #show' do
     context 'question exist' do
-      before { allow(subject).to receive(:resource).and_return question }
-
       before { get :show, params: { id: question.id }, format: :json }
 
       it('returns status 200') { expect(response).to have_http_status 200 }
 
-      it('returns question') { expect(response_body).to eq serialized_attributes }
+      it('returns question') { expect(response.body).to eq serialized_question_json }
     end
 
     context 'question is not exist' do
-      before { expect(subject).to receive(:resource).and_raise ActiveRecord::RecordNotFound }
-
-      before { get :show, params: { id: question.id }, format: :json }
+      before { get :show, params: { id: -1 }, format: :json }
 
       it('returns status 404') { expect(response).to have_http_status 404 }
     end
@@ -51,86 +47,56 @@ RSpec.describe Api::QuestionsController, type: :controller do
     before { sign_in user }
 
     describe 'POST #create' do
-      before { allow(Question).to receive(:new).with(permitted_attributes).and_return question }
-
-      before { expect(question).to receive(:save) }
-
       context 'question was created' do
-        before { allow(question).to receive(:valid?).and_return true }
+        let(:serialized_attributes) { serialized_question.to_h.without(:id).stringify_keys }
 
         before { post :create, params: { question: attributes }, format: :json }
 
         it('returns status 201') { expect(response).to have_http_status 201 }
 
-        it('returns question') { expect(response_body).to eq serialized_attributes }
+        it('returns question') { expect(JSON.parse response.body).to include serialized_attributes }
       end
 
       context 'question was not created' do
-        before { allow(question).to receive(:valid?).and_return false }
+        let(:errors) { { 'title' => ["can't be blank"] }.to_json }
 
-        before { allow(question).to receive(:errors).and_return :errors }
-
-        before { post :create, params: { question: attributes }, format: :json }
+        before { post :create, params: { question: attributes.merge(title: '') }, format: :json }
 
         it('returns status 422') { expect(response).to have_http_status 422 }
 
-        it('returns errors') { expect(response_body).to eq 'errors' }
+        it('returns errors') { expect(response.body).to eq errors }
       end
     end
 
     describe 'PATCH #update' do
       let(:params) { { id: question.id, question: attributes } }
 
-      before { allow(subject).to receive(:resource).and_return question }
-
-      before { expect(question).to receive(:update).with(permitted_attributes) }
-
       context 'question was updated' do
-        before { allow(question).to receive(:valid?).and_return true }
-
         before { patch :update, params: params, format: :json }
 
         it('returns status 200') { expect(response).to have_http_status 200 }
 
-        it('returns updated question') { expect(response_body).to eq serialized_attributes }
+        it('returns updated question') { expect(response.body).to eq serialized_question_json }
       end
 
       context 'question was not updated' do
-        before { allow(question).to receive(:valid?).and_return false }
+        let(:errors) { { 'title' => ["can't be blank"] }.to_json }
 
-        before { allow(question).to receive(:errors).and_return :errors }
+        let(:params) { { id: question.id, question: attributes.merge(title: '') } }
 
         before { patch :update, params: params, format: :json }
 
         it('returns status 422') { expect(response).to have_http_status 422 }
 
-        it('returns errors') { expect(response_body).to eq 'errors' }
+        it('returns errors') { expect(response.body).to eq errors }
       end
     end
 
     describe 'DELETE #destroy' do
-      before { allow(subject).to receive(:resource).and_return question }
-
-      before { expect(question).to receive(:destroy) }
-
       context 'question destroyed' do
-        before { allow(question).to receive(:valid?).and_return true }
-
         before { delete :destroy, params: { id: question.id }, format: :json }
 
         it('returns status 204') { expect(response).to have_http_status 204 }
-      end
-
-      context 'question do not destroyed' do
-        before { allow(question).to receive(:valid?).and_return false }
-
-        before { allow(question).to receive(:errors).and_return :errors }
-
-        before { delete :destroy, params: { id: question.id }, format: :json }
-
-        it('returns status 422') { expect(response).to have_http_status 422 }
-
-        it('returns errors') { expect(response_body).to eq 'errors' }
       end
     end
   end

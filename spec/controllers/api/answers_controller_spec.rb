@@ -21,13 +21,17 @@ RSpec.describe Api::AnswersController, type: :controller do
 
   describe 'GET #index' do
     describe 'answers exist' do
-      before { allow(subject).to receive(:collection).and_return :collection }
+      before { Answer.destroy_all }
+
+      let(:collection) { FactoryBot.create_list(:answer, 2) }
+
+      let!(:collection_json) { collection.map { |element| AnswerSerializer.new(element) }.to_json }
 
       before { get :index, format: :json }
 
       it('returns status 200') { expect(response).to have_http_status 200 }
 
-      it('returns answers') { expect(response.body).to eq :collection.to_json }
+      it('returns answers') { expect(response.body).to eq collection_json }
     end
   end
 

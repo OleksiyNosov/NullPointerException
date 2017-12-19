@@ -13,7 +13,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
   let(:errors) { { 'title' => ["can't be blank"] }.to_json }
 
-  let(:question) { FactoryBot.create(:question) }
+  let!(:question) { FactoryBot.create(:question) }
 
   let(:serialized_question) { QuestionSerializer.new(question) }
 
@@ -21,18 +21,24 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
   describe 'GET #index' do
     describe 'questions exist' do
-      before { expect(subject).to receive(:collection).and_return :collection }
+      before { Question.destroy_all }
+
+      let(:collection) { FactoryBot.create_list(:question, 2) }
+
+      let!(:collection_json) { collection.map { |element| QuestionSerializer.new(element) }.to_json }
 
       before { get :index, format: :json }
 
       it('returns status 200') { expect(response).to have_http_status 200 }
 
-      it('returns questions') { expect(response.body).to eq :collection.to_json }
+      it('returns questions') { expect(response.body).to eq collection_json }
     end
   end
 
   describe 'GET #show' do
     context 'question exist' do
+      before { serialized_question_json }
+
       before { get :show, params: { id: question.id }, format: :json }
 
       it('returns status 200') { expect(response).to have_http_status 200 }

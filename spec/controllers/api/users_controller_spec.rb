@@ -46,13 +46,17 @@ RSpec.describe Api::UsersController, type: :controller do
 
     describe 'GET #index' do
       context 'users exist' do
-        before { allow(subject).to receive(:collection).and_return :collection }
+        before { User.destroy_all }
+
+        let(:collection) { FactoryBot.create_list(:user, 2) }
+
+        let!(:collection_json) { collection.map { |element| UserSerializer.new(element) }.to_json }
 
         before { get :index, format: :json }
 
         it('returns status 200') { expect(response).to have_http_status 200 }
 
-        it('returns users') { expect(response.body).to eq :collection.to_json }
+        it('returns users') { expect(response.body).to eq collection_json }
       end
     end
 

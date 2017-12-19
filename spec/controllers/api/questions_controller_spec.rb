@@ -7,9 +7,13 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
   let(:user) { instance_double User }
 
-  let(:attributes) { attributes_for(:question) }
+  let(:attributes) { question.attributes }
 
-  let(:question) { FactoryBot.create(:question, **attributes) }
+  let(:invalid_attributes) { attributes.merge('title' => '') }
+
+  let(:errors) { { 'title' => ["can't be blank"] }.to_json }
+
+  let(:question) { FactoryBot.create(:question) }
 
   let(:serialized_question) { QuestionSerializer.new(question) }
 
@@ -58,9 +62,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
       end
 
       context 'question was not created' do
-        let(:errors) { { 'title' => ["can't be blank"] }.to_json }
-
-        before { post :create, params: { question: attributes.merge(title: '') }, format: :json }
+        before { post :create, params: { question: invalid_attributes }, format: :json }
 
         it('returns status 422') { expect(response).to have_http_status 422 }
 
@@ -80,9 +82,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
       end
 
       context 'question was not updated' do
-        let(:errors) { { 'title' => ["can't be blank"] }.to_json }
-
-        let(:params) { { id: question.id, question: attributes.merge(title: '') } }
+        let(:params) { { id: question.id, question: invalid_attributes } }
 
         before { patch :update, params: params, format: :json }
 

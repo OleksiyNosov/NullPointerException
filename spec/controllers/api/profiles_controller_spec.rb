@@ -20,7 +20,7 @@ RSpec.describe Api::ProfilesController, type: :controller do
 
     it('returns status 200') { expect(response).to have_http_status 200 }
 
-    it('returns user profile') { expect(response_body).to eq serialized_attributes }
+    it('returns user profile') { expect(response.body).to eq user.to_json }
   end
 
   describe '#resource' do

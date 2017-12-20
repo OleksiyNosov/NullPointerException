@@ -14,6 +14,10 @@ Layout/EmptyLinesAroundAccessModifier:
 Layout/MultilineAssignmentLayout:
   Enabled: true
 
+Layout/MultilineMethodCallIndentation:
+  Exclude:
+    - "app/controllers/**/*.rb"
+
 Layout/SpaceInsideStringInterpolation:
   Enabled: false
 

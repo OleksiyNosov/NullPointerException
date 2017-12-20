@@ -7,7 +7,7 @@ RSpec.describe Api::UsersController, type: :controller do
 
   let(:attributes) { user.attributes }
 
-  let(:invalid_attributes) { attributes.merge('password' => '123', 'password_confirmation' => '123','email' => '') }
+  let(:invalid_attributes) { attributes.merge('password' => '123', 'password_confirmation' => '123', 'email' => '') }
 
   let(:errors) { { 'email' => ["can't be blank", 'is invalid'] }.to_json }
 

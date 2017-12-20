@@ -5,6 +5,8 @@ RSpec.describe Api::ProfilesController, type: :controller do
 
   it { is_expected.to be_kind_of Authenticatable }
 
+  it { is_expected.to be_kind_of Exceptionable }
+
   let(:attributes) { attributes_for(:user) }
 
   let(:serialized_attributes) { attributes.stringify_keys }

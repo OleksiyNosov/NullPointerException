@@ -5,6 +5,8 @@ RSpec.describe Api::AnswersController, type: :controller do
 
   it { is_expected.to be_kind_of Authenticatable }
 
+  it { is_expected.to be_kind_of Exceptionable }
+
   let(:user) { instance_double User }
 
   let(:attributes) { answer.attributes }

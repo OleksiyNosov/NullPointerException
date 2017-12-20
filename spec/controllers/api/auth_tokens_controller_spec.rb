@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Api::AuthTokensController, type: :controller do
+  it { is_expected.to be_kind_of Exceptionable }
+
   let(:password) { 'user_password' }
 
   let(:email) { 'test@example.com' }

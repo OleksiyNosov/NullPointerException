@@ -5,6 +5,8 @@ RSpec.describe Api::UsersController, type: :controller do
 
   it { is_expected.to be_kind_of Authenticatable }
 
+  it { is_expected.to be_kind_of Exceptionable }
+
   let(:attributes) { user.attributes }
 
   let(:invalid_attributes) { attributes.merge('password' => '123', 'password_confirmation' => '123', 'email' => '') }

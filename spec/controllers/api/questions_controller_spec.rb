@@ -13,7 +13,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
   let(:errors) { { 'title' => ["can't be blank"] }.to_json }
 
-  let!(:question) { FactoryBot.create(:question) }
+  let!(:question) { create(:question) }
 
   let(:serialized_question) { QuestionSerializer.new(question) }
 
@@ -23,7 +23,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
     describe 'questions exist' do
       before { Question.destroy_all }
 
-      let(:collection) { FactoryBot.create_list(:question, 2) }
+      let(:collection) { create_list(:question, 2) }
 
       let!(:collection_json) { collection.map { |element| QuestionSerializer.new(element) }.to_json }
 

@@ -1,7 +1,7 @@
 require 'acceptance_helper'
 
 RSpec.describe 'Authentication', type: :request do
-  let(:user) { FactoryBot.create(:user) }
+  let(:user) { create(:user) }
 
   let(:user_json) { { id: user.id, email: user.email }.to_json }
 

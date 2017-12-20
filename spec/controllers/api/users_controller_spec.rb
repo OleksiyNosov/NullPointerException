@@ -11,7 +11,7 @@ RSpec.describe Api::UsersController, type: :controller do
 
   let(:errors) { { 'email' => ["can't be blank", 'is invalid'] }.to_json }
 
-  let(:user) { FactoryBot.create(:user, password: '123') }
+  let(:user) { create(:user, password: '123') }
 
   let(:serialized_user) { UserSerializer.new(user) }
 
@@ -54,7 +54,7 @@ RSpec.describe Api::UsersController, type: :controller do
       context 'users exist' do
         before { User.destroy_all }
 
-        let(:collection) { FactoryBot.create_list(:user, 2) }
+        let(:collection) { create_list(:user, 2) }
 
         let!(:collection_json) { collection.map { |element| UserSerializer.new(element) }.to_json }
 

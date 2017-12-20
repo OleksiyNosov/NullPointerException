@@ -42,6 +42,12 @@ RSpec.describe Api::AuthTokensController, type: :controller do
       it('returns errors') { expect(response.body).to eq errors_json }
     end
 
+    context 'bad request parametres' do
+      before { post :create, params: { invalid_key: { email: email, password: password } }, format: :json }
+
+      it('returns status 400') { expect(response).to have_http_status 400 }
+    end
+
     context 'password is invalid' do
       let(:password) { 'wrong_user_password' }
 

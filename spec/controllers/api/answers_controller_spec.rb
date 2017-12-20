@@ -49,6 +49,12 @@ RSpec.describe Api::AnswersController, type: :controller do
         it('returns created answer') { expect(JSON.parse response.body).to include serialized_attributes }
       end
 
+      context 'bad request parametres' do
+        before { post :create, params: { invalid_key: attributes }, format: :json }
+
+        it('returns status 400') { expect(response).to have_http_status 400 }
+      end
+
       context 'answer not valid' do
         before { post :create, params: { answer: invalid_attributes }, format: :json }
 
@@ -65,6 +71,12 @@ RSpec.describe Api::AnswersController, type: :controller do
         it('returns status 200') { expect(response).to have_http_status 200 }
 
         it('returns updated answer') { expect(response.body).to eq serialized_answer_json }
+      end
+
+      context 'bad request parametres' do
+        before { post :update, params: { id: answer.id, invalid_key: attributes }, format: :json }
+
+        it('returns status 400') { expect(response).to have_http_status 400 }
       end
 
       context 'answer not valid' do

@@ -67,6 +67,12 @@ RSpec.describe Api::QuestionsController, type: :controller do
         it('returns question') { expect(JSON.parse response.body).to include serialized_attributes }
       end
 
+      context 'bad request parametres' do
+        before { post :create, params: { invalid_key: attributes }, format: :json }
+
+        it('returns status 400') { expect(response).to have_http_status 400 }
+      end
+
       context 'question was not created' do
         before { post :create, params: { question: invalid_attributes }, format: :json }
 
@@ -85,6 +91,12 @@ RSpec.describe Api::QuestionsController, type: :controller do
         it('returns status 200') { expect(response).to have_http_status 200 }
 
         it('returns updated question') { expect(response.body).to eq serialized_question_json }
+      end
+
+      context 'bad request parametres' do
+        before { post :update, params: { id: question.id, invalid_key: attributes }, format: :json }
+
+        it('returns status 400') { expect(response).to have_http_status 400 }
       end
 
       context 'question was not updated' do

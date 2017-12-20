@@ -11,21 +11,25 @@ RSpec.describe 'Authentication', type: :request do
 
   let(:headers) { { 'Authorization' => "Bearer #{ token }", 'Content-type' => 'application/json' } }
 
-  before { get '/api/profile', params: {}, headers: headers }
+  context 'GET /api/profile' do
+    before { get '/api/profile', params: {}, headers: headers }
 
-  context 'with valid params' do
-    it { expect(response.body).to eq user_json }
+    context 'with valid params' do
+      it('returns user profile') { expect(response.body).to eq user_json }
 
-    it { expect(response).to have_http_status 200 }
-  end
+      it('returns status 200') { expect(response).to have_http_status 200 }
+    end
 
-  context 'with invalid params' do
-    let(:token) { 'invalid token' }
+    context 'with invalid params' do
+      let(:token) { 'invalid token' }
 
-    it { expect(response.body).to eq "HTTP Token: Access denied.\n" }
+      it('returns "HTTP Token: Access denied."') { expect(response.body).to eq "HTTP Token: Access denied.\n" }
 
-    it { expect(response.header['WWW-Authenticate']).to eq 'Token realm="Application"' }
+      it('returns header "WWW-Authenticate"') do
+        expect(response.header['WWW-Authenticate']).to eq 'Token realm="Application"'
+      end
 
-    it { expect(response).to have_http_status 401 }
+      it('returns status 401') { expect(response).to have_http_status 401 }
+    end
   end
 end

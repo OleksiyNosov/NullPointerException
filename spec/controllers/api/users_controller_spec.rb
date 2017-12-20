@@ -29,7 +29,7 @@ RSpec.describe Api::UsersController, type: :controller do
 
       it('returns status 201') { expect(response).to have_http_status 201 }
 
-      it('returns user profile') { expect(JSON.parse response.body).to include serialized_attributes }
+      it('returns user') { expect(JSON.parse response.body).to include serialized_attributes }
     end
 
     context 'new user was not created' do
@@ -77,15 +77,15 @@ RSpec.describe Api::UsersController, type: :controller do
     end
 
     describe 'PATCH $update' do
-      describe 'user profile was updated' do
+      describe 'user was updated' do
         before { patch :update, params: { id: user.id, user: attributes }, format: :json }
 
         it('returns status 200') { expect(response).to have_http_status 200 }
 
-        it('returns updated profile') { expect(response.body).to eq serialized_user_json }
+        it('returns updated user') { expect(response.body).to eq serialized_user_json }
       end
 
-      describe 'user profile was not updated' do
+      describe 'user was not updated' do
         before { patch :update, params: { id: user.id, user: invalid_attributes }, format: :json }
 
         it('returns status 422') { expect(response).to have_http_status 422 }

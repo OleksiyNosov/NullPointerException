@@ -118,6 +118,12 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
         it('returns status 204') { expect(response).to have_http_status 204 }
       end
+
+      context 'question not found' do
+        before { delete :destroy, params: { id: -1 }, format: :json }
+
+        it('returns status 404') { expect(response).to have_http_status 404 }
+      end
     end
   end
 end

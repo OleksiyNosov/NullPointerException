@@ -23,11 +23,15 @@ RSpec.describe Api::AnswersController, type: :controller do
     describe 'answers exist' do
       before { Answer.destroy_all }
 
-      let(:collection) { create_list(:answer, 2) }
+      before { create(:answer) }
+
+      let(:question) { create(:question) }
+
+      let(:collection) { create_list(:answer, 2, question: question) }
 
       let!(:collection_json) { collection.map { |element| AnswerSerializer.new(element) }.to_json }
 
-      before { get :index, format: :json }
+      before { get :index, params: { question_id: question.id }, format: :json }
 
       it('returns status 200') { expect(response).to have_http_status 200 }
 

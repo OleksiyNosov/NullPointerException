@@ -24,6 +24,8 @@ RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
 
   config.include Authentication
+
+  config.include ResponseParser
 end
 
 Shoulda::Matchers.configure do |config|

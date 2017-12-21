@@ -23,6 +23,7 @@ group :development, :test do
 end
 
 group :test do
+  gem 'database_cleaner'
   gem 'rspec-its'
   gem 'rubocop', require: false
   gem 'shoulda-matchers'

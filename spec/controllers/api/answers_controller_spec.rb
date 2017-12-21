@@ -27,17 +27,19 @@ RSpec.describe Api::AnswersController, type: :controller do
 
       before { create(:answer) }
 
-      let(:question) { create(:question) }
+      let!(:question) { create(:question) }
 
       let(:collection) { create_list(:answer, 2, question: question) }
 
-      let!(:collection_json) { collection.map { |element| AnswerSerializer.new(element) }.to_json }
+      let!(:ids_collection) { collection.map { |e| e.id } }
+
+      let(:response_ids_collectiond) { JSON.parse(response.body).map { |e| e['id'] } }
 
       before { get :index, params: { question_id: question.id }, format: :json }
 
       it('returns status 200') { expect(response).to have_http_status 200 }
 
-      it('returns answers') { expect(response.body).to eq collection_json }
+      it('returns answers ids') { expect(response_ids_collectiond).to eq ids_collection }
     end
   end
 

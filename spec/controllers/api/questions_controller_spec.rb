@@ -25,15 +25,17 @@ RSpec.describe Api::QuestionsController, type: :controller do
     describe 'questions exist' do
       before { Question.destroy_all }
 
-      let(:collection) { create_list(:question, 2) }
+      let!(:collection) { create_list(:question, 2) }
 
-      let!(:collection_json) { collection.map { |element| QuestionSerializer.new(element) }.to_json }
+      let(:ids_collection) { collection.map { |e| e.id } }
+
+      let(:response_ids_collectiond) { JSON.parse(response.body).map { |e| e['id'] } }
 
       before { get :index, format: :json }
 
       it('returns status 200') { expect(response).to have_http_status 200 }
 
-      it('returns questions') { expect(response.body).to eq collection_json }
+      it('returns questions with ids') { expect(response_ids_collectiond).to eq ids_collection }
     end
   end
 

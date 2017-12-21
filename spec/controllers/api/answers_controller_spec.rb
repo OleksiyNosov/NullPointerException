@@ -21,8 +21,6 @@ RSpec.describe Api::AnswersController, type: :controller do
 
   describe 'GET #index' do
     describe 'answers exist' do
-      before { Answer.destroy_all }
-
       before { create(:answer) }
 
       let!(:question) { create(:question) }
@@ -35,7 +33,9 @@ RSpec.describe Api::AnswersController, type: :controller do
 
       it('returns status 200') { expect(response).to have_http_status 200 }
 
-      it('returns answers') { expect(response_collection_values :id, :question_id).to eq collection_values }
+      it 'returns answers' do
+        expect(response_collection_values :id, :question_id).to have_same_elements collection_values
+      end
     end
   end
 

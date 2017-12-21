@@ -8,7 +8,7 @@ module ResponseParser
   end
 
   def extract_values element, keys
-    keys.map! { |key| key.to_s }
+    keys.map!(&:to_s)
 
     element.slice(*keys)
   end

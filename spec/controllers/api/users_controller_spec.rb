@@ -1,6 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe Api::UsersController, type: :controller do
+  DatabaseCleaner.strategy = :transaction
+
+  DatabaseCleaner.start
+
   it { is_expected.to be_an ApplicationController }
 
   it { is_expected.to be_kind_of Authenticatable }
@@ -52,9 +56,7 @@ RSpec.describe Api::UsersController, type: :controller do
 
     describe 'GET #index' do
       context 'users exist' do
-        before { User.destroy_all }
-
-        let(:collection) { create_list(:user, 2) }
+        let(:collection) { create_list(:user, 2).push(user) }
 
         let!(:collection_values) { collection.map { |element| element.slice(:id, :email) } }
 
@@ -62,7 +64,7 @@ RSpec.describe Api::UsersController, type: :controller do
 
         it('returns status 200') { expect(response).to have_http_status 200 }
 
-        it('returns users') { expect(response_collection_values :id, :email).to eq collection_values }
+        it('returns users') { expect(response_collection_values :id, :email).to have_same_elements collection_values }
       end
     end
 

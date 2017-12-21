@@ -21,8 +21,6 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
   describe 'GET #index' do
     describe 'questions exist' do
-      before { Question.destroy_all }
-
       let!(:collection) { create_list(:question, 2) }
 
       let(:collection_values) { collection.map { |e| e.slice(:id, :title) } }
@@ -31,7 +29,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
       it('returns status 200') { expect(response).to have_http_status 200 }
 
-      it('returns questions attributes') { expect(response_collection_values :id, :title).to eq collection_values }
+      it('returns questions') { expect(response_collection_values :id, :title).to have_same_elements collection_values }
     end
   end
 

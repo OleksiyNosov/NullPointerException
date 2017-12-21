@@ -15,11 +15,9 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
   let(:errors) { { 'title' => ["can't be blank"] }.to_json }
 
-  let!(:question) { create(:question) }
+  let(:question) { create(:question) }
 
-  let(:serialized_question) { QuestionSerializer.new(question) }
-
-  let(:serialized_question_json) { serialized_question.to_json }
+  let(:question_values) { question.slice(:id, :title) }
 
   describe 'GET #index' do
     describe 'questions exist' do
@@ -27,30 +25,28 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
       let!(:collection) { create_list(:question, 2) }
 
-      let(:ids_collection) { collection.map { |e| e.id } }
-
-      let(:response_ids_collectiond) { JSON.parse(response.body).map { |e| e['id'] } }
+      let(:collection_values) { collection.map { |e| e.slice(:id, :title) } }
 
       before { get :index, format: :json }
 
       it('returns status 200') { expect(response).to have_http_status 200 }
 
-      it('returns questions with ids') { expect(response_ids_collectiond).to eq ids_collection }
+      it('returns questions attributes') { expect(response_collection_values :id, :title).to eq collection_values }
     end
   end
 
   describe 'GET #show' do
     context 'question exist' do
-      before { serialized_question_json }
-
       before { get :show, params: { id: question.id }, format: :json }
 
       it('returns status 200') { expect(response).to have_http_status 200 }
 
-      it('returns question') { expect(response.body).to eq serialized_question_json }
+      it('returns question attributes') { expect(response_values :id, :title).to eq question_values }
     end
 
     context 'question is not exist' do
+      before { expect(Question).to receive(:find).and_raise ActiveRecord::RecordNotFound }
+
       before { get :show, params: { id: -1 }, format: :json }
 
       it('returns status 404') { expect(response).to have_http_status 404 }
@@ -62,13 +58,11 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
     describe 'POST #create' do
       context 'question was created' do
-        let(:serialized_attributes) { serialized_question.to_h.without(:id).stringify_keys }
-
         before { post :create, params: { question: attributes }, format: :json }
 
         it('returns status 201') { expect(response).to have_http_status 201 }
 
-        it('returns question') { expect(JSON.parse response.body).to include serialized_attributes }
+        it('returns question') { expect(response_values :title, :body).to eq question.slice(:title, :body) }
       end
 
       context 'bad request parametres' do
@@ -94,13 +88,21 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
         it('returns status 200') { expect(response).to have_http_status 200 }
 
-        it('returns updated question') { expect(response.body).to eq serialized_question_json }
+        it('returns updated question') { expect(response_values :id, :title).to eq question_values }
       end
 
       context 'bad request parametres' do
         before { post :update, params: { id: question.id, invalid_key: attributes }, format: :json }
 
         it('returns status 400') { expect(response).to have_http_status 400 }
+      end
+
+      context 'question is not exist' do
+        before { expect(Question).to receive(:find).and_raise ActiveRecord::RecordNotFound }
+
+        before { post :update, params: { id: -1, invalid_key: attributes }, format: :json }
+
+        it('returns status 404') { expect(response).to have_http_status 404 }
       end
 
       context 'question was not updated' do
@@ -122,6 +124,8 @@ RSpec.describe Api::QuestionsController, type: :controller do
       end
 
       context 'question not found' do
+        before { expect(Question).to receive(:find).and_raise ActiveRecord::RecordNotFound }
+
         before { delete :destroy, params: { id: -1 }, format: :json }
 
         it('returns status 404') { expect(response).to have_http_status 404 }

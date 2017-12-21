@@ -7,27 +7,17 @@ RSpec.describe Api::ProfilesController, type: :controller do
 
   it { is_expected.to be_kind_of Exceptionable }
 
-  let(:attributes) { attributes_for(:user) }
+  let(:user) { create(:user) }
 
-  let(:serialized_attributes) { attributes.stringify_keys }
-
-  let(:user) { instance_double User, id: 5, as_json: attributes, **attributes }
+  let(:profile_values) { user.slice(:id, :email) }
 
   describe 'GET #show' do
     before { sign_in user }
-
-    before { allow(subject).to receive(:current_user).and_return user }
 
     before { get :show, format: :json }
 
     it('returns status 200') { expect(response).to have_http_status 200 }
 
-    it('returns user profile') { expect(response.body).to eq user.to_json }
-  end
-
-  describe '#resource' do
-    before { allow(subject).to receive(:current_user).and_return user }
-
-    it('returns current user profile') { expect(subject.send :resource).to eq user }
+    it('returns user profile') { expect(response_values :id, :email).to eq profile_values }
   end
 end

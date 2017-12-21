@@ -15,15 +15,13 @@ RSpec.describe Api::UsersController, type: :controller do
 
   let(:user) { create(:user, password: '123') }
 
-  let(:serialized_user) { UserSerializer.new(user) }
-
-  let(:serialized_user_json) { serialized_user.to_json }
+  let(:user_values) { user.slice(:id, :email) }
 
   describe 'POST #create' do
     context 'new user was created' do
       let(:permitted_attributes) { ActionController::Parameters.new(email: user.email).permit! }
 
-      let(:serialized_attributes) { serialized_user.to_h.without(:id).stringify_keys }
+      let(:user_values) { user.slice(:email) }
 
       before { allow(User).to receive(:new).with(permitted_attributes).and_return user }
 
@@ -31,7 +29,7 @@ RSpec.describe Api::UsersController, type: :controller do
 
       it('returns status 201') { expect(response).to have_http_status 201 }
 
-      it('returns user') { expect(JSON.parse response.body).to include serialized_attributes }
+      it('returns user') { expect(response_values :email).to eq user_values }
     end
 
     context 'bad request parametres' do
@@ -58,13 +56,13 @@ RSpec.describe Api::UsersController, type: :controller do
 
         let(:collection) { create_list(:user, 2) }
 
-        let!(:collection_json) { collection.map { |element| UserSerializer.new(element) }.to_json }
+        let!(:collection_values) { collection.map { |element| element.slice(:id, :email) } }
 
         before { get :index, format: :json }
 
         it('returns status 200') { expect(response).to have_http_status 200 }
 
-        it('returns users') { expect(response.body).to eq collection_json }
+        it('returns users') { expect(response_collection_values :id, :email).to eq collection_values }
       end
     end
 
@@ -74,10 +72,12 @@ RSpec.describe Api::UsersController, type: :controller do
 
         it('returns status 200') { expect(response).to have_http_status 200 }
 
-        it('returns user') { expect(response.body).to eq serialized_user_json }
+        it('returns user') { expect(response_values :id, :email).to eq user_values }
       end
 
       context 'user not exist' do
+        before { expect(User).to receive(:find).and_raise ActiveRecord::RecordNotFound }
+
         before { get :show, params: { id: -1 }, format: :json }
 
         it('returns status 404') { expect(response).to have_http_status 404 }
@@ -90,13 +90,21 @@ RSpec.describe Api::UsersController, type: :controller do
 
         it('returns status 200') { expect(response).to have_http_status 200 }
 
-        it('returns updated user') { expect(response.body).to eq serialized_user_json }
+        it('returns updated user') { expect(response_values :id, :email).to eq user_values }
       end
 
       context 'bad request parametres' do
         before { post :update, params: { id: user.id, invalid_key: attributes }, format: :json }
 
         it('returns status 400') { expect(response).to have_http_status 400 }
+      end
+
+      context 'user is not exist' do
+        before { expect(User).to receive(:find).and_raise ActiveRecord::RecordNotFound }
+
+        before { post :update, params: { id: -1, invalid_key: attributes }, format: :json }
+
+        it('returns status 404') { expect(response).to have_http_status 404 }
       end
 
       describe 'user was not updated' do

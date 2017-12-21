@@ -17,9 +17,7 @@ RSpec.describe Api::AnswersController, type: :controller do
 
   let(:answer) { create(:answer) }
 
-  let(:serialized_answer) { AnswerSerializer.new(answer) }
-
-  let(:serialized_answer_json) { serialized_answer.to_json }
+  let(:answer_values) { answer.slice(:id, :question_id) }
 
   describe 'GET #index' do
     describe 'answers exist' do
@@ -31,15 +29,13 @@ RSpec.describe Api::AnswersController, type: :controller do
 
       let(:collection) { create_list(:answer, 2, question: question) }
 
-      let!(:ids_collection) { collection.map { |e| e.id } }
-
-      let(:response_ids_collectiond) { JSON.parse(response.body).map { |e| e['id'] } }
+      let!(:collection_values) { collection.map { |e| e.slice(:id, :question_id) } }
 
       before { get :index, params: { question_id: question.id }, format: :json }
 
       it('returns status 200') { expect(response).to have_http_status 200 }
 
-      it('returns answers ids') { expect(response_ids_collectiond).to eq ids_collection }
+      it('returns answers') { expect(response_collection_values :id, :question_id).to eq collection_values }
     end
   end
 
@@ -48,13 +44,13 @@ RSpec.describe Api::AnswersController, type: :controller do
 
     describe 'POST #create' do
       context 'answer valid' do
-        let(:serialized_attributes) { serialized_answer.to_h.without(:id).stringify_keys }
+        let(:answer_values) { answer.slice(:question_id, :body) }
 
         before { post :create, params: { answer: attributes }, format: :json }
 
         it('returns status 201') { expect(response).to have_http_status 201 }
 
-        it('returns created answer') { expect(JSON.parse response.body).to include serialized_attributes }
+        it('returns created answer') { expect(response_values :question_id, :body).to eq answer_values }
       end
 
       context 'bad request parametres' do
@@ -78,13 +74,21 @@ RSpec.describe Api::AnswersController, type: :controller do
 
         it('returns status 200') { expect(response).to have_http_status 200 }
 
-        it('returns updated answer') { expect(response.body).to eq serialized_answer_json }
+        it('returns updated answer') { expect(response_values :id, :question_id).to eq answer_values }
       end
 
       context 'bad request parametres' do
         before { post :update, params: { id: answer.id, invalid_key: attributes }, format: :json }
 
         it('returns status 400') { expect(response).to have_http_status 400 }
+      end
+
+      context 'answer is not exist' do
+        before { expect(Answer).to receive(:find).and_raise ActiveRecord::RecordNotFound }
+
+        before { post :update, params: { id: -1, invalid_key: attributes }, format: :json }
+
+        it('returns status 404') { expect(response).to have_http_status 404 }
       end
 
       context 'answer not valid' do
@@ -104,6 +108,8 @@ RSpec.describe Api::AnswersController, type: :controller do
       end
 
       context 'answer not found' do
+        before { expect(Answer).to receive(:find).and_raise ActiveRecord::RecordNotFound }
+
         before { delete :destroy, params: { id: -1 }, format: :json }
 
         it('returns status 404') { expect(response).to have_http_status 404 }

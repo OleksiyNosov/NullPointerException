@@ -7,13 +7,13 @@ RSpec.describe ResourceDestroyer do
 
   it('behaves as resource dispatcher') { is_expected.to be_an ResourceCrudWorker }
 
-  describe 'process_action' do
+  describe '#process_action' do
     before { expect(resource).to receive(:destroy) }
 
     it('destroy resource') { expect { subject.send :process_action }.to_not raise_error }
   end
 
-  describe 'call' do
+  describe '#call' do
     before { expect(subject).to receive(:process_action) }
 
     before { expect(subject).to receive(:broadcast_resource) }

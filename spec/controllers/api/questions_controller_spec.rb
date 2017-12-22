@@ -20,29 +20,29 @@ RSpec.describe Api::QuestionsController, type: :controller do
   let(:question_values) { question.slice(:id, :title) }
 
   describe 'GET #index' do
-    describe 'questions exist' do
-      let!(:collection) { create_list(:question, 2) }
+    let!(:collection) { create_list(:question, 2) }
 
-      let(:collection_values) { collection.map { |e| e.slice(:id, :title) } }
+    let(:collection_values) { collection.map { |e| e.slice(:id, :title) } }
 
-      before { get :index, format: :json }
+    before { get :index, format: :json }
 
-      it('returns status 200') { expect(response).to have_http_status 200 }
+    it('returns status 200') { expect(response).to have_http_status 200 }
 
-      it('returns questions') { expect(response_collection_values :id, :title).to have_same_elements collection_values }
+    it 'returns collection of questions' do
+      expect(response_collection_values :id, :title).to have_same_elements collection_values
     end
   end
 
   describe 'GET #show' do
-    context 'question exist' do
+    context 'when requested question was found' do
       before { get :show, params: { id: question.id }, format: :json }
 
       it('returns status 200') { expect(response).to have_http_status 200 }
 
-      it('returns question attributes') { expect(response_values :id, :title).to eq question_values }
+      it('returns question') { expect(response_values :id, :title).to eq question_values }
     end
 
-    context 'question is not exist' do
+    context 'when requested question was not found' do
       before { expect(Question).to receive(:find).and_raise ActiveRecord::RecordNotFound }
 
       before { get :show, params: { id: -1 }, format: :json }
@@ -55,21 +55,21 @@ RSpec.describe Api::QuestionsController, type: :controller do
     before { sign_in user }
 
     describe 'POST #create' do
-      context 'question was created' do
+      context 'when sent question attributes are valid' do
         before { post :create, params: { question: attributes }, format: :json }
 
         it('returns status 201') { expect(response).to have_http_status 201 }
 
-        it('returns question') { expect(response_values :title, :body).to eq question.slice(:title, :body) }
+        it('returns created question') { expect(response_values :title, :body).to eq question.slice(:title, :body) }
       end
 
-      context 'bad request parametres' do
+      context 'when request have invalid structure' do
         before { post :create, params: { invalid_key: attributes }, format: :json }
 
         it('returns status 400') { expect(response).to have_http_status 400 }
       end
 
-      context 'question was not created' do
+      context 'when sent question attributes are not valid' do
         before { post :create, params: { question: invalid_attributes }, format: :json }
 
         it('returns status 422') { expect(response).to have_http_status 422 }
@@ -81,7 +81,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
     describe 'PATCH #update' do
       let(:params) { { id: question.id, question: attributes } }
 
-      context 'question was updated' do
+      context 'when sent question attributes are valid' do
         before { patch :update, params: params, format: :json }
 
         it('returns status 200') { expect(response).to have_http_status 200 }
@@ -89,13 +89,13 @@ RSpec.describe Api::QuestionsController, type: :controller do
         it('returns updated question') { expect(response_values :id, :title).to eq question_values }
       end
 
-      context 'bad request parametres' do
+      context 'when request have invalid structure' do
         before { post :update, params: { id: question.id, invalid_key: attributes }, format: :json }
 
         it('returns status 400') { expect(response).to have_http_status 400 }
       end
 
-      context 'question is not exist' do
+      context 'when requested question did not found' do
         before { expect(Question).to receive(:find).and_raise ActiveRecord::RecordNotFound }
 
         before { post :update, params: { id: -1, invalid_key: attributes }, format: :json }
@@ -103,7 +103,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
         it('returns status 404') { expect(response).to have_http_status 404 }
       end
 
-      context 'question was not updated' do
+      context 'when sent question attributes are not valid' do
         let(:params) { { id: question.id, question: invalid_attributes } }
 
         before { patch :update, params: params, format: :json }
@@ -115,13 +115,13 @@ RSpec.describe Api::QuestionsController, type: :controller do
     end
 
     describe 'DELETE #destroy' do
-      context 'question destroyed' do
+      context 'when requested question was destroyed' do
         before { delete :destroy, params: { id: question.id }, format: :json }
 
         it('returns status 204') { expect(response).to have_http_status 204 }
       end
 
-      context 'question not found' do
+      context 'when requested question did not found' do
         before { expect(Question).to receive(:find).and_raise ActiveRecord::RecordNotFound }
 
         before { delete :destroy, params: { id: -1 }, format: :json }

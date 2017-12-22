@@ -20,7 +20,7 @@ RSpec.describe Api::AuthTokensController, type: :controller do
 
     let(:params) { { sign_in: { email: email, password: password } } }
 
-    context 'email and params is valid' do
+    context 'when email and password are valid' do
       let(:stringified_token) { { token: token }.stringify_keys }
 
       let(:token_json) { { token: token }.to_json }
@@ -36,7 +36,13 @@ RSpec.describe Api::AuthTokensController, type: :controller do
       it('returns token') { expect(response.body).to eq token_json }
     end
 
-    context 'email is invalid' do
+    context 'request have invalid structure' do
+      before { post :create, params: { invalid_key: { email: email, password: password } }, format: :json }
+
+      it('returns status 400') { expect(response).to have_http_status 400 }
+    end
+
+    context 'when email is invalid' do
       let(:email) { 'wrong_user_email' }
 
       before { post :create, params: params, format: :json }
@@ -46,13 +52,7 @@ RSpec.describe Api::AuthTokensController, type: :controller do
       it('returns errors') { expect(response.body).to eq errors_json }
     end
 
-    context 'bad request parametres' do
-      before { post :create, params: { invalid_key: { email: email, password: password } }, format: :json }
-
-      it('returns status 400') { expect(response).to have_http_status 400 }
-    end
-
-    context 'password is invalid' do
+    context 'when password is invalid' do
       let(:password) { 'wrong_user_password' }
 
       before { post :create, params: params, format: :json }

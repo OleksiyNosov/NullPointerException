@@ -20,22 +20,20 @@ RSpec.describe Api::AnswersController, type: :controller do
   let(:answer_values) { answer.slice(:id, :question_id) }
 
   describe 'GET #index' do
-    describe 'answers exist' do
-      before { create(:answer) }
+    before { create(:answer) }
 
-      let!(:question) { create(:question) }
+    let!(:question) { create(:question) }
 
-      let(:collection) { create_list(:answer, 2, question: question) }
+    let(:collection) { create_list(:answer, 2, question: question) }
 
-      let!(:collection_values) { collection.map { |e| e.slice(:id, :question_id) } }
+    let!(:collection_values) { collection.map { |e| e.slice(:id, :question_id) } }
 
-      before { get :index, params: { question_id: question.id }, format: :json }
+    before { get :index, params: { question_id: question.id }, format: :json }
 
-      it('returns status 200') { expect(response).to have_http_status 200 }
+    it('returns status 200') { expect(response).to have_http_status 200 }
 
-      it 'returns answers' do
-        expect(response_collection_values :id, :question_id).to have_same_elements collection_values
-      end
+    it 'returns collection of answers' do
+      expect(response_collection_values :id, :question_id).to have_same_elements collection_values
     end
   end
 
@@ -43,7 +41,7 @@ RSpec.describe Api::AnswersController, type: :controller do
     before { sign_in user }
 
     describe 'POST #create' do
-      context 'answer valid' do
+      context 'when sent answer attributes are valid' do
         let(:answer_values) { answer.slice(:question_id, :body) }
 
         before { post :create, params: { answer: attributes }, format: :json }
@@ -53,13 +51,13 @@ RSpec.describe Api::AnswersController, type: :controller do
         it('returns created answer') { expect(response_values :question_id, :body).to eq answer_values }
       end
 
-      context 'bad request parametres' do
+      context 'when request have invalid structure' do
         before { post :create, params: { invalid_key: attributes }, format: :json }
 
         it('returns status 400') { expect(response).to have_http_status 400 }
       end
 
-      context 'answer not valid' do
+      context 'when sent answer attributes are not valid' do
         before { post :create, params: { answer: invalid_attributes }, format: :json }
 
         it('returns status 422') { expect(response).to have_http_status 422 }
@@ -69,7 +67,7 @@ RSpec.describe Api::AnswersController, type: :controller do
     end
 
     describe 'PATCH #update' do
-      context 'answer updated' do
+      context 'when rsent answer attributes are valid' do
         before { patch :update, params: { id: answer.id, answer: attributes }, format: :json }
 
         it('returns status 200') { expect(response).to have_http_status 200 }
@@ -77,13 +75,13 @@ RSpec.describe Api::AnswersController, type: :controller do
         it('returns updated answer') { expect(response_values :id, :question_id).to eq answer_values }
       end
 
-      context 'bad request parametres' do
+      context 'when request have invalid structure' do
         before { post :update, params: { id: answer.id, invalid_key: attributes }, format: :json }
 
         it('returns status 400') { expect(response).to have_http_status 400 }
       end
 
-      context 'answer is not exist' do
+      context 'when requested answer did not found' do
         before { expect(Answer).to receive(:find).and_raise ActiveRecord::RecordNotFound }
 
         before { post :update, params: { id: -1, invalid_key: attributes }, format: :json }
@@ -91,7 +89,7 @@ RSpec.describe Api::AnswersController, type: :controller do
         it('returns status 404') { expect(response).to have_http_status 404 }
       end
 
-      context 'answer not valid' do
+      context 'when sent answer attributes are not valid' do
         before { patch :update, params: { id: answer.id, answer: invalid_attributes }, format: :json }
 
         it('returns status 422') { expect(response).to have_http_status 422 }
@@ -101,13 +99,13 @@ RSpec.describe Api::AnswersController, type: :controller do
     end
 
     describe 'DELETE #destroy' do
-      context 'answer destroyed' do
+      context 'when requested answer was destroyed' do
         before { delete :destroy, params: { id: answer.id }, format: :json }
 
         it('returns status 204') { expect(response).to have_http_status 204 }
       end
 
-      context 'answer not found' do
+      context 'when requested answer did not found' do
         before { expect(Answer).to receive(:find).and_raise ActiveRecord::RecordNotFound }
 
         before { delete :destroy, params: { id: -1 }, format: :json }

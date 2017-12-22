@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::QuestionsController, type: :controller do
-  it('inherits from ApplicationController') { is_expected.to be_an ApplicationController }
+  it { is_expected.to be_an ApplicationController }
 
   it('authenticate and set user') { is_expected.to be_kind_of Authenticatable }
 

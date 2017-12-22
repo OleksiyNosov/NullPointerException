@@ -12,17 +12,17 @@ RSpec.describe JWTWorker do
   let(:decoded_payload) { payload.stringify_keys }
 
   describe '.decode' do
-    context 'all is good' do
+    context 'when token is valid' do
       it('returns decoded token') { expect(JWTWorker.decode(token).first).to eq decoded_payload }
     end
 
-    context 'token expired' do
+    context 'when token expired' do
       let(:exp) { Time.zone.now.to_i - 5.minutes.to_i }
 
       it('returns false') { expect(JWTWorker.decode token).to eq false }
     end
 
-    context 'token is invalid' do
+    context 'when token is invalid' do
       let(:token) { 'bad_token_value' }
 
       it('returns false') { expect(JWTWorker.decode token).to eq false }

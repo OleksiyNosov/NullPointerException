@@ -9,14 +9,14 @@ RSpec.describe ResourceCreator do
 
   subject { ResourceCreator.new resource_class, resource_attributes }
 
-  it { is_expected.to be_an ResourceCrudWorker }
+  it('behaves as resource dispatcher') { is_expected.to be_an ResourceCrudWorker }
 
   describe '#process_action' do
     before { allow(resource_class).to receive(:new).with(resource_attributes).and_return resource }
 
     before { expect(resource).to receive(:save) }
 
-    it('executes resource creation logic') { expect { subject.send :process_action }.to_not raise_error }
+    it('create resource') { expect { subject.send :process_action }.to_not raise_error }
   end
 
   describe '#call' do
@@ -24,6 +24,6 @@ RSpec.describe ResourceCreator do
 
     before { expect(subject).to receive(:broadcast_resource) }
 
-    it('executes all methods') { expect { subject.call }.to_not raise_error }
+    it('create and broadcast resource') { expect { subject.call }.to_not raise_error }
   end
 end

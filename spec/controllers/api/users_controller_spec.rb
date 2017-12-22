@@ -1,15 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe Api::UsersController, type: :controller do
-  DatabaseCleaner.strategy = :transaction
+  it('inherits from ApplicationController') { is_expected.to be_an ApplicationController }
 
-  DatabaseCleaner.start
+  it('authenticate and set user') { is_expected.to be_kind_of Authenticatable }
 
-  it { is_expected.to be_an ApplicationController }
-
-  it { is_expected.to be_kind_of Authenticatable }
-
-  it { is_expected.to be_kind_of Exceptionable }
+  it('handles exceptions') { is_expected.to be_kind_of Exceptionable }
 
   let(:attributes) { user.attributes }
 

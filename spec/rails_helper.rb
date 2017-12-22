@@ -21,6 +21,8 @@ RSpec.configure do |config|
 
   config.filter_rails_from_backtrace!
 
+  config.formatter = :documentation
+
   config.include FactoryBot::Syntax::Methods
 
   config.include Authentication

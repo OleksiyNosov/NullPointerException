@@ -81,7 +81,7 @@ RSpec.describe Api::UsersController, type: :controller do
     end
 
     describe 'PATCH $update' do
-      describe 'when requested user was updated' do
+      describe 'when sent question attributes are valid' do
         before { patch :update, params: { id: user.id, user: attributes }, format: :json }
 
         it('returns status 200') { expect(response).to have_http_status 200 }
@@ -103,7 +103,7 @@ RSpec.describe Api::UsersController, type: :controller do
         it('returns status 404') { expect(response).to have_http_status 404 }
       end
 
-      describe 'when requested user was not updated' do
+      describe 'when sent user attributes are not valid' do
         before { patch :update, params: { id: user.id, user: invalid_attributes }, format: :json }
 
         it('returns status 422') { expect(response).to have_http_status 422 }

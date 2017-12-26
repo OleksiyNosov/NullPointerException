@@ -67,7 +67,7 @@ RSpec.describe Api::AnswersController, type: :controller do
     end
 
     describe 'PATCH #update' do
-      context 'when rsent answer attributes are valid' do
+      context 'when sent answer attributes are valid' do
         before { patch :update, params: { id: answer.id, answer: attributes }, format: :json }
 
         it('returns status 200') { expect(response).to have_http_status 200 }

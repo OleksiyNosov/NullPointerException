@@ -55,7 +55,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
     context 'with authentication' do
       before { sign_in user }
 
-      context 'when request have invalid structure' do
+      context 'when request do not have requied keys' do
         before { post :create, params: { invalid_key: question_attrs }, format: :json }
 
         it('returns status 400') { expect(response).to have_http_status 400 }
@@ -103,7 +103,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
     context 'with authentication' do
       before { sign_in user }
 
-      context 'when request have invalid structure' do
+      context 'when request do not have requied keys' do
         before { expect(subject).to receive(:resource) }
 
         before { post :update, params: { id: question_double.id, invalid_key: question_attrs }, format: :json }
@@ -161,22 +161,6 @@ RSpec.describe Api::QuestionsController, type: :controller do
     context 'with authentication' do
       before { sign_in user }
 
-      context 'when requested question was destroyed' do
-        let(:destroyer) { ResourceDestroyer.new question_double }
-
-        before { allow(subject).to receive(:resource).and_return question_double }
-
-        before { allow(ResourceDestroyer).to receive(:new).and_return(destroyer) }
-
-        before { expect(destroyer).to receive(:on).twice.and_call_original }
-
-        before { expect(destroyer).to receive(:call) { destroyer.send(:broadcast, :succeeded, question_double) } }
-
-        before { delete :destroy, params: { id: question_double.id }, format: :json }
-
-        it('returns status 204') { expect(response).to have_http_status 204 }
-      end
-
       context 'when requested question did not found' do
         before { expect(subject).to receive(:resource).and_raise ActiveRecord::RecordNotFound }
 
@@ -184,24 +168,34 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
         it('returns status 404') { expect(response).to have_http_status 404 }
       end
-    end
-  end
 
-  describe '#collection' do
-    let(:collection) { create_list(:question, 2) }
+      context 'with dispatcher' do
+        let(:destroyer) { ResourceDestroyer.new question_double }
 
-    it('returns collection of questions') { expect(subject.send :collection).to eq collection }
-  end
+        before { allow(subject).to receive(:resource).and_return question_double }
 
-  describe '#resource' do
-    let(:question) { create(:question) }
+        before { allow(ResourceDestroyer).to receive(:new).and_return(destroyer) }
 
-    before do
-      allow(subject).to receive(:params) do
-        double.tap { |params| allow(params).to receive(:[]).with(:id).and_return question.id }
+        context 'when sent data is valid' do
+          before { expect(destroyer).to receive(:on).twice.and_call_original }
+
+          before { expect(destroyer).to receive(:call) { destroyer.send(:broadcast, :succeeded, question_double) } }
+
+          before { delete :destroy, params: { id: question_double.id }, format: :json }
+
+          it('returns status 204') { expect(response).to have_http_status 204 }
+        end
+
+        context 'when sent data in not valid' do
+          before { expect(destroyer).to receive(:on).twice.and_call_original }
+
+          before { expect(destroyer).to receive(:call) { destroyer.send(:broadcast, :failed, question_errors) } }
+
+          before { delete :destroy, params: { id: question_double.id }, format: :json }
+
+          it('returns status 422') { expect(response).to have_http_status 422 }
+        end
       end
     end
-
-    it('returns question') { expect(subject.send :resource).to eq question }
   end
 end

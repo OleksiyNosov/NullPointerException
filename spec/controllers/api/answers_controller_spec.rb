@@ -76,10 +76,8 @@ RSpec.describe Api::AnswersController, type: :controller do
   end
 
   describe 'PATCH #update' do
-    let(:params) { { id: answer_double.id, answer: answer_attrs } }
-
     context 'when not authenticated' do
-      before { post :update, params: params, format: :json }
+      before { post :update, params: { id: answer_double.id, invalid_key: answer_attrs }, format: :json }
 
       it('returns status 401') { expect(response).to have_http_status 401 }
     end
@@ -98,7 +96,7 @@ RSpec.describe Api::AnswersController, type: :controller do
       context 'when requested answer did not found' do
         before { expect(subject).to receive(:resource).and_raise ActiveRecord::RecordNotFound }
 
-        before { post :update, params: params, format: :json }
+        before { post :update, params: { id: answer_double.id, answer: answer_attrs }, format: :json }
 
         it('returns status 404') { expect(response).to have_http_status 404 }
       end
@@ -115,7 +113,7 @@ RSpec.describe Api::AnswersController, type: :controller do
         context 'when sent answer attributes are valid' do
           before { expect(updator).to receive(:call) { updator.send(:broadcast, :succeeded, answer_double) } }
 
-          before { patch :update, params: params, format: :json }
+          before { patch :update, params: { id: answer_double.id, answer: answer_attrs }, format: :json }
 
           it('returns status 200') { expect(response).to have_http_status 200 }
 
@@ -125,7 +123,7 @@ RSpec.describe Api::AnswersController, type: :controller do
         context 'when sent answer attributes are not valid' do
           before { expect(updator).to receive(:call) { updator.send(:broadcast, :failed, answer_errors) } }
 
-          before { patch :update, params: params, format: :json }
+          before { patch :update, params: { id: answer_double.id, answer: answer_attrs }, format: :json }
 
           it('returns status 422') { expect(response).to have_http_status 422 }
 

@@ -34,9 +34,3 @@ Shoulda::Matchers.configure do |config|
     with.library :rails
   end
 end
-
-RSpec::Matchers.define :have_same_elements do |expected|
-  match do |actual|
-    (expected.length == actual.length) && (expected & actual == expected)
-  end
-end

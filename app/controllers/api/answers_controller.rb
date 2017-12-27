@@ -2,7 +2,7 @@ class Api::AnswersController < ApplicationController
   skip_before_action :authenticate, only: :index
 
   def create
-    AnswerCreator.new(resource_params)
+    AnswerCreator.new(question, resource_params)
       .on(:succeeded) { |resource| render json: resource, status: 201 }
       .on(:failed) { |errors| render json: errors, status: 422 }
       .call
@@ -32,6 +32,10 @@ class Api::AnswersController < ApplicationController
   end
 
   def collection
-    @collection ||= Question.find(params[:question_id]).answers
+    @collection ||= parent.answers
+  end
+
+  def question
+    @question ||= Question.find params[:question_id]
   end
 end

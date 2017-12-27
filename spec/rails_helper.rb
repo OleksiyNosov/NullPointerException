@@ -27,8 +27,6 @@ RSpec.configure do |config|
 
   config.include Authentication
 
-  config.include ResponseParser
-
   config.before(:suite) do
     DatabaseCleaner.strategy = :transaction
     DatabaseCleaner.clean_with(:truncation)

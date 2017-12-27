@@ -35,6 +35,10 @@ RSpec.describe Api::AnswersController, type: :controller do
     context 'with authentication' do
       before { sign_in user }
 
+      let(:question_double) { instance_double Question }
+
+      before { allow(Question).to receive(:find).and_return question_double }
+
       context 'when request do not have requied keys' do
         before { post :create, params: { invalid_key: answer_attrs }, format: :json }
 
@@ -42,7 +46,7 @@ RSpec.describe Api::AnswersController, type: :controller do
       end
 
       context 'with dispatcher' do
-        let(:creator) { AnswerCreator.new answer_attrs }
+        let(:creator) { AnswerCreator.new question_double, answer_attrs }
 
         before { allow(AnswerCreator).to receive(:new).and_return(creator) }
 

@@ -168,15 +168,9 @@ RSpec.describe Api::UsersController, type: :controller do
   end
 
   describe '#resource' do
-    let(:id) { user_double.id }
+    before { get :show, params: { id: 5 }, format: :json }
 
-    before do
-      allow(subject).to receive(:params) do
-        double.tap { |params| allow(params).to receive(:[]).with(:id).and_return id }
-      end
-    end
-
-    before { allow(User).to receive(:find).with(id).and_return user_double }
+    before { allow(User).to receive(:find).with('5').and_return user_double }
 
     it('returns user') { expect(subject.send :resource).to eq user_double }
   end

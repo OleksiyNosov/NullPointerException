@@ -208,27 +208,17 @@ RSpec.describe Api::AnswersController, type: :controller do
   describe '#resource' do
     let(:id) { answer_double.id }
 
-    before do
-      allow(subject).to receive(:params) do
-        double.tap { |params| allow(params).to receive(:[]).with(:id).and_return id }
-      end
-    end
+    before { delete :destroy, params: { id: 3 }, format: :json }
 
-    before { allow(Answer).to receive(:find).with(id).and_return answer_double }
+    before { allow(Answer).to receive(:find).with('3').and_return answer_double }
 
     it('returns answer') { expect(subject.send :resource).to eq answer_double }
   end
 
   describe '#question' do
-    let(:question_id) { question_double.id }
+    before { get :index, params: { question_id: 2 }, format: :json }
 
-    before do
-      allow(subject).to receive(:params) do
-        double.tap { |params| allow(params).to receive(:[]).with(:question_id).and_return question_id }
-      end
-    end
-
-    before { allow(Question).to receive(:find).with(question_id).and_return question_double }
+    before { allow(Question).to receive(:find).with('2').and_return question_double }
 
     it('returns question') { expect(subject.send :question).to eq question_double }
   end

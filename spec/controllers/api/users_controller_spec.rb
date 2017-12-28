@@ -66,38 +66,40 @@ RSpec.describe Api::UsersController, type: :controller do
   end
 
   describe 'POST #create' do
+    let(:creator) { ResourceCreator.new User, user_attrs }
+
     context 'when request do not have requied keys' do
       before { post :create, params: { invalid_key: user_attrs }, format: :json }
 
       it('returns status 400') { expect(response).to have_http_status 400 }
     end
 
-    context 'with dispather' do
-      let(:creator) { ResourceCreator.new User, user_attrs }
-
+    context 'when sent user attributes are valid' do
       before { allow(ResourceCreator).to receive(:new).and_return creator }
 
       before { expect(creator).to receive(:on).twice.and_call_original }
 
-      context 'when sent user attributes are valid' do
-        before { allow(creator).to receive(:call) { creator.send :broadcast, :succeeded, user_double } }
+      before { allow(creator).to receive(:call) { creator.send :broadcast, :succeeded, user_double } }
 
-        before { post :create, params: { user: user_attrs }, format: :json }
+      before { post :create, params: { user: user_attrs }, format: :json }
 
-        it('returns status 201') { expect(response).to have_http_status 201 }
+      it('returns status 201') { expect(response).to have_http_status 201 }
 
-        it('returns created user') { expect(response.body).to eq user_double.to_json }
-      end
+      it('returns created user') { expect(response.body).to eq user_double.to_json }
+    end
 
-      context 'when sent user attributes are not valid' do
-        before { allow(creator).to receive(:call) { creator.send :broadcast, :failed, user_errors } }
+    context 'when sent user attributes are not valid' do
+      before { allow(ResourceCreator).to receive(:new).and_return creator }
 
-        before { post :create, params: { user: user_attrs }, format: :json }
+      before { expect(creator).to receive(:on).twice.and_call_original }
 
-        it('returns status 422') { expect(response).to have_http_status 422 }
+      before { allow(creator).to receive(:call) { creator.send :broadcast, :failed, user_errors } }
 
-        it('returns errors') { expect(response.body).to eq user_errors.to_json }
-      end
+      before { post :create, params: { user: user_attrs }, format: :json }
+
+      it('returns status 422') { expect(response).to have_http_status 422 }
+
+      it('returns errors') { expect(response.body).to eq user_errors.to_json }
     end
   end
 
@@ -109,6 +111,8 @@ RSpec.describe Api::UsersController, type: :controller do
     end
 
     context 'with authentication' do
+      let(:updator) { ResourceUpdator.new user_double, user_attrs }
+
       before { sign_in user }
 
       context 'when request do not have requied keys' do
@@ -127,34 +131,36 @@ RSpec.describe Api::UsersController, type: :controller do
         it('returns status 404') { expect(response).to have_http_status 404 }
       end
 
-      context 'with dispather' do
-        let(:updator) { ResourceUpdator.new user_double, user_attrs }
-
+      context 'when sent user attributes are valid' do
         before { allow(subject).to receive(:resource).and_return user_double }
 
         before { allow(ResourceUpdator).to receive(:new).and_return updator }
 
         before { expect(updator).to receive(:on).twice.and_call_original }
 
-        context 'when sent user attributes are valid' do
-          before { expect(updator).to receive(:call) { updator.send :broadcast, :succeeded, user_double } }
+        before { expect(updator).to receive(:call) { updator.send :broadcast, :succeeded, user_double } }
 
-          before { patch :update, params: { id: user_double.id, user: user_attrs }, format: :json }
+        before { patch :update, params: { id: user_double.id, user: user_attrs }, format: :json }
 
-          it('returns status 200') { expect(response).to have_http_status 200 }
+        it('returns status 200') { expect(response).to have_http_status 200 }
 
-          it('returns updated user') { expect(response.body).to eq user_double.to_json }
-        end
+        it('returns updated user') { expect(response.body).to eq user_double.to_json }
+      end
 
-        context 'when sent user attributes are not valid' do
-          before { expect(updator).to receive(:call) { updator.send :broadcast, :failed, user_errors } }
+      context 'when sent user attributes are not valid' do
+        before { allow(subject).to receive(:resource).and_return user_double }
 
-          before { patch :update, params: { id: user_double.id, user: user_attrs }, format: :json }
+        before { allow(ResourceUpdator).to receive(:new).and_return updator }
 
-          it('returns status 422') { expect(response).to have_http_status 422 }
+        before { expect(updator).to receive(:on).twice.and_call_original }
 
-          it('returns updated user') { expect(response.body).to eq user_errors.to_json }
-        end
+        before { expect(updator).to receive(:call) { updator.send :broadcast, :failed, user_errors } }
+
+        before { patch :update, params: { id: user_double.id, user: user_attrs }, format: :json }
+
+        it('returns status 422') { expect(response).to have_http_status 422 }
+
+        it('returns updated user') { expect(response.body).to eq user_errors.to_json }
       end
     end
   end

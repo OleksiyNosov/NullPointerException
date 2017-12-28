@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::API
   include Authenticatable
-  include ErrorHandler
+  include ErrorHandable
 
   def index
     render json: collection

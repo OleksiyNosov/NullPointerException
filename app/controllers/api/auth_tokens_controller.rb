@@ -1,5 +1,5 @@
 class Api::AuthTokensController < ActionController::API
-  include ErrorHandler
+  include ErrorHandable
 
   def create
     user = User.find_by email: resource_params[:email]

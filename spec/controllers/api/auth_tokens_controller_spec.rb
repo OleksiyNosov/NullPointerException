@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Api::AuthTokensController, type: :controller do
   it { is_expected.to be_an ActionController::API }
 
-  it('handles exceptions') { is_expected.to be_kind_of ErrorHandler }
+  it('handles exceptions') { is_expected.to be_kind_of ErrorHandable }
 
   let(:password) { 'user_password' }
 

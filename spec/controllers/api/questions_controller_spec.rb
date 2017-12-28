@@ -5,7 +5,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
   it('authenticate and set user') { is_expected.to be_kind_of Authenticatable }
 
-  it('handles exceptions') { is_expected.to be_kind_of ErrorHandler }
+  it('handles exceptions') { is_expected.to be_kind_of ErrorHandable }
 
   let(:user) { instance_double User }
 

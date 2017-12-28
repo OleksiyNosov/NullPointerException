@@ -11,9 +11,7 @@ RSpec.describe Api::AuthTokensController, type: :controller do
 
   let(:user) { instance_double User, id: 7, email: 'test@example.com', password: 'user_password' }
 
-  let(:exp) { 7.days.from_now.to_i }
-
-  let(:token) { JWTWorker.encode user_id: user.id, exp: exp }
+  let(:token) { JWTWorker.encode user_id: user.id }
 
   describe 'POST #create' do
     let(:errors_json) { { 'errors' => { 'message' => 'email or password is invalid' } }.to_json }

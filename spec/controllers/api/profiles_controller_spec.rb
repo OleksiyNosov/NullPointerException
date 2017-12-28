@@ -3,10 +3,6 @@ require 'rails_helper'
 RSpec.describe Api::ProfilesController, type: :controller do
   it { is_expected.to be_an ApplicationController }
 
-  it('authenticate and set user') { is_expected.to be_kind_of Authenticatable }
-
-  it('handles exceptions') { is_expected.to be_kind_of ErrorHandable }
-
   let(:user_attrs) { attributes_for(:user) }
 
   let(:user_double) { instance_double(User, id: 5, as_json: user_attrs, **user_attrs) }

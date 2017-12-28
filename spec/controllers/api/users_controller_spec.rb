@@ -75,7 +75,7 @@ RSpec.describe Api::UsersController, type: :controller do
 
       before { expect(creator).to receive(:on).twice.and_call_original }
 
-      before { allow(creator).to receive(:call) { creator.send :broadcast, :succeeded, user_double } }
+      before { broadcast_succeeded creator, user_double }
 
       before { post :create, params: { user: user_attrs }, format: :json }
 
@@ -89,7 +89,7 @@ RSpec.describe Api::UsersController, type: :controller do
 
       before { expect(creator).to receive(:on).twice.and_call_original }
 
-      before { allow(creator).to receive(:call) { creator.send :broadcast, :failed, user_errors } }
+      before { broadcast_failed creator, user_errors }
 
       before { post :create, params: { user: user_attrs }, format: :json }
 
@@ -134,7 +134,7 @@ RSpec.describe Api::UsersController, type: :controller do
 
         before { expect(updator).to receive(:on).twice.and_call_original }
 
-        before { expect(updator).to receive(:call) { updator.send :broadcast, :succeeded, user_double } }
+        before { broadcast_succeeded updator, user_double }
 
         before { patch :update, params: { id: user_double.id, user: user_attrs }, format: :json }
 
@@ -150,7 +150,7 @@ RSpec.describe Api::UsersController, type: :controller do
 
         before { expect(updator).to receive(:on).twice.and_call_original }
 
-        before { expect(updator).to receive(:call) { updator.send :broadcast, :failed, user_errors } }
+        before { broadcast_failed updator, user_errors }
 
         before { patch :update, params: { id: user_double.id, user: user_attrs }, format: :json }
 

@@ -64,7 +64,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
         before { expect(creator).to receive(:on).twice.and_call_original }
 
-        before { expect(creator).to receive(:call) { creator.send(:broadcast, :succeeded, question_double) } }
+        before { broadcast_succeeded creator, question_double }
 
         before { post :create, params: { question: question_attrs }, format: :json }
 
@@ -78,7 +78,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
         before { expect(creator).to receive(:on).twice.and_call_original }
 
-        before { expect(creator).to receive(:call) { creator.send(:broadcast, :failed, question_errors) } }
+        before { broadcast_failed creator, question_errors }
 
         before { post :create, params: { question: question_attrs }, format: :json }
 
@@ -126,7 +126,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
         before { expect(updator).to receive(:on).twice.and_call_original }
 
-        before { expect(updator).to receive(:call) { updator.send(:broadcast, :succeeded, question_double) } }
+        before { broadcast_succeeded updator, question_double }
 
         before { patch :update, params: params, format: :json }
 
@@ -142,7 +142,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
         before { expect(updator).to receive(:on).twice.and_call_original }
 
-        before { expect(updator).to receive(:call) { updator.send(:broadcast, :failed, question_errors) } }
+        before { broadcast_failed updator, question_errors }
 
         before { patch :update, params: params, format: :json }
 
@@ -180,7 +180,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
         before { expect(destroyer).to receive(:on).twice.and_call_original }
 
-        before { expect(destroyer).to receive(:call) { destroyer.send(:broadcast, :succeeded, question_double) } }
+        before { broadcast_succeeded destroyer, question_double }
 
         before { delete :destroy, params: { id: question_double.id }, format: :json }
 
@@ -194,7 +194,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
         before { expect(destroyer).to receive(:on).twice.and_call_original }
 
-        before { expect(destroyer).to receive(:call) { destroyer.send(:broadcast, :failed, question_errors) } }
+        before { broadcast_failed destroyer, question_errors }
 
         before { delete :destroy, params: { id: question_double.id }, format: :json }
 

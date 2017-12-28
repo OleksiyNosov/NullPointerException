@@ -5,7 +5,7 @@ RSpec.describe ResourceCreator do
 
   let(:resource_class) { Question }
 
-  let(:resource) { instance_double(resource_class, valid?: true ,**resource_attributes) }
+  let(:resource) { instance_double(resource_class, valid?: true, **resource_attributes) }
 
   subject { ResourceCreator.new resource_class, resource_attributes }
 

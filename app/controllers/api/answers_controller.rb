@@ -32,7 +32,7 @@ class Api::AnswersController < ApplicationController
   end
 
   def collection
-    @collection ||= parent.answers
+    @collection ||= question.answers
   end
 
   def question

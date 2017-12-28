@@ -198,4 +198,24 @@ RSpec.describe Api::QuestionsController, type: :controller do
       end
     end
   end
+
+  describe '#collection' do
+    before { allow(Question).to receive(:all).and_return [question_double] }
+
+    it('returns collection of questions') { expect(subject.send :collection).to eq [question_double] }
+  end
+
+  describe '#resource' do
+    let(:id) { question_double.id }
+
+    before do
+      allow(subject).to receive(:params) do
+        double.tap { |params| allow(params).to receive(:[]).with(:id).and_return id }
+      end
+    end
+
+    before { allow(Question).to receive(:find).with(id).and_return question_double }
+
+    it('returns question') { expect(subject.send :resource).to eq question_double }
+  end
 end

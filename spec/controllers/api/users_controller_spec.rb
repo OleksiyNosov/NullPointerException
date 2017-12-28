@@ -158,4 +158,24 @@ RSpec.describe Api::UsersController, type: :controller do
       end
     end
   end
+
+  describe '#collection' do
+    before { allow(User).to receive(:all).and_return [user_double] }
+
+    it('returns collection of users') { expect(subject.send :collection).to eq [user_double] }
+  end
+
+  describe '#resource' do
+    let(:id) { user_double.id }
+
+    before do
+      allow(subject).to receive(:params) do
+        double.tap { |params| allow(params).to receive(:[]).with(:id).and_return id }
+      end
+    end
+
+    before { allow(User).to receive(:find).with(id).and_return user_double }
+
+    it('returns user') { expect(subject.send :resource).to eq user_double }
+  end
 end

@@ -9,6 +9,8 @@ RSpec.describe Api::AnswersController, type: :controller do
 
   let(:user) { instance_double User }
 
+  let(:question_double) { instance_double Question, id: 2 }
+
   let(:answer_attrs) { attributes_for(:answer) }
 
   let(:answer_double) { instance_double(Answer, id: 3, as_json: answer_attrs, **answer_attrs) }
@@ -35,9 +37,7 @@ RSpec.describe Api::AnswersController, type: :controller do
     context 'with authentication' do
       before { sign_in user }
 
-      let(:question_double) { instance_double Question }
-
-      before { allow(Question).to receive(:find).and_return question_double }
+      before { allow(subject).to receive(:question).and_return question_double }
 
       context 'when request do not have requied keys' do
         before { post :create, params: { invalid_key: answer_attrs }, format: :json }
@@ -179,5 +179,43 @@ RSpec.describe Api::AnswersController, type: :controller do
         end
       end
     end
+  end
+
+  describe '#collection' do
+    before do
+      allow(subject).to receive(:question) do
+        double.tap { |question| allow(question).to receive(:answers).and_return [answer_double] }
+      end
+    end
+
+    it('returns collection of answers') { expect(subject.send :collection).to eq [answer_double] }
+  end
+
+  describe '#resource' do
+    let(:id) { answer_double.id }
+
+    before do
+      allow(subject).to receive(:params) do
+        double.tap { |params| allow(params).to receive(:[]).with(:id).and_return id }
+      end
+    end
+
+    before { allow(Answer).to receive(:find).with(id).and_return answer_double }
+
+    it('returns answer') { expect(subject.send :resource).to eq answer_double }
+  end
+
+  describe '#question' do
+    let(:question_id) { question_double.id }
+
+    before do
+      allow(subject).to receive(:params) do
+        double.tap { |params| allow(params).to receive(:[]).with(:question_id).and_return question_id }
+      end
+    end
+
+    before { allow(Question).to receive(:find).with(question_id).and_return question_double }
+
+    it('returns question') { expect(subject.send :question).to eq question_double }
   end
 end

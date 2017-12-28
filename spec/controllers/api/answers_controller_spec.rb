@@ -111,37 +111,37 @@ RSpec.describe Api::AnswersController, type: :controller do
         it('returns status 404') { expect(response).to have_http_status 404 }
       end
 
-        context 'when sent answer attributes are valid' do
-          before { allow(subject).to receive(:resource).and_return(answer_double) }
+      context 'when sent answer attributes are valid' do
+        before { allow(subject).to receive(:resource).and_return(answer_double) }
 
-          before { allow(ResourceUpdator).to receive(:new).and_return(updator) }
+        before { allow(ResourceUpdator).to receive(:new).and_return(updator) }
 
-          before { expect(updator).to receive(:on).twice.and_call_original }
+        before { expect(updator).to receive(:on).twice.and_call_original }
 
-          before { broadcast_succeeded updator, answer_double }
+        before { broadcast_succeeded updator, answer_double }
 
-          before { patch :update, params: { id: answer_double.id, answer: answer_attrs }, format: :json }
+        before { patch :update, params: { id: answer_double.id, answer: answer_attrs }, format: :json }
 
-          it('returns status 200') { expect(response).to have_http_status 200 }
+        it('returns status 200') { expect(response).to have_http_status 200 }
 
-          it('returns updated answer') { expect(response.body).to eq answer_double.to_json }
-        end
+        it('returns updated answer') { expect(response.body).to eq answer_double.to_json }
+      end
 
-        context 'when sent answer attributes are not valid' do
-          before { allow(subject).to receive(:resource).and_return(answer_double) }
+      context 'when sent answer attributes are not valid' do
+        before { allow(subject).to receive(:resource).and_return(answer_double) }
 
-          before { allow(ResourceUpdator).to receive(:new).and_return(updator) }
+        before { allow(ResourceUpdator).to receive(:new).and_return(updator) }
 
-          before { expect(updator).to receive(:on).twice.and_call_original }
+        before { expect(updator).to receive(:on).twice.and_call_original }
 
-          before { broadcast_failed updator, answer_errors }
+        before { broadcast_failed updator, answer_errors }
 
-          before { patch :update, params: { id: answer_double.id, answer: answer_attrs }, format: :json }
+        before { patch :update, params: { id: answer_double.id, answer: answer_attrs }, format: :json }
 
-          it('returns status 422') { expect(response).to have_http_status 422 }
+        it('returns status 422') { expect(response).to have_http_status 422 }
 
-          it('returns errors') { expect(response.body).to eq answer_errors.to_json }
-        end
+        it('returns errors') { expect(response.body).to eq answer_errors.to_json }
+      end
     end
   end
 

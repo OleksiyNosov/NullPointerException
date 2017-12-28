@@ -18,13 +18,23 @@ RSpec.describe Api::AnswersController, type: :controller do
   let(:answer_errors) { { 'body' => ["can't be blank"] } }
 
   describe 'GET #index' do
-    before { expect(subject).to receive(:collection).and_return [answer_double] }
+    context 'when question id not passed' do
+      before { expect(subject).to receive(:collection).and_raise ActiveRecord::RecordNotFound }
 
-    before { get :index, format: :json }
+      before { get :index, format: :json }
 
-    it('returns status 200') { expect(response).to have_http_status 200 }
+      it('returns status 404') { expect(response).to have_http_status 404 }
+    end
 
-    it('returns collection of answers') { expect(response.body).to eq [answer_double].to_json }
+    context 'when question id passed ' do
+      before { expect(subject).to receive(:collection).and_return [answer_double] }
+
+      before { get :index, params: { question_id: question.id }, format: :json }
+
+      it('returns status 200') { expect(response).to have_http_status 200 }
+
+      it('returns collection of answers') { expect(response.body).to eq [answer_double].to_json }
+    end
   end
 
   describe 'POST #create' do

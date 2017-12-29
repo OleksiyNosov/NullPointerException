@@ -23,7 +23,7 @@ RSpec.describe Api::AnswersController, type: :controller do
     end
 
     context 'when sent data is valid' do
-      before { expect(subject).to receive(:collection).and_return [answer_double] }
+      before { allow(subject).to receive(:collection).and_return [answer_double] }
 
       before { get :index, params: { question_id: question_double.id }, format: :json }
 
@@ -57,6 +57,12 @@ RSpec.describe Api::AnswersController, type: :controller do
         before { allow(AnswerCreator).to receive(:new).and_return(creator) }
 
         before { expect(creator).to receive(:on).twice.and_call_original }
+
+        before do
+          allow(AnswerCreator).to receive(:new).and_return(creator) do
+            creator.tap { |c| expect(c).to receive(:on).twice.and_call_original }
+          end
+        end
 
         before { broadcast_succeeded creator, answer_double }
 

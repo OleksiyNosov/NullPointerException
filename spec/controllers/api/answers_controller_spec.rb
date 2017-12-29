@@ -58,12 +58,6 @@ RSpec.describe Api::AnswersController, type: :controller do
 
         before { expect(creator).to receive(:on).twice.and_call_original }
 
-        before do
-          allow(AnswerCreator).to receive(:new).and_return(creator) do
-            creator.tap { |c| expect(c).to receive(:on).twice.and_call_original }
-          end
-        end
-
         before { broadcast_succeeded creator, answer_double }
 
         before { post :create, params: { answer: answer_attrs }, format: :json }

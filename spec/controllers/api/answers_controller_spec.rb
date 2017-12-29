@@ -3,127 +3,223 @@ require 'rails_helper'
 RSpec.describe Api::AnswersController, type: :controller do
   it { is_expected.to be_an ApplicationController }
 
-  let(:attributes) { attributes_for(:answer) }
+  let(:user) { instance_double User }
 
-  let(:serialized_attributes) { attributes.stringify_keys }
+  let(:question_double) { instance_double Question, id: 2 }
 
-  let(:answer) { instance_double Answer, id: 3, as_json: attributes, **attributes }
+  let(:answer_attrs) { attributes_for(:answer) }
 
-  let(:resource_class) { Answer }
+  let(:answer_double) { instance_double(Answer, id: 3, as_json: answer_attrs, **answer_attrs) }
 
-  describe 'GET #show' do
-    let(:params) { { id: answer.id } }
+  let(:answer_errors) { { attribute_name: %w[error1 error2] } }
 
-    describe 'answer exist' do
-      before { expect(subject).to receive(:resource).and_return answer }
+  describe 'GET #index' do
+    context 'when question id not passed' do
+      before { expect(subject).to receive(:collection).and_raise ActiveRecord::RecordNotFound }
 
-      before { get :show, params: params, format: :json }
+      before { get :index, format: :json }
+
+      it('returns status 404') { expect(response).to have_http_status 404 }
+    end
+
+    context 'when sent data is valid' do
+      before { allow(subject).to receive(:collection).and_return [answer_double] }
+
+      before { get :index, params: { question_id: question_double.id }, format: :json }
 
       it('returns status 200') { expect(response).to have_http_status 200 }
 
-      it('returns answer') { expect(response_body).to eq serialized_attributes }
-    end
-
-    describe 'answer not exist' do
-      before { expect(subject).to receive(:resource).and_raise ActiveRecord::RecordNotFound }
-
-      before { get :show, params: params, format: :json }
-
-      it('returns status 404') { expect(response).to have_http_status 404 }
+      it('returns collection of answers') { expect(response.body).to eq [answer_double].to_json }
     end
   end
 
   describe 'POST #create' do
-    let(:params) { { answer: attributes } }
+    context 'when not authenticated' do
+      before { post :create, params: { answer: answer_attrs }, format: :json }
 
-    before { expect(subject).to receive(:resource_class).and_return resource_class }
-
-    before { expect(resource_class).to receive(:new).with(permit! attributes).and_return answer }
-
-    before { expect(answer).to receive(:save) }
-
-    context 'answer created' do
-      before { expect(answer).to receive(:valid?).and_return true }
-
-      before { post :create, params: params, format: :json }
-
-      it('returns status 201') { expect(response).to have_http_status 201 }
-
-      it('returns created answer') { expect(response_body).to eq serialized_attributes }
+      it('returns status 401') { expect(response).to have_http_status 401 }
     end
 
-    context 'answer not created' do
-      before { expect(answer).to receive(:valid?).and_return false }
+    context 'with authentication' do
+      let(:creator) { AnswerCreator.new question_double, answer_attrs }
 
-      before { expect(answer).to receive(:errors).and_return :errors }
+      before { sign_in user }
 
-      before { post :create, params: params, format: :json }
+      before { allow(subject).to receive(:question).and_return question_double }
 
-      it('returns status 422') { expect(response).to have_http_status 422 }
+      context 'when request do not have requied keys' do
+        before { post :create, params: { invalid_key: answer_attrs }, format: :json }
 
-      it('returns errors') { expect(response_body).to eq 'errors' }
+        it('returns status 400') { expect(response).to have_http_status 400 }
+      end
+
+      context 'when sent answer attributes are valid' do
+        before { allow(AnswerCreator).to receive(:new).and_return(creator) }
+
+        before { expect(creator).to receive(:on).twice.and_call_original }
+
+        before { broadcast_succeeded creator, answer_double }
+
+        before { post :create, params: { answer: answer_attrs }, format: :json }
+
+        it('returns status 201') { expect(response).to have_http_status 201 }
+
+        it('returns created answer') { expect(response.body).to eq answer_double.to_json }
+      end
+
+      context 'when sent answer attributes are not valid' do
+        before { allow(AnswerCreator).to receive(:new).and_return(creator) }
+
+        before { expect(creator).to receive(:on).twice.and_call_original }
+
+        before { broadcast_failed creator, answer_errors }
+
+        before { post :create, params: { answer: answer_attrs }, format: :json }
+
+        it('returns status 422') { expect(response).to have_http_status 422 }
+
+        it('returns created answer') { expect(response.body).to eq answer_errors.to_json }
+      end
     end
   end
 
   describe 'PATCH #update' do
-    let(:params) { { id: answer.id, answer: attributes } }
+    context 'when not authenticated' do
+      before { post :update, params: { id: answer_double.id, invalid_key: answer_attrs }, format: :json }
 
-    before { expect(subject).to receive(:resource).and_return answer }
-
-    before { expect(answer).to receive(:update).with(permit! attributes).and_return answer }
-
-    context 'answer updated' do
-      before { expect(answer).to receive(:valid?).and_return true }
-
-      before { patch :update, params: params, format: :json }
-
-      it('returns status 200') { expect(response).to have_http_status 200 }
-
-      it('returns updated answer') { expect(response_body).to eq serialized_attributes }
+      it('returns status 401') { expect(response).to have_http_status 401 }
     end
 
-    context 'answer not updated' do
-      before { expect(answer).to receive(:valid?).and_return false }
+    context 'with authentication' do
+      let(:updator) { ResourceUpdator.new answer_double, answer_attrs }
 
-      before { expect(answer).to receive(:errors).and_return :errors }
+      before { sign_in user }
 
-      before { patch :update, params: params, format: :json }
+      context 'when request do not have requied keys' do
+        before { expect(subject).to receive(:resource) }
 
-      it('returns status 422') { expect(response).to have_http_status 422 }
+        before { post :update, params: { id: answer_double.id, invalid_key: answer_attrs }, format: :json }
 
-      it('returns errors') { expect(response_body).to eq 'errors' }
+        it('returns status 400') { expect(response).to have_http_status 400 }
+      end
+
+      context 'when requested answer did not found' do
+        before { expect(subject).to receive(:resource).and_raise ActiveRecord::RecordNotFound }
+
+        before { post :update, params: { id: answer_double.id, answer: answer_attrs }, format: :json }
+
+        it('returns status 404') { expect(response).to have_http_status 404 }
+      end
+
+      context 'when sent answer attributes are valid' do
+        before { allow(subject).to receive(:resource).and_return(answer_double) }
+
+        before { allow(ResourceUpdator).to receive(:new).and_return(updator) }
+
+        before { expect(updator).to receive(:on).twice.and_call_original }
+
+        before { broadcast_succeeded updator, answer_double }
+
+        before { patch :update, params: { id: answer_double.id, answer: answer_attrs }, format: :json }
+
+        it('returns status 200') { expect(response).to have_http_status 200 }
+
+        it('returns updated answer') { expect(response.body).to eq answer_double.to_json }
+      end
+
+      context 'when sent answer attributes are not valid' do
+        before { allow(subject).to receive(:resource).and_return(answer_double) }
+
+        before { allow(ResourceUpdator).to receive(:new).and_return(updator) }
+
+        before { expect(updator).to receive(:on).twice.and_call_original }
+
+        before { broadcast_failed updator, answer_errors }
+
+        before { patch :update, params: { id: answer_double.id, answer: answer_attrs }, format: :json }
+
+        it('returns status 422') { expect(response).to have_http_status 422 }
+
+        it('returns errors') { expect(response.body).to eq answer_errors.to_json }
+      end
     end
   end
 
   describe 'DELETE #destroy' do
-    let(:params) { { id: answer.id } }
+    context 'when not authenticated' do
+      before { delete :destroy, params: { id: answer_double.id }, format: :json }
 
-    before { expect(subject).to receive(:resource).and_return answer }
-
-    before { expect(answer).to receive(:destroy) }
-
-    context 'answer destroyed' do
-      before { expect(answer).to receive(:valid?).and_return true }
-
-      before { delete :destroy, params: params, format: :json }
-
-      it('returns status 204') { expect(response).to have_http_status 204 }
+      it('returns status 401') { expect(response).to have_http_status 401 }
     end
 
-    context 'answer not destroyed' do
-      before { expect(answer).to receive(:valid?).and_return false }
+    context 'with authentication' do
+      let(:destroyer) { ResourceDestroyer.new answer_double }
 
-      before { expect(answer).to receive(:errors).and_return :errors }
+      before { sign_in user }
 
-      before { delete :destroy, params: params, format: :json }
+      context 'when requested answer did not found' do
+        before { expect(subject).to receive(:resource).and_raise ActiveRecord::RecordNotFound }
 
-      it('returns status 422') { expect(response).to have_http_status 422 }
+        before { delete :destroy, params: { id: answer_double.id }, format: :json }
 
-      it('returns errors') { expect(response_body).to eq 'errors' }
+        it('returns status 404') { expect(response).to have_http_status 404 }
+      end
+
+      context 'when sent data is valid' do
+        before { allow(subject).to receive(:resource).and_return answer_double }
+
+        before { allow(ResourceDestroyer).to receive(:new).and_return(destroyer) }
+
+        before { expect(destroyer).to receive(:on).twice.and_call_original }
+
+        before { broadcast_succeeded destroyer, answer_double }
+
+        before { delete :destroy, params: { id: answer_double.id }, format: :json }
+
+        it('returns status 204') { expect(response).to have_http_status 204 }
+      end
+
+      context 'when sent data is not valid' do
+        before { allow(subject).to receive(:resource).and_return answer_double }
+
+        before { allow(ResourceDestroyer).to receive(:new).and_return(destroyer) }
+
+        before { expect(destroyer).to receive(:on).twice.and_call_original }
+
+        before { broadcast_failed destroyer, answer_errors }
+
+        before { delete :destroy, params: { id: answer_double.id }, format: :json }
+
+        it('returns status 422') { expect(response).to have_http_status 422 }
+      end
     end
   end
 
-  describe '#resource_class' do
-    its(:resource_class) { is_expected.to eq Answer }
+  describe '#collection' do
+    before do
+      allow(subject).to receive(:question) do
+        double.tap { |question| allow(question).to receive(:answers).and_return [answer_double] }
+      end
+    end
+
+    it('returns collection of answers') { expect(subject.send :collection).to eq [answer_double] }
+  end
+
+  describe '#resource' do
+    let(:id) { answer_double.id }
+
+    before { delete :destroy, params: { id: 3 }, format: :json }
+
+    before { allow(Answer).to receive(:find).with('3').and_return answer_double }
+
+    it('returns answer') { expect(subject.send :resource).to eq answer_double }
+  end
+
+  describe '#question' do
+    before { get :index, params: { question_id: 2 }, format: :json }
+
+    before { allow(Question).to receive(:find).with('2').and_return question_double }
+
+    it('returns question') { expect(subject.send :question).to eq question_double }
   end
 end

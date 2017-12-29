@@ -17,6 +17,9 @@
 config/database.yml
 config/secrets.yml
 
+# Ignore db files
+db/schema.rb
+
 # Ignore test coverage info dir
 /coverage
 
@@ -28,3 +31,6 @@ config/secrets.yml
 # Ignore gemsets
 .ruby-gemset
 .ruby-version
+
+# Ignore macOS system files
+.DS_Store

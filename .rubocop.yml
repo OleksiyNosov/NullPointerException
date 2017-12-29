@@ -1,20 +1,93 @@
+AllCops:
+  TargetRubyVersion: 2.4
+  DisplayCopNames: true
+  DisplayStyleGuide: true
+  TargetRailsVersion: 5.1
+
+Layout/EndOfLine:
+  Enabled: true
+  EnforcedStyle: lf
+
 Layout/EmptyLinesAroundAccessModifier:
   Enabled: false
 
+Layout/MultilineAssignmentLayout:
+  Enabled: true
+
+Layout/MultilineMethodCallIndentation:
+  Exclude:
+    - "app/controllers/**/*.rb"
+
 Layout/SpaceInsideStringInterpolation:
+  Enabled: false
+
+Layout/SpaceInsideStringInterpolation:
+  EnforcedStyle: space
+  Enabled: true
+
+Metrics/LineLength:
+  Max: 120
+
+Rails:
+  Enabled: true
+
+Rails/HasManyOrHasOneDependent:
+  Enabled: false
+
+Rails/SaveBang:
+  Enabled: false
+
+Rails/TimeZone:
+  EnforcedStyle: strict
+  Enabled: true
+
+Style/AutoResourceCleanup:
+  Enabled: true
+
+Style/BlockComments:
+  Enabled: false
+
+Style/CollectionMethods:
+  Enabled: true
+
+Style/ConditionalAssignment:
+  Enabled: true
+  EnforcedStyle: assign_to_condition
+
+Style/ClassAndModuleChildren:
   Enabled: false
 
 Style/Documentation:
   Enabled: false
 
-Style/ClassAndModuleChildren:
-  Enabled: false
-
 Style/FrozenStringLiteralComment:
   Enabled: false
 
+Style/IfUnlessModifier:
+  Enabled: false
+
+Style/ImplicitRuntimeError:
+  Enabled: true
+
 Style/MethodDefParentheses:
   Enabled: false
+
+Style/MissingElse:
+  Enabled: true
+  EnforcedStyle: case
+
+Style/MutableConstant:
+  Enabled: false
+
+Style/NegatedIf:
+  Enabled: false
+
+Style/NumericLiterals:
+  Enabled: true
+  Strict: true
+
+Style/ReturnNil:
+  Enabled: true
 
 Style/PercentLiteralDelimiters:
   PreferredDelimiters:
@@ -24,5 +97,5 @@ Style/PercentLiteralDelimiters:
     '%w': '[]'
     '%W': '[]'
 
-Metrics/LineLength:
-  Max: 120
+Style/GuardClause:
+  Enabled: false

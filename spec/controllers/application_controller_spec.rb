@@ -1,18 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe ApplicationController, type: :controller do
-  describe '#resource' do
-    let(:resource) { double }
+  it { is_expected.to be_an ActionController::API }
 
-    before do
-      #
-      # => resource_class.find
-      #
-      expect(subject).to receive(:resource_class) do
-        double.tap { |resource_class| expect(resource_class).to receive(:find).with(2).and_return resource }
-      end
+  it('authenticate and set user') { is_expected.to be_kind_of Authenticatable }
 
-      its(:resource) { is_expected.to eq resource }
-    end
-  end
+  it('handles exceptions') { is_expected.to be_kind_of ErrorHandable }
 end

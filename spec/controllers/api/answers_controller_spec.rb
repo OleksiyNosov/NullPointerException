@@ -11,7 +11,7 @@ RSpec.describe Api::AnswersController, type: :controller do
 
   let(:answer_double) { instance_double(Answer, id: 3, as_json: answer_attrs, **answer_attrs) }
 
-  let(:answer_errors) { { 'body' => ["can't be blank"] } }
+  let(:answer_errors) { { attribute_name: %w[error1 error2] } }
 
   describe 'GET #index' do
     context 'when question id not passed' do

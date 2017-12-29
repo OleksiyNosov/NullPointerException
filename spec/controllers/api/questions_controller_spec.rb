@@ -9,7 +9,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
   let(:question_double) { instance_double(Question, id: 2, as_json: question_attrs, **question_attrs) }
 
-  let(:question_errors) { { 'title' => ["can't be blank"] } }
+  let(:question_errors) { { attribute_name: %w[error1 error2] } }
 
   describe 'GET #show' do
     context 'when requested question was found' do

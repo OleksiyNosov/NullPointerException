@@ -9,7 +9,7 @@ RSpec.describe Api::UsersController, type: :controller do
 
   let(:user_double) { instance_double(User, id: 5, as_json: user_attrs, **user_attrs) }
 
-  let(:user_errors) { { 'email' => ["can't be blank"] } }
+  let(:user_errors) { { attribute_name: %w[error1 error2] } }
 
   describe 'GET #show' do
     context 'when not authenticated' do

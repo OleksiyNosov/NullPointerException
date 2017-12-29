@@ -21,7 +21,7 @@ rails db:setup
 Create and setup database.yml and secrets.yml in config folder.
 
 ```sh
-cp config/secret.database.yml config/database.yml
-cp config/secret.secrets.yml config/secrets.yml
+cp config/example.database.yml config/database.yml
+cp config/example.secrets.yml config/secrets.yml
 ```
 

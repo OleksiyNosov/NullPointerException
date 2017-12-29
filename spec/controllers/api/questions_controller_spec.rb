@@ -11,16 +11,6 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
   let(:question_errors) { { 'title' => ["can't be blank"] } }
 
-  describe 'GET #index' do
-    before { expect(subject).to receive(:collection).and_return [question_double] }
-
-    before { get :index, format: :json }
-
-    it('returns status 200') { expect(response).to have_http_status 200 }
-
-    it('returns collection of questions') { expect(response.body).to eq [question_double].to_json }
-  end
-
   describe 'GET #show' do
     context 'when requested question was found' do
       before { expect(subject).to receive(:resource).and_return question_double }

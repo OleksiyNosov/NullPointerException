@@ -23,8 +23,4 @@ class Api::UsersController < ApplicationController
   def resource
     @resource ||= User.find params[:id]
   end
-
-  def collection
-    @collection ||= User.all
-  end
 end

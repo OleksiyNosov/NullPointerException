@@ -11,26 +11,6 @@ RSpec.describe Api::UsersController, type: :controller do
 
   let(:user_errors) { { 'email' => ["can't be blank"] } }
 
-  describe 'GET #collection' do
-    context 'when not authenticated' do
-      before { get :index, format: :json }
-
-      it('returns status 401') { expect(response).to have_http_status 401 }
-    end
-
-    context 'with authentication' do
-      before { sign_in user }
-
-      before { allow(subject).to receive(:collection).and_return [user_double] }
-
-      before { get :index, format: :json }
-
-      it('returns status 200') { expect(response).to have_http_status 200 }
-
-      it('returns collection of users') { expect(response.body).to eq [user_double].to_json }
-    end
-  end
-
   describe 'GET #show' do
     context 'when not authenticated' do
       before { get :show, params: { id: user_double.id }, format: :json }
@@ -159,12 +139,6 @@ RSpec.describe Api::UsersController, type: :controller do
         it('returns updated user') { expect(response.body).to eq user_errors.to_json }
       end
     end
-  end
-
-  describe '#collection' do
-    before { allow(User).to receive(:all).and_return [user_double] }
-
-    it('returns collection of users') { expect(subject.send :collection).to eq [user_double] }
   end
 
   describe '#resource' do

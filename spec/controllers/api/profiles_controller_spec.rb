@@ -28,4 +28,10 @@ RSpec.describe Api::ProfilesController, type: :controller do
       it('returns user profile') { expect(response.body).to eq user_double.to_json }
     end
   end
+
+  describe '#resource' do
+    before { allow(subject).to receive(:current_user).and_return user_double }
+
+    it('returns user') { expect(subject.send :resource).to eq user_double }
+  end
 end

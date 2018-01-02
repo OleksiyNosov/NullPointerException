@@ -13,6 +13,7 @@ gem 'jwt'
 gem 'pg'
 gem 'puma'
 gem 'wisper'
+gem 'pundit'
 
 group :development, :test do
   gem 'factory_bot_rails'

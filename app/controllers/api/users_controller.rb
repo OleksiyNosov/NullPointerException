@@ -2,7 +2,7 @@ class Api::UsersController < ApplicationController
   skip_before_action :authenticate, only: :create
 
   def create
-    ResourceCreator.new(User, resource_params)
+    UserCreator.new(resource_params)
       .on(:succeeded) { |resource| render json: resource, status: 201 }
       .on(:failed) { |errors| render json: errors, status: 422 }
       .call

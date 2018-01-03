@@ -1,6 +1,8 @@
 class User < ApplicationRecord
   has_secure_password
 
+  enum status: %i[not_confirmed confirmed]
+
   validates :email,
             presence: true,
             uniqueness: { case_sensitive: false },

@@ -1,8 +1,11 @@
 class Api::AuthTokensController < ActionController::API
   include ErrorHandable
+  include Pundit
 
   def create
     user = User.find_by email: resource_params[:email]
+
+    authorize user
 
     if user&.authenticate resource_params[:password]
       render json: { token: JWTWorker.encode(user_id: user.id) }, status: 201

@@ -12,8 +12,9 @@ gem 'bcrypt'
 gem 'jwt'
 gem 'pg'
 gem 'puma'
-gem 'wisper'
 gem 'pundit'
+gem 'redis'
+gem 'wisper'
 
 group :development, :test do
   gem 'factory_bot_rails'

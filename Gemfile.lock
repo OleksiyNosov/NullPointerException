@@ -129,6 +129,7 @@ GEM
     rainbow (2.2.2)
       rake
     rake (12.1.0)
+    redis (4.0.1)
     rspec-core (3.6.0)
       rspec-support (~> 3.6.0)
     rspec-expectations (3.6.0)
@@ -197,6 +198,7 @@ DEPENDENCIES
   puma
   pundit
   rails
+  redis
   rspec-its
   rspec-rails
   rubocop

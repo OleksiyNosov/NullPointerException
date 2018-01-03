@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::API
   include Authenticatable
   include ErrorHandable
+  include Pundit
 
   def index
     render json: collection

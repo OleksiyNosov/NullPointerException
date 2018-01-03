@@ -9,5 +9,9 @@ module ErrorHandable
     rescue_from ActionController::ParameterMissing do
       head 400
     end
+
+    rescue_from Pundit::NotAuthorizedError do
+      head 403
+    end
   end
 end

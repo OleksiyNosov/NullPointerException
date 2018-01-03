@@ -1,7 +1,5 @@
 class AddEmailConfirmationAndConfirmationTokenToUsers < ActiveRecord::Migration[5.1]
   def change
-    add_column :users, :email_confirmation, :boolean, default: false
-
-    add_column :users, :confirmation_token, :string
+    add_column :users, :status, :integer, default: 0
   end
 end

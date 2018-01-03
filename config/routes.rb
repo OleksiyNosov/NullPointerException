@@ -9,5 +9,7 @@ Rails.application.routes.draw do
     resource :profile, only: :show
 
     resources :auth_tokens, only: :create
+
+    resources :registration_confirmations, only: :show
   end
 end

@@ -153,6 +153,40 @@ RSpec.describe Api::UsersController, type: :controller do
     end
   end
 
+  describe 'GET #confirmation' do
+    let(:token) { JWTWorker.encode(user_id: user_double.id) }
+
+    context 'when token is valid' do
+      before { allow(User).to receive(:find).and_return user_double }
+
+      before { expect(user_double).to receive(:update).with(status: :confirmed) }
+
+      before { get :confirmation, params: { token: token }, format: :json }
+
+      it('returns status 204') { expect(response).to have_http_status 204 }
+    end
+
+    context 'when no token passed' do
+      before { get :confirmation, format: :json }
+
+      it('returns status 404') { expect(response).to have_http_status 404 }
+    end
+
+    context 'when passed empty token' do
+      before { get :confirmation, params: { token: '' }, format: :json }
+
+      it('returns status 404') { expect(response).to have_http_status 404 }
+    end
+
+    context 'when passed expired token' do
+      let(:token) { JWTWorker.encode(user_id: user_double.id, exp: Time.zone.now.to_i - 5.minutes.to_i) }
+
+      before { get :confirmation, params: { token: token }, format: :json }
+
+      it('returns status 404') { expect(response).to have_http_status 404 }
+    end
+  end
+
   describe '#resource' do
     before { get :show, params: { id: 5 }, format: :json }
 

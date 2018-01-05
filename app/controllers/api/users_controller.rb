@@ -9,6 +9,8 @@ class Api::UsersController < ApplicationController
   end
 
   def update
+    authorize resource
+
     ResourceUpdator.new(resource, resource_params)
       .on(:succeeded) { |resource| render json: resource }
       .on(:failed) { |errors| render json: errors, status: 422 }

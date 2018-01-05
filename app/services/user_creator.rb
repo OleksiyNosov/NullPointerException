@@ -1,4 +1,4 @@
-class UserCreator < ResourceCreator
+class UserCreator < ResourceCrudWorker
   def initialize params
     @params = params
   end
@@ -6,10 +6,6 @@ class UserCreator < ResourceCreator
   def process_action
     @resource = User.new @params
 
-    @resource.confirmation_token = SecureRandom.urlsafe_base64(64).to_s
-
-    # TODO: send user data to Slava's redis micro service
-
-    @resource.save
+    @resource.save && RegistrationMailer.deliver @resource
   end
 end

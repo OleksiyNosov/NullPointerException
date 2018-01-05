@@ -4,12 +4,14 @@ Rails.application.routes.draw do
 
     resources :answers, only: %i[index create update destroy]
 
-    resources :users, only: %i[show create update]
+    resources :users, only: %i[show create update] do
+      collection do
+        get :confirmation
+      end
+    end
 
     resource :profile, only: :show
 
     resources :auth_tokens, only: :create
-
-    resources :registration_confirmations, only: :show
   end
 end

@@ -3,11 +3,9 @@ require 'rails_helper'
 RSpec.describe Api::UsersController, type: :controller do
   it { is_expected.to be_an ApplicationController }
 
-  let(:user) { instance_double User }
-
   let(:user_attrs) { attributes_for(:user) }
 
-  let(:user_double) { instance_double(User, id: 5, as_json: user_attrs, **user_attrs) }
+  let(:user_double) { instance_double(User, id: 5, status: :confirmed, as_json: user_attrs, **user_attrs) }
 
   let(:user_errors) { { attribute_name: %w[error1 error2] } }
 
@@ -19,7 +17,7 @@ RSpec.describe Api::UsersController, type: :controller do
     end
 
     context 'with authentication' do
-      before { sign_in user }
+      before { sign_in user_double }
 
       context 'when requested user found' do
         before { allow(subject).to receive(:resource).and_return user_double }
@@ -51,7 +49,7 @@ RSpec.describe Api::UsersController, type: :controller do
     end
 
     context 'when sent user attributes are valid' do
-      before { allow(ResourceCreator).to receive(:new).and_return creator }
+      before { allow(UserCreator).to receive(:new).and_return creator }
 
       before { expect(creator).to receive(:on).twice.and_call_original }
 
@@ -65,7 +63,7 @@ RSpec.describe Api::UsersController, type: :controller do
     end
 
     context 'when sent user attributes are not valid' do
-      before { allow(ResourceCreator).to receive(:new).and_return creator }
+      before { allow(UserCreator).to receive(:new).and_return creator }
 
       before { expect(creator).to receive(:on).twice.and_call_original }
 
@@ -89,54 +87,68 @@ RSpec.describe Api::UsersController, type: :controller do
     context 'with authentication' do
       let(:updator) { ResourceUpdator.new user_double, user_attrs }
 
-      before { sign_in user }
+      before { sign_in user_double }
 
-      context 'when request do not have requied keys' do
-        before { expect(subject).to receive(:resource) }
+      context 'when user not authorized' do
+        before { allow(subject).to receive(:resource).and_return user_double }
+
+        before { expect(subject).to receive(:authorize).and_raise Pundit::NotAuthorizedError }
 
         before { patch :update, params: { id: user_double.id }, format: :json }
 
-        it('returns status 400') { expect(response).to have_http_status 400 }
+        it('returns status 403') { expect(response).to have_http_status 403 }
       end
 
-      context 'when requested user not found' do
-        before { expect(subject).to receive(:resource).and_raise ActiveRecord::RecordNotFound }
+      context 'with authorization' do
+        before { allow(subject).to receive(:authorize).and_return true }
 
-        before { patch :update, params: { id: user_double.id, user: user_attrs }, format: :json }
+        context 'when request do not have requied keys' do
+          before { allow(subject).to receive(:resource).and_return user_double }
 
-        it('returns status 404') { expect(response).to have_http_status 404 }
-      end
+          before { patch :update, params: { id: user_double.id }, format: :json }
 
-      context 'when sent user attributes are valid' do
-        before { allow(subject).to receive(:resource).and_return user_double }
+          it('returns status 400') { expect(response).to have_http_status 400 }
+        end
 
-        before { allow(ResourceUpdator).to receive(:new).and_return updator }
+        context 'when requested user not found' do
+          before { expect(subject).to receive(:resource).and_raise ActiveRecord::RecordNotFound }
 
-        before { expect(updator).to receive(:on).twice.and_call_original }
+          before { patch :update, params: { id: user_double.id, user: user_attrs }, format: :json }
 
-        before { broadcast_succeeded updator, user_double }
+          it('returns status 404') { expect(response).to have_http_status 404 }
+        end
 
-        before { patch :update, params: { id: user_double.id, user: user_attrs }, format: :json }
+        context 'when sent user attributes are valid' do
+          before { allow(subject).to receive(:resource).and_return user_double }
 
-        it('returns status 200') { expect(response).to have_http_status 200 }
+          before { allow(ResourceUpdator).to receive(:new).and_return updator }
 
-        it('returns updated user') { expect(response.body).to eq user_double.to_json }
-      end
+          before { expect(updator).to receive(:on).twice.and_call_original }
 
-      context 'when sent user attributes are not valid' do
-        before { allow(subject).to receive(:resource).and_return user_double }
+          before { broadcast_succeeded updator, user_double }
 
-        before { allow(ResourceUpdator).to receive(:new).and_return updator }
+          before { patch :update, params: { id: user_double.id, user: user_attrs }, format: :json }
 
-        before { expect(updator).to receive(:on).twice.and_call_original }
+          it('returns status 200') { expect(response).to have_http_status 200 }
 
-        before { broadcast_failed updator, user_errors }
+          it('returns updated user') { expect(response.body).to eq user_double.to_json }
+        end
 
-        before { patch :update, params: { id: user_double.id, user: user_attrs }, format: :json }
+        context 'when sent user attributes are not valid' do
+          before { allow(subject).to receive(:resource).and_return user_double }
 
-        it('returns status 422') { expect(response).to have_http_status 422 }
+          before { allow(ResourceUpdator).to receive(:new).and_return updator }
 
-        it('returns updated user') { expect(response.body).to eq user_errors.to_json }
+          before { expect(updator).to receive(:on).twice.and_call_original }
+
+          before { broadcast_failed updator, user_errors }
+
+          before { patch :update, params: { id: user_double.id, user: user_attrs }, format: :json }
+
+          it('returns status 422') { expect(response).to have_http_status 422 }
+
+          it('returns updated user') { expect(response.body).to eq user_errors.to_json }
+        end
       end
     end
   end

@@ -9,7 +9,7 @@ RSpec.describe Api::AuthTokensController, type: :controller do
 
   let(:email) { 'test@example.com' }
 
-  let(:user) { instance_double User, id: 7, email: 'test@example.com', password: 'user_password' }
+  let(:user) { instance_double User, id: 7, email: 'test@example.com', password: 'user_password', status: :confirmed }
 
   let(:token) { JWTWorker.encode user_id: user.id }
 
@@ -38,6 +38,16 @@ RSpec.describe Api::AuthTokensController, type: :controller do
       before { post :create, params: { invalid_key: { email: email, password: password } }, format: :json }
 
       it('returns status 400') { expect(response).to have_http_status 400 }
+    end
+
+    context 'when not authorized' do
+      before { allow(subject).to receive(:current_user).and_return user }
+
+      before { expect(subject).to receive(:authorize).and_raise Pundit::NotAuthorizedError }
+
+      before { post :create, params: params, format: :json }
+
+      it('returns status 403') { expect(response).to have_http_status 403 }
     end
 
     context 'when email is invalid' do

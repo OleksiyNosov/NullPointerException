@@ -34,3 +34,6 @@ db/schema.rb
 
 # Ignore macOS system files
 .DS_Store
+
+# Ignore Redis files
+dump.rdb

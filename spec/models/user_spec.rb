@@ -5,9 +5,15 @@ RSpec.describe User, type: :model do
 
   it { is_expected.to be_an ApplicationRecord }
 
+  it { is_expected.to validate_presence_of :first_name }
+
+  it { is_expected.to validate_presence_of :last_name }
+
   it { is_expected.to validate_presence_of :email }
 
   it { is_expected.to validate_uniqueness_of(:email).case_insensitive }
+
+  it { is_expected.to validate_length_of(:email).is_at_most(255) }
 
   it { is_expected.not_to allow_values(invalid_mails).for(:email) }
 

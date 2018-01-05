@@ -6,6 +6,6 @@ class UserCreator < ResourceCrudWorker
   def process_action
     @resource = User.new @params
 
-    @resource.save && RegistrationMailer.deliver(@resource)
+    @resource.save && RegistrationMailPublisher.publish(@resource)
   end
 end

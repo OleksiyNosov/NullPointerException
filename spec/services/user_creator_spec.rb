@@ -13,7 +13,7 @@ RSpec.describe UserCreator do
     context 'when user attributes are valid' do
       before { allow(user).to receive(:save).and_return true }
 
-      before { expect(RegistrationMailer).to receive(:deliver) }
+      before { expect(RegistrationMailPublisher).to receive(:publish) }
 
       it('creates user and sends registration email') { expect { subject.send :process_action }.to_not raise_error }
     end
@@ -23,7 +23,7 @@ RSpec.describe UserCreator do
 
       before { allow(user).to receive(:save).and_return false }
 
-      before { expect(RegistrationMailer).not_to receive(:deliver) }
+      before { expect(RegistrationMailPublisher).not_to receive(:publish) }
 
       it('do not saves user to db and skips mailing') { expect { subject.send :process_action }.to_not raise_error }
     end

@@ -2,10 +2,12 @@ class Api::RegistrationConfirmationsController < ActionController::API
   include ErrorHandable
 
   def show
-    user = User.find_by! confirmation_token: params[:id]
+    if (decoded_token = JWTWorker.decode params[:id]) && (user = User.find decoded_token.first['user_id'])
+      user.update status: :confirmed
 
-    user.email_confirmation = true
-
-    head 200
+      head 200
+    else
+      head 404
+    end
   end
 end

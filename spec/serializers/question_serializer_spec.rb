@@ -1,9 +1,17 @@
 require 'rails_helper'
 
 RSpec.describe QuestionSerializer, type: :serializer do
-  subject { QuestionSerializer.new create(:question) }
+  let(:question) { build(:question, id: 2) }
 
-  let(:attributes) { subject.attributes.keys }
+  subject { described_class.new question }
 
-  it('have required keys in attributes') { expect(attributes).to eq %i[id title body] }
+  let(:result) do
+    {
+      id: question.id,
+      title: question.title,
+      body: question.body
+    }
+  end
+
+  it("returns question's required keys and values") { expect(subject.attributes).to eq result }
 end

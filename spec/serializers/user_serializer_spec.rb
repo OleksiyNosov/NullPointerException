@@ -1,9 +1,18 @@
 require 'rails_helper'
 
 RSpec.describe UserSerializer, type: :serializer do
-  subject { UserSerializer.new create(:user) }
+  let(:user) { build(:user, id: 5) }
 
-  let(:attributes) { subject.attributes.keys }
+  subject { described_class.new user }
 
-  it('have required keys in attributes') { expect(attributes).to eq %i[id email first_name last_name] }
+  let(:result) do
+    {
+      id: user.id,
+      email: user.email,
+      first_name: user.first_name,
+      last_name: user.last_name
+    }
+  end
+
+  it("returns user's required keys and values") { expect(subject.attributes).to eq result }
 end

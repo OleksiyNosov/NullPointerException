@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe RedisWorker do
-  subject { RedisWorker }
+  subject { described_class }
 
   let(:redis_double) { double }
 

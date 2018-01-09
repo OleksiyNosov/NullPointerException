@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe AnswerSerializer do
+RSpec.describe AnswerSerializer, type: :serializer do
   subject { AnswerSerializer.new create(:answer) }
 
   let(:attributes) { subject.attributes.keys }

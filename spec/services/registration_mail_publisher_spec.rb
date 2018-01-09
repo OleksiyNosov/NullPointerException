@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe RegistrationMailPublisher do
-  subject { RegistrationMailPublisher }
+  subject { described_class }
 
   let(:user) { User.new }
 

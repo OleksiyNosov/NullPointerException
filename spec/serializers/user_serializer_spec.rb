@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe UserSerializer do
+RSpec.describe UserSerializer, type: :serializer do
   subject { UserSerializer.new create(:user) }
 
   let(:attributes) { subject.attributes.keys }

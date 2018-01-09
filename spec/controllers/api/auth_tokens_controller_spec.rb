@@ -9,7 +9,7 @@ RSpec.describe Api::AuthTokensController, type: :controller do
 
   let(:email) { 'test@example.com' }
 
-  let(:user) { instance_double User, id: 7, email: 'test@example.com', password: 'user_password', status: :confirmed }
+  let(:user) { instance_double User, id: 7, email: 'test@example.com', password: 'user_password', status: 'confirmed' }
 
   let(:token) { JWTWorker.encode user_id: user.id }
 
@@ -23,7 +23,7 @@ RSpec.describe Api::AuthTokensController, type: :controller do
 
       let(:token_json) { { token: token }.to_json }
 
-      before { allow(User).to receive(:find_by).with(email: email).and_return user }
+      before { allow(subject).to receive(:current_user).and_return user }
 
       before { allow(user).to receive(:authenticate).and_return true }
 
@@ -69,5 +69,13 @@ RSpec.describe Api::AuthTokensController, type: :controller do
 
       it('returns errors') { expect(response.body).to eq errors_json }
     end
+  end
+
+  describe '#current_user' do
+    let(:user) { create(:user, password: '123') }
+
+    before { post :create, params: { sign_in: { email: user.email.upcase, password: '123' } }, format: :json }
+
+    it('returns user') { expect(subject.send :current_user).to eq user }
   end
 end

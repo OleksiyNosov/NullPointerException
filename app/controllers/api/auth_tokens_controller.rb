@@ -20,6 +20,6 @@ class Api::AuthTokensController < ActionController::API
   end
 
   def current_user
-    @current_user ||= User.find_by email: resource_params[:email]
+    @current_user ||= User.where('lower(email) = ?', resource_params[:email].downcase).first
   end
 end

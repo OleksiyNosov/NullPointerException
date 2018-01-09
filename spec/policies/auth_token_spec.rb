@@ -9,7 +9,7 @@ RSpec.describe AuthTokenPolicy do
     end
 
     it 'grants access if user status is :confirmed' do
-      expect(subject).not_to permit(User.new(status: :confirmed), :AuthToken)
+      expect(subject).to permit(User.new(status: :confirmed), :AuthToken)
     end
   end
 end

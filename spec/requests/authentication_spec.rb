@@ -3,11 +3,15 @@ require 'acceptance_helper'
 RSpec.describe 'Authentication', type: :request do
   let(:user) { create(:user) }
 
-  let(:user_json) { { id: user.id, email: user.email }.to_json }
+  let(:user_json) do
+    { id: user.id,
+      email: user.email,
+      first_name: user.first_name,
+      last_name: user.last_name
+    }.to_json
+  end
 
-  let(:user_id) { user.id }
-
-  let(:token) { JWTWorker.encode(user_id: user_id) }
+  let(:token) { JWTWorker.encode(user_id: user.id) }
 
   let(:headers) { { 'Authorization' => "Bearer #{ token }", 'Content-type' => 'application/json' } }
 

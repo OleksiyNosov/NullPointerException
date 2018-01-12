@@ -4,6 +4,6 @@ class UserPolicy < ApplicationPolicy
   end
 
   def confirm?
-    not @user.status.eql? 'confirmed'
+    not @user.confirmed?
   end
 end

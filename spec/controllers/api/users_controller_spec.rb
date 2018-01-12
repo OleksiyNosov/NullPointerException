@@ -154,7 +154,7 @@ RSpec.describe Api::UsersController, type: :controller do
   end
 
   describe 'GET #confirm' do
-    let(:user_double) { instance_double User, id: 5, status: 'not_confirmed' }
+    let(:user_double) { instance_double User, id: 5, status: 'not_confirmed', confirmed?: false }
 
     let(:token) { JWTWorker.encode(user_id: user_double.id) }
 
@@ -173,7 +173,7 @@ RSpec.describe Api::UsersController, type: :controller do
     end
 
     context 'when user is already confirmed' do
-      let(:user_double) { instance_double User, id: 5, status: 'confirmed' }
+      let(:user_double) { instance_double User, id: 5, status: 'confirmed', confirmed?: true }
 
       before { allow(User).to receive(:find).and_return user_double }
 

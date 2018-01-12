@@ -9,7 +9,14 @@ RSpec.describe Api::AuthTokensController, type: :controller do
 
   let(:email) { 'test@example.com' }
 
-  let(:user) { instance_double User, id: 7, email: 'test@example.com', password: 'user_password', status: 'confirmed' }
+  let(:user) do
+    instance_double User,
+      id: 7,
+      email: 'test@example.com',
+      password: 'user_password',
+      status: 'confirmed',
+      confirmed?: true
+  end
 
   let(:token) { JWTWorker.encode user_id: user.id }
 

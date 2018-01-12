@@ -1,5 +1,5 @@
 class AuthTokenPolicy < ApplicationPolicy
   def create?
-    @user.status.eql? 'confirmed'
+    @user.confirmed?
   end
 end

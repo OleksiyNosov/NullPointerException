@@ -1,5 +1,5 @@
 class Api::UsersController < ApplicationController
-  skip_before_action :authenticate, only: %i[create confirmation]
+  skip_before_action :authenticate, only: %i[create confirm]
 
   def create
     UserCreator.new(resource_params)
@@ -17,7 +17,7 @@ class Api::UsersController < ApplicationController
       .call
   end
 
-  def confirmation
+  def confirm
     if (decoded_token = JWTWorker.decode params[:token]) && (user = User.find decoded_token.first['user_id'])
       user.update status: :confirmed
 

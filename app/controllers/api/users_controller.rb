@@ -21,7 +21,7 @@ class Api::UsersController < ApplicationController
     if current_user_from_token(params[:token])
       authorize User
 
-      current_user.update status: :confirmed
+      current_user.confirmed!
 
       render body: 'user confirmed'
     else

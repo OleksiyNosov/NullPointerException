@@ -161,7 +161,7 @@ RSpec.describe Api::UsersController, type: :controller do
     context 'when token is valid' do
       before { allow(User).to receive(:find).and_return user_double }
 
-      before { expect(user_double).to receive(:update).with(status: :confirmed) }
+      before { expect(user_double).to receive(:confirmed!) }
 
       before { get :confirm, params: { token: token }, format: :json }
 

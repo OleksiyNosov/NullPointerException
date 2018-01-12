@@ -19,9 +19,11 @@ class Api::UsersController < ApplicationController
 
   def confirm
     if current_user_from_token(params[:token])
+      authorize User
+
       current_user.update status: :confirmed
 
-      head 204
+      render body: 'user confirmed'
     else
       head 404
     end

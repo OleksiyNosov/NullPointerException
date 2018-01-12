@@ -154,6 +154,8 @@ RSpec.describe Api::UsersController, type: :controller do
   end
 
   describe 'GET #confirm' do
+    let(:user_double) { instance_double User, id: 5, status: 'not_confirmed' }
+
     let(:token) { JWTWorker.encode(user_id: user_double.id) }
 
     context 'when token is valid' do
@@ -163,7 +165,21 @@ RSpec.describe Api::UsersController, type: :controller do
 
       before { get :confirm, params: { token: token }, format: :json }
 
-      it('returns status 204') { expect(response).to have_http_status 204 }
+      it('returns status 200') { expect(response).to have_http_status 200 }
+
+      it "returns message 'user confirmed'" do
+        expect(response.body).to eq 'user confirmed'
+      end
+    end
+
+    context 'when user is already confirmed' do
+      let(:user_double) { instance_double User, id: 5, status: 'confirmed' }
+
+      before { allow(User).to receive(:find).and_return user_double }
+
+      before { get :confirm, params: { token: token }, format: :json }
+
+      it('returns status 403') { expect(response).to have_http_status 403 }
     end
 
     context 'when no token passed' do

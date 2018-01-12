@@ -10,7 +10,11 @@ module Authenticatable
   private
   def authenticate
     authenticate_or_request_with_http_token do |token, _|
-      (decoded_token = JWTWorker.decode token) && (@current_user = User.find decoded_token.first['user_id'])
+      current_user_from_token token
     end
+  end
+
+  def current_user_from_token token
+    (decoded_token = JWTWorker.decode token) && (@current_user = User.find decoded_token.first['user_id'])
   end
 end

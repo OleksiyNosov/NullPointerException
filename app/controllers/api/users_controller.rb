@@ -18,8 +18,8 @@ class Api::UsersController < ApplicationController
   end
 
   def confirm
-    if (decoded_token = JWTWorker.decode params[:token]) && (user = User.find decoded_token.first['user_id'])
-      user.update status: :confirmed
+    if current_user_from_token(params[:token])
+      current_user.update status: :confirmed
 
       head 204
     else

@@ -13,7 +13,7 @@ RSpec.describe 'RedisPublishToMailerChannel', type: :request do
       # Creates new redis listener in a different thread
       #
       Thread.new do
-        Redis.new.subscribe('notificationer.email') do |on|
+        Redis.new.subscribe('notifier.email') do |on|
           on.message do |channel, message|
             publish_status = true
           end

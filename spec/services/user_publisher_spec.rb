@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe RegistrationMailPublisher do
+RSpec.describe UserPublisher do
   subject { described_class }
 
   let(:user) { User.new }
@@ -9,7 +9,7 @@ RSpec.describe RegistrationMailPublisher do
 
   let(:publish_args) do
     {
-      event_type: :registration,
+      notification: :registration,
       email: user.email,
       token: token,
       first_name: user.first_name,
@@ -22,7 +22,7 @@ RSpec.describe RegistrationMailPublisher do
 
     before do
       expect(PubSub).to receive(:instance) do
-        double.tap { |redis| expect(redis).to receive(:publish).with('notificationer.email', publish_args) }
+        double.tap { |redis| expect(redis).to receive(:publish).with('notifier.email', publish_args) }
       end
     end
 

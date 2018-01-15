@@ -5,7 +5,7 @@ RSpec.describe Api::UsersController, type: :controller do
 
   let(:user_attrs) { attributes_for(:user) }
 
-  let(:user_double) { instance_double(User, id: 5, status: :confirmed, as_json: user_attrs, **user_attrs) }
+  let(:user_double) { instance_double(User, id: 5, as_json: user_attrs, **user_attrs) }
 
   let(:user_errors) { { attribute_name: %w[error1 error2] } }
 
@@ -154,33 +154,7 @@ RSpec.describe Api::UsersController, type: :controller do
   end
 
   describe 'GET #confirm' do
-    let(:user_double) { instance_double User, id: 5, status: 'not_confirmed', confirmed?: false }
-
     let(:token) { JWTWorker.encode(user_id: user_double.id) }
-
-    context 'when token is valid' do
-      before { allow(User).to receive(:find).and_return user_double }
-
-      before { expect(user_double).to receive(:confirmed!) }
-
-      before { get :confirm, params: { token: token }, format: :json }
-
-      it('returns status 200') { expect(response).to have_http_status 200 }
-
-      it "returns message 'user confirmed'" do
-        expect(response.body).to eq 'user confirmed'
-      end
-    end
-
-    context 'when user is already confirmed' do
-      let(:user_double) { instance_double User, id: 5, status: 'confirmed', confirmed?: true }
-
-      before { allow(User).to receive(:find).and_return user_double }
-
-      before { get :confirm, params: { token: token }, format: :json }
-
-      it('returns status 403') { expect(response).to have_http_status 403 }
-    end
 
     context 'when no token passed' do
       before { get :confirm, format: :json }
@@ -200,6 +174,32 @@ RSpec.describe Api::UsersController, type: :controller do
       before { get :confirm, params: { token: token }, format: :json }
 
       it('returns status 404') { expect(response).to have_http_status 404 }
+    end
+
+    context 'when user is not authorized' do
+      before { allow(User).to receive(:find).and_return user_double }
+
+      before { allow(subject).to receive(:authorize).and_raise Pundit::NotAuthorizedError }
+
+      before { get :confirm, params: { token: token }, format: :json }
+
+      it('returns status 403') { expect(response).to have_http_status 403 }
+    end
+
+    context 'when token is valid' do
+      before { allow(User).to receive(:find).and_return user_double }
+
+      before { allow(subject).to receive(:authorize).and_return true }
+
+      before { expect(user_double).to receive(:confirmed!) }
+
+      before { get :confirm, params: { token: token }, format: :json }
+
+      it('returns status 200') { expect(response).to have_http_status 200 }
+
+      it "returns message 'user confirmed'" do
+        expect(response.body).to eq 'user confirmed'
+      end
     end
   end
 

@@ -21,7 +21,7 @@ RSpec.describe RegistrationMailPublisher do
     before { allow(JWTWorker).to receive(:encode).and_return token }
 
     before do
-      expect(RedisWorker).to receive(:instance) do
+      expect(PubSub).to receive(:instance) do
         double.tap { |redis| expect(redis).to receive(:publish).with('notificationer.email', publish_args) }
       end
     end

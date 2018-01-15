@@ -4,7 +4,7 @@ class RegistrationMailPublisher
 
   class << self
     def publish user
-      RedisWorker.instance.publish CHANNEL, {
+      PubSub.instance.publish CHANNEL, {
         event_type: EVENT_TYPE,
         email: user.email,
         token: JWTWorker.encode(user_id: user.id, exp: 1.day.from_now.to_i),

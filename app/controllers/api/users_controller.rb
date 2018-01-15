@@ -1,6 +1,8 @@
 class Api::UsersController < ApplicationController
   skip_before_action :authenticate, only: %i[create confirm]
 
+  before_action -> { authorize resource }, only: %i[update]
+
   def create
     UserCreator.new(resource_params)
       .on(:succeeded) { |resource| render json: resource, status: 201 }
@@ -9,8 +11,6 @@ class Api::UsersController < ApplicationController
   end
 
   def update
-    authorize resource
-
     ResourceUpdator.new(resource, resource_params)
       .on(:succeeded) { |resource| render json: resource }
       .on(:failed) { |errors| render json: errors, status: 422 }

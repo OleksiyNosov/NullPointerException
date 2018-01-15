@@ -1,6 +1,8 @@
 class Api::QuestionsController < ApplicationController
   skip_before_action :authenticate, only: %i[index show]
 
+  before_action -> { authorize resource }, only: %i[update destroy]
+
   def create
     QuestionCreator.new(resource_params)
       .on(:succeeded) { |resource| render json: resource, status: 201 }

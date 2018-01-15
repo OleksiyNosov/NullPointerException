@@ -11,9 +11,25 @@ RSpec.describe UserCreator do
 
   describe '#process action' do
     context 'when user attributes are valid' do
+      let(:additional_attrs) { { notification: :registration, token: 'user_token' } }
+
       before { allow(user).to receive(:save).and_return true }
 
-      before { expect(UserPublisher).to receive(:publish) }
+      before { allow(JWTWorker).to receive(:encode).and_return 'user_token' }
+
+      before do
+        allow(UserSerializer).to receive(:new) do
+          double.tap do |serialized_user|
+            allow(serialized_user).to receive(:attributes) do
+              double.tap do |attributes|
+                allow(attributes).to receive(:merge).with(additional_attrs).and_return :attrs_for_publish
+              end
+            end
+          end
+        end
+      end
+
+      before { expect(UserPublisher).to receive(:publish).with(:attrs_for_publish) }
 
       it('creates user and publish their attributes') { expect { subject.send :process_action }.to_not raise_error }
     end

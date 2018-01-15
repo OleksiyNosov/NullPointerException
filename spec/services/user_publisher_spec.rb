@@ -3,29 +3,21 @@ require 'rails_helper'
 RSpec.describe UserPublisher do
   subject { described_class }
 
-  let(:user) { User.new }
+  let(:user_attrs) { { user_hash: :with_attributes } }
 
-  let(:token) { 'some_token_value' }
-
-  let(:publish_args) do
-    {
-      notification: :registration,
-      email: user.email,
-      token: token,
-      first_name: user.first_name,
-      last_name: user.last_name
-    }.to_json
-  end
+  let(:user_attrs_json) { user_attrs.to_json }
 
   describe '.publish' do
-    before { allow(JWTWorker).to receive(:encode).and_return token }
+    before { expect(user_attrs).to receive(:to_json).and_return user_attrs_json }
 
     before do
       expect(PubSub).to receive(:instance) do
-        double.tap { |redis| expect(redis).to receive(:publish).with('notifier.email', publish_args) }
+        double.tap do |instance|
+          expect(instance).to receive(:publish).with('notifier.email', user_attrs_json)
+        end
       end
     end
 
-    it('publishes all required registration mail attributes') { expect { subject.publish user }.to_not raise_error }
+    it('publishes all required registration mail attributes') { expect { subject.publish user_attrs }.to_not raise_error }
   end
 end

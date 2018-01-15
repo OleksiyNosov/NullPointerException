@@ -9,6 +9,7 @@ RSpec.describe AnswerSerializer, type: :serializer do
     {
       id: answer.id,
       question_id: answer.question_id,
+      user_id: answer.user_id,
       body: answer.body
     }
   end

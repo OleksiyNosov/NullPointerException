@@ -39,7 +39,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
     end
 
     context 'with authentication' do
-      let(:creator) { ResourceCreator.new Question, question_attrs }
+      let(:creator) { QuestionCreator.new question_attrs }
 
       before { sign_in user }
 
@@ -50,7 +50,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
       end
 
       context 'when sent question attributes are valid' do
-        before { allow(ResourceCreator).to receive(:new).and_return(creator) }
+        before { allow(QuestionCreator).to receive(:new).and_return(creator) }
 
         before { expect(creator).to receive(:on).twice.and_call_original }
 
@@ -64,7 +64,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
       end
 
       context 'when sent question attributes are not valid' do
-        before { allow(ResourceCreator).to receive(:new).and_return(creator) }
+        before { allow(QuestionCreator).to receive(:new).and_return(creator) }
 
         before { expect(creator).to receive(:on).twice.and_call_original }
 

@@ -40,7 +40,7 @@ RSpec.describe Api::UsersController, type: :controller do
   end
 
   describe 'POST #create' do
-    let(:creator) { ResourceCreator.new User, user_attrs }
+    let(:creator) { UserCreator.new user_attrs }
 
     context 'when request do not have requied keys' do
       before { post :create, params: { invalid_key: user_attrs }, format: :json }

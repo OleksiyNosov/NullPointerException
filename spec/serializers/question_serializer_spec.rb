@@ -8,6 +8,7 @@ RSpec.describe QuestionSerializer, type: :serializer do
   let(:result) do
     {
       id: question.id,
+      user_id: question.user_id,
       title: question.title,
       body: question.body
     }

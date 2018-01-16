@@ -50,6 +50,8 @@ RSpec.describe Api::AuthTokensController, type: :controller do
     context 'when not authorized' do
       before { allow(subject).to receive(:current_user).and_return user }
 
+      before { allow(user).to receive(:authenticate).and_return true }
+
       before { expect(subject).to receive(:authorize).and_raise Pundit::NotAuthorizedError }
 
       before { post :create, params: params, format: :json }
@@ -62,9 +64,7 @@ RSpec.describe Api::AuthTokensController, type: :controller do
 
       before { post :create, params: params, format: :json }
 
-      it('returns status 422') { expect(response).to have_http_status 422 }
-
-      it('returns errors') { expect(response.body).to eq errors_json }
+      it('returns status 403') { expect(response).to have_http_status 403 }
     end
 
     context 'when password is invalid' do
@@ -72,9 +72,7 @@ RSpec.describe Api::AuthTokensController, type: :controller do
 
       before { post :create, params: params, format: :json }
 
-      it('returns status 422') { expect(response).to have_http_status 422 }
-
-      it('returns errors') { expect(response.body).to eq errors_json }
+      it('returns status 403') { expect(response).to have_http_status 403 }
     end
   end
 

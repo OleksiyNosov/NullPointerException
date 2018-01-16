@@ -3,15 +3,11 @@ class Api::AuthTokensController < ActionController::API
   include Pundit
 
   def create
-    if current_user
-      authorize :AuthToken
-
-      if current_user.authenticate resource_params[:password]
-        return render json: { token: JWTWorker.encode(user_id: current_user.id) }, status: 201
-      end
+    if current_user&.authenticate(resource_params[:password]) && authorize(:AuthToken)
+      return render json: { token: JWTWorker.encode(user_id: current_user.id) }, status: 201
+    else
+      head 403
     end
-
-    render json: { email: ['invalid email'], password: ['invalid password'] }, status: 422
   end
 
   private

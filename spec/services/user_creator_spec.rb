@@ -10,6 +10,14 @@ RSpec.describe UserCreator do
   it('behaves as resource dispatcher') { is_expected.to be_an ResourceCrudWorker }
 
   describe '#process action' do
+    before { allow(User).to receive(:new).with(user_attrs).and_return user }
+
+    before do
+      expect(user).to receive(:email) do
+        double.tap { |email| expect(email).to receive(:downcase!) }
+      end
+    end
+
     context 'when user attributes are valid' do
       let(:additional_attrs) { { notification: :registration, token: 'user_token' } }
 
@@ -35,13 +43,9 @@ RSpec.describe UserCreator do
     end
 
     context 'when user attributes are invalid' do
-      let(:user_attrs) { nil }
-
       before { allow(user).to receive(:save).and_return false }
 
-      before { expect(UserPublisher).not_to receive(:publish) }
-
-      it('do not saves user to db and skips publis') { expect { subject.send :process_action }.to_not raise_error }
+      it('do not saves user to db and skips publish') { expect { subject.send :process_action }.to_not raise_error }
     end
   end
 

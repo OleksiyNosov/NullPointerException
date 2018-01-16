@@ -13,7 +13,7 @@ class UserCreator < ResourceCrudWorker
 
       additianal_attrs = {
         notification: :registration,
-        token: JWTWorker.encode(user_id: @resource.id, exp: 1.day.from_now.to_i)
+        token: JWTWorker.encode(user_id: @resource.id, intent: 'email_confirmation', exp: 1.day.from_now.to_i)
       }
 
       UserPublisher.publish(serialized_user_attrs.merge(additianal_attrs))

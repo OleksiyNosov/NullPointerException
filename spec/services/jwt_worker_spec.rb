@@ -9,23 +9,39 @@ RSpec.describe JWTWorker do
 
   let(:token) { JWTWorker.encode payload }
 
-  let(:decoded_payload) { payload.stringify_keys }
-
   describe '.decode' do
-    context 'when token is valid' do
-      it('returns decoded token') { expect(JWTWorker.decode(token).first).to eq decoded_payload }
+    context 'without intent' do
+      context 'when token is valid' do
+        it('returns decoded token') { expect(JWTWorker.decode(token).first).to eq payload }
+      end
+
+      context 'when token expired' do
+        let(:exp) { Time.zone.now.to_i - 5.minutes.to_i }
+
+        it('returns false') { expect(JWTWorker.decode token).to eq false }
+      end
+
+      context 'when token is invalid' do
+        let(:token) { 'bad_token_value' }
+
+        it('returns false') { expect(JWTWorker.decode token).to eq false }
+      end
     end
 
-    context 'when token expired' do
-      let(:exp) { Time.zone.now.to_i - 5.minutes.to_i }
+    context 'with intent' do
+      let(:payload) { { user_id: user.id, exp: exp, intent: 'some_intent' } }
 
-      it('returns false') { expect(JWTWorker.decode token).to eq false }
-    end
+      context 'when token is valid' do
+        it('returns decoded token') { expect(JWTWorker.decode(token, intent: 'some_intent').first).to eq payload }
+      end
 
-    context 'when token is invalid' do
-      let(:token) { 'bad_token_value' }
+      context 'when token have some unexpected intent' do
+        it('returns false') { expect(JWTWorker.decode(token, intent: 'different_intent')).to eq false }
+      end
 
-      it('returns false') { expect(JWTWorker.decode token).to eq false }
+      context 'when token decoded without passed intent' do
+        it('returns false') { expect(JWTWorker.decode(token)).to eq false }
+      end
     end
   end
 end

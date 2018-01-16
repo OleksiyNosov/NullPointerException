@@ -18,7 +18,7 @@ class Api::UsersController < ApplicationController
   end
 
   def confirm
-    if current_user_from_token(params[:token])
+    if current_user_from_token(params[:token], intent: 'email_confirmation')
       authorize User
 
       current_user.confirmed!

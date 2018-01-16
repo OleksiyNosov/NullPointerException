@@ -4,7 +4,7 @@ class Api::AuthTokensController < ActionController::API
 
   def create
     if current_user&.authenticate(resource_params[:password]) && authorize(:AuthToken)
-      return render json: { token: JWTWorker.encode(user_id: current_user.id) }, status: 201
+      render json: { token: JWTWorker.encode(user_id: current_user.id, intent: 'authentication') }, status: 201
     else
       head 403
     end

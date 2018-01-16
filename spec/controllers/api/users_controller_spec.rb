@@ -154,7 +154,7 @@ RSpec.describe Api::UsersController, type: :controller do
   end
 
   describe 'GET #confirm' do
-    let(:token) { JWTWorker.encode(user_id: user_double.id) }
+    let(:token) { JWTWorker.encode(user_id: user_double.id, intent: 'email_confirmation') }
 
     context 'when no token passed' do
       before { get :confirm, format: :json }

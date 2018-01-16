@@ -18,6 +18,8 @@ RSpec.describe UserPublisher do
       end
     end
 
-    it('publishes all required registration mail attributes') { expect { subject.publish user_attrs }.to_not raise_error }
+    it 'publishes all required registration mail attributes' do
+      expect { subject.publish user_attrs }.to_not raise_error
+    end
   end
 end

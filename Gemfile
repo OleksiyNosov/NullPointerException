@@ -9,12 +9,12 @@ gem 'rails'
 
 gem 'active_model_serializers'
 gem 'bcrypt'
+gem 'homie'
 gem 'jwt'
 gem 'pg'
 gem 'puma'
 gem 'pundit'
 gem 'redis'
-gem 'homie'
 
 group :development, :test do
   gem 'factory_bot_rails'

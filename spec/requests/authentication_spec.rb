@@ -4,7 +4,8 @@ RSpec.describe 'Authentication', type: :request do
   let(:user) { create(:user) }
 
   let(:user_json) do
-    { id: user.id,
+    {
+      id: user.id,
       email: user.email,
       first_name: user.first_name,
       last_name: user.last_name

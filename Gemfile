@@ -14,7 +14,7 @@ gem 'pg'
 gem 'puma'
 gem 'pundit'
 gem 'redis'
-gem 'wisper'
+gem 'homie'
 
 group :development, :test do
   gem 'factory_bot_rails'

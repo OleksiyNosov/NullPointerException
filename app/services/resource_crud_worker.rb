@@ -1,5 +1,5 @@
 class ResourceCrudWorker
-  include Wisper::Publisher
+  include Homie
 
   attr_reader :resource
 

@@ -15,6 +15,6 @@ module Authenticatable
   end
 
   def current_user_from_token token, params
-    (decoded_token = JWTWorker.decode(token, params)) && (@current_user = User.find decoded_token.first[:user_id])
+    (payload, _ = JWTWorker.decode(token, params)) && (@current_user = User.find payload[:user_id])
   end
 end

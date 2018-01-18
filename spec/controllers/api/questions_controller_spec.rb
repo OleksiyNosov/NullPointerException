@@ -39,7 +39,7 @@ RSpec.describe Api::QuestionsController, type: :controller do
     end
 
     context 'with authentication' do
-      let(:creator) { QuestionCreator.new question_attrs }
+      let(:creator) { QuestionCreator.new user, question_attrs }
 
       before { sign_in user }
 

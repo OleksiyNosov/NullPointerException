@@ -1,15 +1,19 @@
 require 'rails_helper'
 
 RSpec.describe QuestionCreator do
-  let(:resource_attributes) { attributes_for(:question) }
+  let(:user) { instance_double User, id: 5 }
+
+  let(:resource_attributes) { attributes_for(:question, user: user) }
 
   let(:resource) { instance_double(Question, valid?: true, **resource_attributes) }
 
-  subject { QuestionCreator.new resource_attributes }
+  subject { QuestionCreator.new user, resource_attributes }
 
   it('behaves as resource dispatcher') { is_expected.to be_an ResourceCrudWorker }
 
   describe '#process_action' do
+    before { allow(resource_attributes).to receive(:merge).with(user_id: user.id).and_return resource_attributes }
+
     before { expect(Question).to receive(:create).with(resource_attributes) }
 
     it('create resource') { expect { subject.send :process_action }.to_not raise_error }

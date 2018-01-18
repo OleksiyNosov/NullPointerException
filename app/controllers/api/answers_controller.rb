@@ -26,7 +26,7 @@ class Api::AnswersController < ApplicationController
 
   private
   def resource_params
-    params.require(:answer).permit(:question_id, :body)
+    params.require(:answer).permit(:body)
   end
 
   def resource

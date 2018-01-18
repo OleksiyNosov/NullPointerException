@@ -4,7 +4,7 @@ class Api::QuestionsController < ApplicationController
   before_action -> { authorize resource }, only: %i[update destroy]
 
   def create
-    QuestionCreator.new(resource_params)
+    QuestionCreator.new(current_user, resource_params)
       .on(:succeeded) { |resource| render json: resource, status: 201 }
       .on(:failed) { |errors| render json: errors, status: 422 }
       .call
@@ -26,7 +26,7 @@ class Api::QuestionsController < ApplicationController
 
   private
   def resource_params
-    params.require(:question).permit(:user_id, :title, :body)
+    params.require(:question).permit(:title, :body)
   end
 
   def resource

@@ -12,12 +12,6 @@ RSpec.describe UserCreator do
   describe '#process action' do
     before { allow(User).to receive(:new).with(user_attrs).and_return user }
 
-    before do
-      expect(user).to receive(:email) do
-        double.tap { |email| expect(email).to receive(:downcase!) }
-      end
-    end
-
     context 'when user attributes are valid' do
       let(:additional_attrs) { { notification: :registration, token: 'user_token' } }
 

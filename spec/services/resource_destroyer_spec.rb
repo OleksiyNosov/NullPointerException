@@ -10,7 +10,7 @@ RSpec.describe ResourceDestroyer do
   describe '#process_action' do
     before { expect(resource).to receive(:destroy) }
 
-    it('destroy resource') { expect { subject.send :process_action }.to_not raise_error }
+    it('destroys resource') { expect { subject.send :process_action }.to_not raise_error }
   end
 
   describe '#call' do
@@ -18,7 +18,7 @@ RSpec.describe ResourceDestroyer do
 
     before { expect(subject).to receive(:broadcast_resource) }
 
-    it('destroy and broadcast resource') { expect { subject.call }.to_not raise_error }
+    it('destroys and broadcast resource') { expect { subject.call }.to_not raise_error }
   end
 
   describe  '#broadcast_resource' do
@@ -29,7 +29,7 @@ RSpec.describe ResourceDestroyer do
 
       before { expect(subject).to receive(:broadcast).with(:succeeded, resource) }
 
-      it('broadcast resource') { expect { subject.send :broadcast_resource }.to_not raise_error }
+      it('broadcasts resource') { expect { subject.send :broadcast_resource }.to_not raise_error }
     end
 
     context 'when resource is invalid' do
@@ -41,7 +41,7 @@ RSpec.describe ResourceDestroyer do
 
       before { expect(subject).to receive(:broadcast).with(:failed, resource_errors) }
 
-      it('broadcast resource errors') { expect { subject.send :broadcast_resource }.to_not raise_error }
+      it('broadcasts resource errors') { expect { subject.send :broadcast_resource }.to_not raise_error }
     end
   end
 end

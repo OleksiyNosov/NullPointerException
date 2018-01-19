@@ -20,7 +20,7 @@ RSpec.describe AnswerCreator do
       end
     end
 
-    it('create answer') { expect { subject.send :process_action }.to_not raise_error }
+    it('creates answer') { expect { subject.send :process_action }.to_not raise_error }
   end
 
   describe '#call' do
@@ -28,6 +28,6 @@ RSpec.describe AnswerCreator do
 
     before { expect(subject).to receive(:broadcast_resource) }
 
-    it('create and broadcast answer') { expect { subject.send :call }.to_not raise_error }
+    it('creates and broadcasts answer') { expect { subject.send :call }.to_not raise_error }
   end
 end

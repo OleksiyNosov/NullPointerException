@@ -11,7 +11,7 @@ class Api::UsersController < ApplicationController
   end
 
   def update
-    ResourceUpdator.new(resource, resource_params)
+    UserUpdator.new(resource, resource_params)
       .on(:succeeded) { |resource| render json: resource }
       .on(:failed) { |errors| render json: errors, status: 422 }
       .call

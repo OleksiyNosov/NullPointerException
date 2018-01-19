@@ -85,7 +85,7 @@ RSpec.describe Api::UsersController, type: :controller do
     end
 
     context 'with authentication' do
-      let(:updator) { ResourceUpdator.new user_double, user_attrs }
+      let(:updator) { UserUpdator.new user_double, user_attrs }
 
       before { sign_in user_double }
 

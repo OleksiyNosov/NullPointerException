@@ -6,6 +6,8 @@ class UserCreator < ResourceCrudWorker
   def process_action
     @resource = User.new @params
 
+    @resource.email&.downcase!
+
     if @resource.save
       serialized_user_attrs = UserSerializer.new(@resource).attributes
 

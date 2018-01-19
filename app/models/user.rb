@@ -5,7 +5,7 @@ class User < ApplicationRecord
 
   enum status: %i[not_confirmed confirmed]
 
-  before_save :email_downcase!
+  before_save -> { email&.downcase! }
 
   validates :first_name, :last_name, presence: true
 
@@ -14,8 +14,4 @@ class User < ApplicationRecord
             uniqueness: { case_sensitive: false },
             length: { maximum: 255 },
             format: { with: /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i }
-
-  def email_downcase!
-    email&.downcase!
-  end
 end

@@ -1,9 +1,9 @@
 class UserUpdator < ResourceUpdator
   private
   def process_action
-    @resource.update @params
+    params[:email]&.downcase!
 
-    @resource.email&.downcase!
+    @resource.update @params
   end
 end
 

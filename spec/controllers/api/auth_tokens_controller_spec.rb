@@ -16,8 +16,6 @@ RSpec.describe Api::AuthTokensController, type: :controller do
   let(:token) { JWTWorker.encode user_id: user.id, intent: 'authentication' }
 
   describe 'POST #create' do
-    let(:errors_json) { { 'email' => ['invalid email'], 'password' => ['invalid password'] }.to_json }
-
     let(:params) { { sign_in: { email: email, password: password } } }
 
     context 'when email and password are valid' do

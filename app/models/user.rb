@@ -16,6 +16,6 @@ class User < ApplicationRecord
             format: { with: /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i }
 
   def email_downcase!
-    self.email&.downcase!
+    email&.downcase!
   end
 end

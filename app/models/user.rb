@@ -12,8 +12,4 @@ class User < ApplicationRecord
             uniqueness: { case_sensitive: false },
             length: { maximum: 255 },
             format: { with: /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i }
-
-  def confirmed?
-    !not_confirmed?
-  end
 end

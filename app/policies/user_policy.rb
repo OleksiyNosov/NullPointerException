@@ -4,6 +4,6 @@ class UserPolicy < ApplicationPolicy
   end
 
   def confirm?
-    !user.confirmed?
+    user.not_confirmed?
   end
 end

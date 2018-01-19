@@ -18,4 +18,6 @@ RSpec.describe User, type: :model do
   it { is_expected.not_to allow_values(invalid_mails).for(:email) }
 
   it { is_expected.to allow_value('test@example.com').for(:email) }
+
+  it { is_expected.to define_enum_for(:status).with([:not_confirmed, :confirmed]) }
 end

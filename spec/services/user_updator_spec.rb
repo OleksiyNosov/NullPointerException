@@ -1,16 +1,16 @@
 require 'rails_helper'
 
-RSpec.describe UserCreator do
+RSpec.describe UserUpdator do
   let(:user_attrs) { attributes_for :user }
 
   let(:user) { User.new user_attrs }
 
-  subject { UserCreator.new user_attrs }
+  subject { UserUpdator.new user, user_attrs }
 
   it('behaves as resource dispatcher') { is_expected.to be_an ResourceCrudWorker }
 
   describe '#process action' do
-    before { allow(User).to receive(:new).with(user_attrs).and_return user }
+    before { allow(subject).to receive(:resource).and_return user }
 
     before do
       expect(user_attrs).to receive(:[]).with(:email) do
@@ -18,35 +18,9 @@ RSpec.describe UserCreator do
       end
     end
 
-    context 'when user attributes are valid' do
-      let(:additional_attrs) { { notification: :registration, token: 'user_token' } }
+    before { expect(user).to receive(:update).with(user_attrs) }
 
-      before { allow(user).to receive(:save).and_return true }
-
-      before { allow(JWTWorker).to receive(:encode).and_return 'user_token' }
-
-      before do
-        allow(UserSerializer).to receive(:new) do
-          double.tap do |serialized_user|
-            allow(serialized_user).to receive(:attributes) do
-              double.tap do |attributes|
-                allow(attributes).to receive(:merge).with(additional_attrs).and_return :attrs_for_publish
-              end
-            end
-          end
-        end
-      end
-
-      before { expect(UserPublisher).to receive(:publish).with(:attrs_for_publish) }
-
-      it('creates user and publish their attributes') { expect { subject.send :process_action }.to_not raise_error }
-    end
-
-    context 'when user attributes are invalid' do
-      before { allow(user).to receive(:save).and_return false }
-
-      it('do not saves user to db and skips publish') { expect { subject.send :process_action }.to_not raise_error }
-    end
+    it('updates user') { expect { subject.send :process_action }.to_not raise_error }
   end
 
   describe '#call' do

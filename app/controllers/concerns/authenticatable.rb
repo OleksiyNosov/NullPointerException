@@ -10,11 +10,11 @@ module Authenticatable
   private
   def authenticate
     authenticate_or_request_with_http_token do |token, _|
-      current_user_from_token(token, intent: 'authentication')
+      current_user_from_token(token)
     end
   end
 
-  def current_user_from_token token, params
-    (payload, = JWTWorker.decode(token, params)) && (@current_user = User.find payload[:user_id])
+  def current_user_from_token token
+    (payload, = JWTWorker.decode(token)) && (@current_user = User.find payload[:user_id])
   end
 end

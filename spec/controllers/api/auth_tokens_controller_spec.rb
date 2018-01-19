@@ -13,7 +13,7 @@ RSpec.describe Api::AuthTokensController, type: :controller do
 
   let(:user) { instance_double User, id: 7, confirmed?: true, **user_attrs }
 
-  let(:token) { JWTWorker.encode user_id: user.id, intent: 'authentication' }
+  let(:token) { JWTWorker.encode user_id: user.id }
 
   describe 'POST #create' do
     let(:params) { { sign_in: { email: email, password: password } } }

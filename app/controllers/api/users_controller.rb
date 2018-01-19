@@ -18,12 +18,12 @@ class Api::UsersController < ApplicationController
   end
 
   def confirm
-    if current_user_from_token(params[:token], intent: 'email_confirmation')
+    if current_user_from_token(params[:token])
       authorize User
 
       current_user.confirmed!
 
-      render body: 'user confirmed'
+      render json: { message: 'user confirmed' }
     else
       head 404
     end

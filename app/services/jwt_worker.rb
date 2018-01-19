@@ -8,12 +8,14 @@ class JWTWorker
       JWT.encode payload, SECRET_KEY
     end
 
-    def decode token, params = {}
-      decoded_token = JWT.decode(token, SECRET_KEY).map(&:symbolize_keys)
-
-      decoded_token.first[:intent].eql?(params[:intent]) && decoded_token
+    def decode token
+      (decoded_token = JWT.decode(token, SECRET_KEY)) && symbolize_keys(decoded_token)
     rescue JWT::ExpiredSignature, JWT::DecodeError
       false
+    end
+
+    def symbolize_keys decoded_token
+      decoded_token.map { |h| h.transform_keys(&:to_sym) }
     end
   end
 end

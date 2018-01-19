@@ -1,7 +1,7 @@
 class AnswerCreator < ResourceCrudWorker
   def initialize question, user, params
-    @user = user
     @question = question
+    @user = user
     @params = params
   end
 

@@ -13,7 +13,7 @@ RSpec.describe UserPolicy do
     context 'whed requested by some other user' do
       let(:other_user) { instance_double User, id: 7 }
 
-      it('denies update of user') { expect(subject).not_to permit(user, other_user) }
+      it('rejects update of user') { expect(subject).not_to permit(user, other_user) }
     end
   end
 
@@ -25,7 +25,7 @@ RSpec.describe UserPolicy do
     end
 
     context "when user's status is already confirmed" do
-      it('denies user confirmation') { expect(subject).not_to permit(user, User) }
+      it('rejects user confirmation') { expect(subject).not_to permit(user, User) }
     end
   end
 end

@@ -15,7 +15,7 @@ RSpec.describe AnswerPolicy do
     end
 
     context 'when requested by some other user' do
-      it('denies answer update') { expect(subject).not_to permit(other_user, answer) }
+      it('rejects answer update') { expect(subject).not_to permit(other_user, answer) }
     end
   end
 
@@ -25,7 +25,7 @@ RSpec.describe AnswerPolicy do
     end
 
     context 'when requested by some other user' do
-      it('denies answer destroy') { expect(subject).not_to permit(other_user, answer) }
+      it('rejects answer destroy') { expect(subject).not_to permit(other_user, answer) }
     end
   end
 end

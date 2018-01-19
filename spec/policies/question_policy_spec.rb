@@ -15,7 +15,7 @@ RSpec.describe QuestionPolicy do
     end
 
     context 'when requested by some other user' do
-      it('denies question update') { expect(subject).not_to permit(other_user, question) }
+      it('rejects question update') { expect(subject).not_to permit(other_user, question) }
     end
   end
 
@@ -25,7 +25,7 @@ RSpec.describe QuestionPolicy do
     end
 
     context 'when requested by some other user' do
-      it('denies question destroy') { expect(subject).not_to permit(other_user, question) }
+      it('rejects question destroy') { expect(subject).not_to permit(other_user, question) }
     end
   end
 end

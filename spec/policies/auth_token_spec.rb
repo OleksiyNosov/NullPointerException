@@ -9,7 +9,7 @@ RSpec.describe AuthTokenPolicy do
     end
 
     context "when user's status is not_confirmed" do
-      it('denies token creation') { expect(subject).to permit(User.new(status: :confirmed), :AuthToken) }
+      it('rejects token creation') { expect(subject).to permit(User.new(status: :confirmed), :AuthToken) }
     end
   end
 end

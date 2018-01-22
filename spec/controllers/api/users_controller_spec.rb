@@ -19,22 +19,36 @@ RSpec.describe Api::UsersController, type: :controller do
     context 'with authentication' do
       before { sign_in user_double }
 
-      context 'when requested user found' do
-        before { allow(subject).to receive(:resource).and_return user_double }
-
-        before { get :show, params: { id: user_double.id }, format: :json }
-
-        it('returns status 200') { expect(response).to have_http_status 200 }
-
-        it('returns user') { expect(response.body).to eq user_double.to_json }
-      end
-
       context 'when requested user not found' do
         before { expect(subject).to receive(:resource).and_raise ActiveRecord::RecordNotFound }
 
         before { get :show, params: { id: user_double.id }, format: :json }
 
         it('returns status 404') { expect(response).to have_http_status 404 }
+      end
+
+      context 'when not authorized' do
+        before { allow(subject).to receive(:resource).and_return user_double }
+
+        before { expect(subject).to receive(:authorize).and_raise Pundit::NotAuthorizedError }
+
+        before { get :show, params: { id: user_double.id }, format: :json }
+
+        it('returns status 403') { expect(response).to have_http_status 403 }
+      end
+
+      context 'with authorization' do
+        before { allow(subject).to receive(:resource).and_return user_double }
+
+        before { allow(subject).to receive(:authorize).and_return true }
+
+        context 'when requested user found' do
+          before { get :show, params: { id: user_double.id }, format: :json }
+
+          it('returns status 200') { expect(response).to have_http_status 200 }
+
+          it('returns user') { expect(response.body).to eq user_double.to_json }
+        end
       end
     end
   end

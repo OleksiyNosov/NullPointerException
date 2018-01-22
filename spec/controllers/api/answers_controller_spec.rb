@@ -47,38 +47,52 @@ RSpec.describe Api::AnswersController, type: :controller do
 
       before { allow(subject).to receive(:question).and_return question_double }
 
-      context 'when request do not have requied keys' do
-        before { post :create, params: { invalid_key: answer_attrs }, format: :json }
+      before { allow(subject).to receive(:resource).and_return(answer_double) }
 
-        it('returns status 400') { expect(response).to have_http_status 400 }
-      end
-
-      context 'when sent answer attributes are valid' do
-        before { allow(AnswerCreator).to receive(:new).and_return(creator) }
-
-        before { expect(creator).to receive(:on).twice.and_call_original }
-
-        before { broadcast_succeeded creator, answer_double }
+      context 'when not authorized' do
+        before { expect(subject).to receive(:authorize).and_raise Pundit::NotAuthorizedError }
 
         before { post :create, params: { answer: answer_attrs }, format: :json }
 
-        it('returns status 201') { expect(response).to have_http_status 201 }
-
-        it('returns created answer') { expect(response.body).to eq answer_double.to_json }
+        it('returns status 403') { expect(response).to have_http_status 403 }
       end
 
-      context 'when sent answer attributes are not valid' do
-        before { allow(AnswerCreator).to receive(:new).and_return(creator) }
+      context 'with authorization' do
+        before { allow(subject).to receive(:authorize).and_return true }
 
-        before { expect(creator).to receive(:on).twice.and_call_original }
+        context 'when request do not have requied keys' do
+          before { post :create, params: { invalid_key: answer_attrs }, format: :json }
 
-        before { broadcast_failed creator, answer_errors }
+          it('returns status 400') { expect(response).to have_http_status 400 }
+        end
 
-        before { post :create, params: { answer: answer_attrs }, format: :json }
+        context 'when sent answer attributes are valid' do
+          before { allow(AnswerCreator).to receive(:new).and_return(creator) }
 
-        it('returns status 422') { expect(response).to have_http_status 422 }
+          before { expect(creator).to receive(:on).twice.and_call_original }
 
-        it('returns created answer') { expect(response.body).to eq answer_errors.to_json }
+          before { broadcast_succeeded creator, answer_double }
+
+          before { post :create, params: { answer: answer_attrs }, format: :json }
+
+          it('returns status 201') { expect(response).to have_http_status 201 }
+
+          it('returns created answer') { expect(response.body).to eq answer_double.to_json }
+        end
+
+        context 'when sent answer attributes are not valid' do
+          before { allow(AnswerCreator).to receive(:new).and_return(creator) }
+
+          before { expect(creator).to receive(:on).twice.and_call_original }
+
+          before { broadcast_failed creator, answer_errors }
+
+          before { post :create, params: { answer: answer_attrs }, format: :json }
+
+          it('returns status 422') { expect(response).to have_http_status 422 }
+
+          it('returns created answer') { expect(response.body).to eq answer_errors.to_json }
+        end
       end
     end
   end

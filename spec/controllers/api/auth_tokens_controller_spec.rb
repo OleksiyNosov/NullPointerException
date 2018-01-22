@@ -27,6 +27,8 @@ RSpec.describe Api::AuthTokensController, type: :controller do
 
       before { allow(user).to receive(:authenticate).and_return true }
 
+      before { allow(subject).to receive(:authorize).and_return true }
+
       before { post :create, params: params, format: :json }
 
       it('returns status 201') { expect(response).to have_http_status 201 }
@@ -40,28 +42,22 @@ RSpec.describe Api::AuthTokensController, type: :controller do
       it('returns status 400') { expect(response).to have_http_status 400 }
     end
 
+    context 'when not authenticated with password' do
+      before { allow(subject).to receive(:current_user).and_return user }
+
+      before { allow(user).to receive(:authenticate).and_raise Pundit::NotAuthorizedError  }
+
+      before { post :create, params: params, format: :json }
+
+      it('returns status 403') { expect(response).to have_http_status 403 }
+    end
+
     context 'when not authorized' do
       before { allow(subject).to receive(:current_user).and_return user }
 
       before { allow(user).to receive(:authenticate).and_return true }
 
       before { expect(subject).to receive(:authorize).and_raise Pundit::NotAuthorizedError }
-
-      before { post :create, params: params, format: :json }
-
-      it('returns status 403') { expect(response).to have_http_status 403 }
-    end
-
-    context 'when email is invalid' do
-      let(:email) { 'wrong_user_email' }
-
-      before { post :create, params: params, format: :json }
-
-      it('returns status 403') { expect(response).to have_http_status 403 }
-    end
-
-    context 'when password is invalid' do
-      let(:password) { 'wrong_user_password' }
 
       before { post :create, params: params, format: :json }
 

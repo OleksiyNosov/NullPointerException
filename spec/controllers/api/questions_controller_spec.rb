@@ -43,38 +43,52 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
       before { sign_in user }
 
-      context 'when request do not have requied keys' do
-        before { post :create, params: { invalid_key: question_attrs }, format: :json }
+      before { allow(subject).to receive(:resource).and_return question_double }
 
-        it('returns status 400') { expect(response).to have_http_status 400 }
+      context 'when not authorized' do
+        before { expect(subject).to receive(:authorize).and_raise Pundit::NotAuthorizedError }
+
+        before { post :create, params: { answer: question_attrs }, format: :json }
+
+        it('returns status 403') { expect(response).to have_http_status 403 }
       end
 
-      context 'when sent question attributes are valid' do
-        before { allow(QuestionCreator).to receive(:new).and_return(creator) }
+      context 'with authorization' do
+        before { allow(subject).to receive(:authorize).and_return true }
 
-        before { expect(creator).to receive(:on).twice.and_call_original }
+        context 'when request do not have requied keys' do
+          before { post :create, params: { invalid_key: question_attrs }, format: :json }
 
-        before { broadcast_succeeded creator, question_double }
+          it('returns status 400') { expect(response).to have_http_status 400 }
+        end
 
-        before { post :create, params: { question: question_attrs }, format: :json }
+        context 'when sent question attributes are valid' do
+          before { allow(QuestionCreator).to receive(:new).and_return(creator) }
 
-        it('returns status 201') { expect(response).to have_http_status 201 }
+          before { expect(creator).to receive(:on).twice.and_call_original }
 
-        it('returns created question') { expect(response.body).to eq question_double.to_json }
-      end
+          before { broadcast_succeeded creator, question_double }
 
-      context 'when sent question attributes are not valid' do
-        before { allow(QuestionCreator).to receive(:new).and_return(creator) }
+          before { post :create, params: { question: question_attrs }, format: :json }
 
-        before { expect(creator).to receive(:on).twice.and_call_original }
+          it('returns status 201') { expect(response).to have_http_status 201 }
 
-        before { broadcast_failed creator, question_errors }
+          it('returns created question') { expect(response.body).to eq question_double.to_json }
+        end
 
-        before { post :create, params: { question: question_attrs }, format: :json }
+        context 'when sent question attributes are not valid' do
+          before { allow(QuestionCreator).to receive(:new).and_return(creator) }
 
-        it('returns status 422') { expect(response).to have_http_status 422 }
+          before { expect(creator).to receive(:on).twice.and_call_original }
 
-        it('returns created question') { expect(response.body).to eq question_errors.to_json }
+          before { broadcast_failed creator, question_errors }
+
+          before { post :create, params: { question: question_attrs }, format: :json }
+
+          it('returns status 422') { expect(response).to have_http_status 422 }
+
+          it('returns created question') { expect(response.body).to eq question_errors.to_json }
+        end
       end
     end
   end

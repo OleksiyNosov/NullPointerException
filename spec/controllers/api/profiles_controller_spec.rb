@@ -16,16 +16,28 @@ RSpec.describe Api::ProfilesController, type: :controller do
       it('returns status 401') { expect(response).to have_http_status 401 }
     end
 
-    context 'when authenticated' do
+    context 'with authentication' do
       before { sign_in user_double }
 
       before { allow(subject).to receive(:resource).and_return user_double }
 
-      before { get :show, format: :json }
+      context 'when not authorized' do
+        before { expect(subject).to receive(:authorize).and_raise Pundit::NotAuthorizedError }
 
-      it('returns status 200') { expect(response).to have_http_status 200 }
+        before { get :show, format: :json }
 
-      it('returns user profile') { expect(response.body).to eq user_double.to_json }
+        it('returns status 403') { expect(response).to have_http_status 403 }
+      end
+
+      context 'user is valid' do
+        before { allow(subject).to receive(:authorize).and_return true }
+
+        before { get :show, format: :json }
+
+        it('returns status 200') { expect(response).to have_http_status 200 }
+
+        it('returns user profile') { expect(response.body).to eq user_double.to_json }
+      end
     end
   end
 

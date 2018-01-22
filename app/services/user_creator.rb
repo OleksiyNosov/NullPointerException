@@ -9,7 +9,7 @@ class UserCreator < ResourceCrudWorker
     @resource = User.new @params
 
     if @resource.save
-      serialized_user_attrs = UserSerializer.new(@resource).attributes
+      serialized_user_attrs = ActiveModelSerializers::SerializableResource.new(@resource).as_json
 
       additional_attrs = {
         notification: :registration,

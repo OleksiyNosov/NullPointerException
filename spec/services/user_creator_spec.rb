@@ -26,11 +26,11 @@ RSpec.describe UserCreator do
       before { allow(JWTWorker).to receive(:encode).and_return 'user_token' }
 
       before do
-        allow(UserSerializer).to receive(:new) do
+        allow(ActiveModelSerializers::SerializableResource).to receive(:new) do
           double.tap do |serialized_user|
-            allow(serialized_user).to receive(:attributes) do
-              double.tap do |attributes|
-                allow(attributes).to receive(:merge).with(additional_attrs).and_return :attrs_for_publish
+            allow(serialized_user).to receive(:as_json) do
+              double.tap do |as_json|
+                allow(as_json).to receive(:merge).with(additional_attrs).and_return :attrs_for_publish
               end
             end
           end

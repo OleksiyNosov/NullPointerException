@@ -6,6 +6,6 @@ class QuestionCreator < ResourceCrudWorker
 
   private
   def process_action
-    @resource = Question.create @params.merge(user_id: @user.id)
+    @resource = Question.create @params.merge(user: @user)
   end
 end

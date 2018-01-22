@@ -12,7 +12,7 @@ RSpec.describe AnswerCreator do
   subject { AnswerCreator.new question_double, user_double, answer_attrs }
 
   describe '#process_action' do
-    before { allow(answer_attrs).to receive(:merge).with(user_id: user_double.id).and_return answer_attrs }
+    before { allow(answer_attrs).to receive(:merge).with(user: user_double).and_return answer_attrs }
 
     before do
       allow(question_double).to receive(:answers) do

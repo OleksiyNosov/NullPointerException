@@ -12,7 +12,7 @@ RSpec.describe QuestionCreator do
   it('behaves as resource dispatcher') { is_expected.to be_an ResourceCrudWorker }
 
   describe '#process_action' do
-    before { allow(resource_attributes).to receive(:merge).with(user_id: user.id).and_return resource_attributes }
+    before { allow(resource_attributes).to receive(:merge).with(user: user).and_return resource_attributes }
 
     before { expect(Question).to receive(:create).with(resource_attributes) }
 

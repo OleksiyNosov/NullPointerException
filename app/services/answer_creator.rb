@@ -7,6 +7,6 @@ class AnswerCreator < ResourceCrudWorker
 
   private
   def process_action
-    @resource = @question.answers.create @params.merge(user_id: @user.id)
+    @resource = @question.answers.create @params.merge(user: @user)
   end
 end

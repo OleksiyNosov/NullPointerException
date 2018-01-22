@@ -1,6 +1,6 @@
 class User < ApplicationRecord
-  has_many :question, dependent: :nullify
-  has_many :answers, dependent: :nullify
+  has_many :question
+  has_many :answers
   has_secure_password
 
   enum status: %i[not_confirmed confirmed]

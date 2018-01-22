@@ -4,7 +4,7 @@ class UserPolicy < ApplicationPolicy
   end
 
   def update?
-    user.id == record.id
+    user_valid? && user.id.eql?(record.id)
   end
 
   def confirm?

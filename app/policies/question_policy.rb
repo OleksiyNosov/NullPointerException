@@ -1,9 +1,13 @@
 class QuestionPolicy < ApplicationPolicy
+  def create?
+    user_valid?
+  end
+
   def update?
-    requested_by_author?
+    user_valid? && requested_by_author?
   end
 
   def destroy?
-    requested_by_author?
+    user_valid? && requested_by_author?
   end
 end

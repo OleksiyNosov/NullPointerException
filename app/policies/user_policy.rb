@@ -1,4 +1,8 @@
 class UserPolicy < ApplicationPolicy
+  def show?
+    user_valid?
+  end
+
   def update?
     user.id == record.id
   end

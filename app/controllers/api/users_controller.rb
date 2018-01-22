@@ -19,13 +19,13 @@ class Api::UsersController < ApplicationController
 
   def confirm
     if current_user_from_token(params[:token])
-      authorize User
+      authorize(:user, :confirm?)
 
       current_user.confirmed!
 
       render json: { message: 'user confirmed' }
     else
-      head 404
+      head 403
     end
   end
 

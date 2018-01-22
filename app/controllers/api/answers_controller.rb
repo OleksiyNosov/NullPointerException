@@ -1,7 +1,7 @@
 class Api::AnswersController < ApplicationController
   skip_before_action :authenticate, only: :index
 
-  before_action -> { authorize resource }, only: %i[update destroy]
+  before_action -> { authorize resource }, only: %i[create update destroy]
 
   def create
     AnswerCreator.new(question, current_user, resource_params)

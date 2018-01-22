@@ -1,7 +1,7 @@
 class Api::UsersController < ApplicationController
   skip_before_action :authenticate, only: %i[create confirm]
 
-  before_action -> { authorize resource }, only: %i[update]
+  before_action -> { authorize resource }, only: %i[show update confirm]
 
   def create
     UserCreator.new(resource_params)

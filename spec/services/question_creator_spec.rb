@@ -11,6 +11,8 @@ RSpec.describe QuestionCreator do
 
   it('behaves as resource dispatcher') { is_expected.to be_an ResourceCrudWorker }
 
+  it('publishes resource') { is_expected.to be_kind_of Homie }
+
   describe '#process_action' do
     before { allow(resource_attributes).to receive(:merge).with(user: user).and_return resource_attributes }
 

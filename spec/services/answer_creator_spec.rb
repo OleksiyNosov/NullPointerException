@@ -11,6 +11,10 @@ RSpec.describe AnswerCreator do
 
   subject { AnswerCreator.new question_double, user_double, answer_attrs }
 
+  it('behaves as resource dispatcher') { is_expected.to be_an ResourceCrudWorker }
+
+  it('publishes resource') { is_expected.to be_kind_of Homie }
+
   describe '#process_action' do
     before { allow(answer_attrs).to receive(:merge).with(user: user_double).and_return answer_attrs }
 

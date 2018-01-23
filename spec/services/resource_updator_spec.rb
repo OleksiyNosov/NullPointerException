@@ -9,6 +9,8 @@ RSpec.describe ResourceUpdator do
 
   it('behaves as resource dispatcher') { is_expected.to be_an ResourceCrudWorker }
 
+  it('publishes resource') { is_expected.to be_kind_of Homie }
+
   describe '#process_action' do
     before { expect(resource).to receive(:update).with(resource_attributes) }
 

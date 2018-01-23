@@ -9,6 +9,8 @@ RSpec.describe UserUpdator do
 
   it('behaves as resource dispatcher') { is_expected.to be_an ResourceCrudWorker }
 
+  it('publishes resource') { is_expected.to be_kind_of Homie }
+
   describe '#process action' do
     before { allow(subject).to receive(:resource).and_return user }
 

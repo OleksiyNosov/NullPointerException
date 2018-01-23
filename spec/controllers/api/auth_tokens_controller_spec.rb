@@ -45,7 +45,7 @@ RSpec.describe Api::AuthTokensController, type: :controller do
     context 'when not authenticated with password' do
       before { allow(subject).to receive(:current_user).and_return user }
 
-      before { allow(user).to receive(:authenticate).and_raise Pundit::NotAuthorizedError  }
+      before { allow(user).to receive(:authenticate).and_raise Pundit::NotAuthorizedError }
 
       before { post :create, params: params, format: :json }
 

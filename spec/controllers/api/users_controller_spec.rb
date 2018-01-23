@@ -173,13 +173,13 @@ RSpec.describe Api::UsersController, type: :controller do
     context 'when no token passed' do
       before { get :confirm, format: :json }
 
-      it('returns status 404') { expect(response).to have_http_status 404 }
+      it('returns status 403') { expect(response).to have_http_status 403 }
     end
 
     context 'when passed empty token' do
       before { get :confirm, params: { token: '' }, format: :json }
 
-      it('returns status 404') { expect(response).to have_http_status 404 }
+      it('returns status 403') { expect(response).to have_http_status 403 }
     end
 
     context 'when passed expired token' do
@@ -187,7 +187,7 @@ RSpec.describe Api::UsersController, type: :controller do
 
       before { get :confirm, params: { token: token }, format: :json }
 
-      it('returns status 404') { expect(response).to have_http_status 404 }
+      it('returns status 403') { expect(response).to have_http_status 403 }
     end
 
     context 'when user is not authorized' do

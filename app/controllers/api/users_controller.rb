@@ -1,7 +1,7 @@
 class Api::UsersController < ApplicationController
   skip_before_action :authenticate, only: %i[create confirm]
 
-  before_action -> { authorize resource }, only: %i[show update confirm]
+  before_action -> { authorize resource }, only: %i[show update]
 
   def create
     UserCreator.new(resource_params)
@@ -18,15 +18,13 @@ class Api::UsersController < ApplicationController
   end
 
   def confirm
-    if current_user_from_token(params[:token])
-      authorize(:user, :confirm?)
+    current_user_from_token(params[:token])
 
-      current_user.confirmed!
+    authorize(:user, :confirm?)
 
-      render json: { message: 'user confirmed' }
-    else
-      head 403
-    end
+    current_user.confirmed!
+
+    render json: { message: 'user confirmed' }
   end
 
   private

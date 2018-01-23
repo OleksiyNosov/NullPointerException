@@ -5,6 +5,8 @@ RSpec.describe Api::AuthTokensController, type: :controller do
 
   it('handles exceptions') { is_expected.to be_kind_of ErrorHandable }
 
+  it('authorize current user') { is_expected.to be_kind_of Pundit }
+
   let(:password) { 'user_password' }
 
   let(:email) { 'test@example.com' }

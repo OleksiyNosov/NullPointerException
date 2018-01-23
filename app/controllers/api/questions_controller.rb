@@ -1,9 +1,11 @@
 class Api::QuestionsController < ApplicationController
   skip_before_action :authenticate, only: %i[index show]
 
-  before_action -> { authorize resource }, only: %i[create update destroy]
+  before_action -> { authorize resource }, only: %i[update destroy]
 
   def create
+    authorize(:question, :create?)
+
     QuestionCreator.new(current_user, resource_params)
       .on(:succeeded) { |resource| render json: resource, status: 201 }
       .on(:failed) { |errors| render json: errors, status: 422 }

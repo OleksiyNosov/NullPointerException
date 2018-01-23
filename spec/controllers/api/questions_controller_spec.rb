@@ -43,8 +43,6 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
       before { sign_in user }
 
-      before { allow(subject).to receive(:resource).and_return question_double }
-
       context 'when not authorized' do
         before { expect(subject).to receive(:authorize).and_raise Pundit::NotAuthorizedError }
 

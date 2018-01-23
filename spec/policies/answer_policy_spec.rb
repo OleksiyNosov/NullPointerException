@@ -10,8 +10,8 @@ RSpec.describe AnswerPolicy do
   let(:answer) { build(:answer, user: user) }
 
   permissions :create? do
-    context 'when requested by invalid user' do
-      let(:user) { build(:user, id: 5, status: :not_confirmed) }
+    context "when user's status is not_confirmed" do
+      let(:user) { build(:user, status: :not_confirmed) }
 
       it('rejects answer create') { expect(subject).not_to permit(user, nil) }
     end
@@ -22,13 +22,13 @@ RSpec.describe AnswerPolicy do
   end
 
   permissions :update? do
-    context 'when requested by invalid user' do
-      let(:user) { build(:user, id: 5, status: :not_confirmed) }
+    context "when user's status is not_confirmed" do
+      let(:user) { build(:user, status: :not_confirmed) }
 
       it('rejects answer update') { expect(subject).not_to permit(user, answer) }
     end
 
-    context 'when requested by some other user' do
+    context 'when requested not by author' do
       it('rejects answer update') { expect(subject).not_to permit(other_user, answer) }
     end
 
@@ -38,13 +38,13 @@ RSpec.describe AnswerPolicy do
   end
 
   permissions :destroy? do
-    context 'when requested by invalid user' do
-      let(:user) { build(:user, id: 5, status: :not_confirmed) }
+    context "when user's status is not_confirmed" do
+      let(:user) { build(:user, status: :not_confirmed) }
 
       it('rejects answer destroy') { expect(subject).not_to permit(user, answer) }
     end
 
-    context 'when requested by some other user' do
+    context 'when requested not by author' do
       it('rejects answer destroy') { expect(subject).not_to permit(other_user, answer) }
     end
 

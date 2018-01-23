@@ -10,8 +10,8 @@ RSpec.describe QuestionPolicy do
   let(:question) { build(:question, id: 7, user: user) }
 
   permissions :create? do
-    context 'when requested by invalid user' do
-      let(:user) { build(:user, id: 5, status: :not_confirmed) }
+    context "when user's status is not_confirmed" do
+      let(:user) { build(:user, status: :not_confirmed) }
 
       it('rejects question create') { expect(subject).not_to permit(user, nil) }
     end
@@ -22,13 +22,13 @@ RSpec.describe QuestionPolicy do
   end
 
   permissions :update? do
-    context 'when requested by invalid user' do
-      let(:user) { build(:user, id: 5, status: :not_confirmed) }
+    context "when user's status is not_confirmed" do
+      let(:user) { build(:user, status: :not_confirmed) }
 
       it('rejects question destroy') { expect(subject).not_to permit(user, question) }
     end
 
-    context 'when requested by some other user' do
+    context 'when requested not by author' do
       it('rejects question update') { expect(subject).not_to permit(other_user, question) }
     end
 
@@ -38,13 +38,13 @@ RSpec.describe QuestionPolicy do
   end
 
   permissions :destroy? do
-    context 'when requested by invalid user' do
-      let(:user) { build(:user, id: 5, status: :not_confirmed) }
+    context "when user's status is not_confirmed" do
+      let(:user) { build(:user, status: :not_confirmed) }
 
       it('rejects question destroy') { expect(subject).not_to permit(user, question) }
     end
 
-    context 'when requested by some other user' do
+    context 'when requested not by author' do
       it('rejects question destroy') { expect(subject).not_to permit(other_user, question) }
     end
 

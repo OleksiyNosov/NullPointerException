@@ -3,7 +3,9 @@ class Api::AuthTokensController < ActionController::API
   include Pundit
 
   def create
-    authenticate_with_password && authorize(:auth_token, :create?)
+    authenticate_with_password
+
+    authorize(:auth_token, :create?)
 
     render json: { token: JWTWorker.encode(user_id: current_user.id) }, status: 201
   end

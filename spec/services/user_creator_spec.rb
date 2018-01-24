@@ -63,7 +63,7 @@ RSpec.describe UserCreator do
     context 'when resource is valid' do
       before { allow(subject).to receive_message_chain(:resource, :valid?).and_return true }
 
-      before { allow(subject).to receive(:resource).and_return user }
+      before { allow(subject).to receive(:serialized_resource).and_return user }
 
       before { expect(subject).to receive(:broadcast).with(:succeeded, user) }
 

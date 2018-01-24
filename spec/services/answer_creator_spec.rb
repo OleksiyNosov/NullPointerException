@@ -36,4 +36,28 @@ RSpec.describe AnswerCreator do
 
     it('creates and broadcasts answer') { expect { subject.send :call }.to_not raise_error }
   end
+
+  describe  '#broadcast_resource' do
+    context 'when resource is valid' do
+      before { allow(subject).to receive_message_chain(:resource, :valid?).and_return true }
+
+      before { allow(subject).to receive(:serialized_resource).and_return answer_double }
+
+      before { expect(subject).to receive(:broadcast).with(:succeeded, answer_double) }
+
+      it('broadcasts resource') { expect { subject.send :broadcast_resource }.to_not raise_error }
+    end
+
+    context 'when resource is invalid' do
+      let(:resource_errors) { double }
+
+      before { allow(subject).to receive_message_chain(:resource, :valid?).and_return false }
+
+      before { allow(subject).to receive_message_chain(:resource, :errors).and_return resource_errors }
+
+      before { expect(subject).to receive(:broadcast).with(:failed, resource_errors) }
+
+      it('broadcasts resource errors') { expect { subject.send :broadcast_resource }.to_not raise_error }
+    end
+  end
 end

@@ -173,13 +173,13 @@ RSpec.describe Api::UsersController, type: :controller do
     context 'when no token passed' do
       before { get :confirm, format: :json }
 
-      it('returns status 403') { expect(response).to have_http_status 403 }
+      it('returns status 401') { expect(response).to have_http_status 401 }
     end
 
     context 'when passed empty token' do
       before { get :confirm, params: { token: '' }, format: :json }
 
-      it('returns status 403') { expect(response).to have_http_status 403 }
+      it('returns status 401') { expect(response).to have_http_status 401 }
     end
 
     context 'when passed expired token' do
@@ -187,34 +187,38 @@ RSpec.describe Api::UsersController, type: :controller do
 
       before { get :confirm, params: { token: token }, format: :json }
 
-      it('returns status 403') { expect(response).to have_http_status 403 }
+      it('returns status 401') { expect(response).to have_http_status 401 }
     end
 
-    context 'when user is not authorized' do
+    context 'with authentication' do
       before { allow(User).to receive(:find).and_return user_double }
 
-      before { allow(subject).to receive(:authorize).and_raise Pundit::NotAuthorizedError }
+      before { expect(subject).to receive(:authenticate_to_confirm) }
 
-      before { get :confirm, params: { token: token }, format: :json }
+      context 'when user is not authorized' do
+        before { allow(subject).to receive(:authorize).and_raise Pundit::NotAuthorizedError }
 
-      it('returns status 403') { expect(response).to have_http_status 403 }
-    end
+        before { get :confirm, params: { token: token }, format: :json }
 
-    context 'when token is valid' do
-      let(:result_json) { { message: 'user confirmed' }.to_json }
+        it('returns status 403') { expect(response).to have_http_status 403 }
+      end
 
-      before { allow(User).to receive(:find).and_return user_double }
+      context 'when user authorized' do
+        let(:result_json) { { message: 'user confirmed' }.to_json }
 
-      before { allow(subject).to receive(:authorize).and_return true }
+        before { allow(subject).to receive(:current_user).and_return user_double }
 
-      before { expect(user_double).to receive(:confirmed!) }
+        before { allow(subject).to receive(:authorize).and_return true }
 
-      before { get :confirm, params: { token: token }, format: :json }
+        before { expect(user_double).to receive(:confirmed!) }
 
-      it('returns status 200') { expect(response).to have_http_status 200 }
+        before { get :confirm, params: { token: token }, format: :json }
 
-      it "returns message 'user confirmed'" do
-        expect(response.body).to eq result_json
+        it('returns status 200') { expect(response).to have_http_status 200 }
+
+        it "returns message 'user confirmed'" do
+          expect(response.body).to eq result_json
+        end
       end
     end
   end

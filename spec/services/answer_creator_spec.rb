@@ -9,13 +9,15 @@ RSpec.describe AnswerCreator do
 
   let(:answer_double) { instance_double Answer, id: 3, question: question_double, user: user_double }
 
-  subject { AnswerCreator.new question_double, user_double, answer_attrs }
+  subject { AnswerCreator.new user_double, answer_attrs }
 
   it('behaves as resource dispatcher') { is_expected.to be_an ResourceCrudWorker }
 
   it('publishes resource') { is_expected.to be_kind_of Homie }
 
   describe '#process_action' do
+    before { allow(Question).to receive(:find).and_return question_double }
+
     before { allow(answer_attrs).to receive(:merge).with(user: user_double).and_return answer_attrs }
 
     before do

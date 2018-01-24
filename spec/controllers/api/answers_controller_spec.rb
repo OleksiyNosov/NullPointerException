@@ -41,11 +41,9 @@ RSpec.describe Api::AnswersController, type: :controller do
     end
 
     context 'with authentication' do
-      let(:creator) { AnswerCreator.new question_double, user, answer_attrs }
+      let(:creator) { AnswerCreator.new user, answer_attrs }
 
       before { sign_in user }
-
-      before { allow(subject).to receive(:question).and_return question_double }
 
       context 'when not authorized' do
         before { expect(subject).to receive(:authorize).and_raise Pundit::NotAuthorizedError }

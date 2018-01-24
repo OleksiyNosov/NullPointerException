@@ -56,4 +56,12 @@ RSpec.describe UserUpdator do
       it('broadcasts resource errors') { expect { subject.send :broadcast_resource }.to_not raise_error }
     end
   end
+
+  describe '#serialized_resource' do
+    let(:serialized_resource) { UserSerializer.new(user).as_json }
+
+    before { allow(subject).to receive(:resource).and_return user }
+
+    it('resturns serialized user') { expect(subject.send :serialized_resource).to eq serialized_resource }
+  end
 end

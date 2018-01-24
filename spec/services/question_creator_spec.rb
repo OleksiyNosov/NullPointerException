@@ -5,7 +5,7 @@ RSpec.describe QuestionCreator do
 
   let(:resource_attributes) { attributes_for(:question, user: user) }
 
-  let(:resource) { instance_double(Question, valid?: true, **resource_attributes) }
+  let(:resource) { build(:question, **resource_attributes) }
 
   subject { QuestionCreator.new user, resource_attributes }
 
@@ -51,5 +51,13 @@ RSpec.describe QuestionCreator do
 
       it('broadcasts resource errors') { expect { subject.send :broadcast_resource }.to_not raise_error }
     end
+  end
+
+  describe '#serialized_resource' do
+    let(:serialized_resource) { QuestionSerializer.new(resource).as_json }
+
+    before { allow(subject).to receive(:resource).and_return resource }
+
+    it('resturns serialized resource') { expect(subject.send :serialized_resource).to eq serialized_resource }
   end
 end

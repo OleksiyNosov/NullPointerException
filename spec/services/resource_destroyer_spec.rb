@@ -46,4 +46,20 @@ RSpec.describe ResourceDestroyer do
       it('broadcasts resource errors') { expect { subject.send :broadcast_resource }.to_not raise_error }
     end
   end
+
+  describe '#serialized_resource' do
+    let(:serialized_resource) { double }
+
+    before { allow(subject).to receive(:resource).and_return resource }
+
+    before do
+      allow(ActiveModelSerializers::SerializableResource).to receive(:new) do
+        double.tap do |serialized_instance|
+          allow(serialized_instance).to receive(:as_json).and_return serialized_resource
+        end
+      end
+    end
+
+    it('resturns serialized resource') { expect(subject.send :serialized_resource).to eq serialized_resource }
+  end
 end

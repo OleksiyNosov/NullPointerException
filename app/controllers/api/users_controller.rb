@@ -6,14 +6,14 @@ class Api::UsersController < ApplicationController
 
   def create
     UserCreator.new(resource_params)
-      .on(:succeeded) { |resource| render json: resource, status: 201 }
+      .on(:succeeded) { |serialized_resource| render json: serialized_resource, status: 201 }
       .on(:failed) { |errors| render json: errors, status: 422 }
       .call
   end
 
   def update
     UserUpdator.new(resource, resource_params)
-      .on(:succeeded) { |resource| render json: resource }
+      .on(:succeeded) { |serialized_resource| render json: serialized_resource }
       .on(:failed) { |errors| render json: errors, status: 422 }
       .call
   end

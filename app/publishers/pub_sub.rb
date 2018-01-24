@@ -1,7 +1,7 @@
 class PubSub
   class << self
     def instance
-      @redis ||= Redis.current
+      Redis.current
     end
   end
 end

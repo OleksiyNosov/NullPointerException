@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe ResourceUpdator do
   let(:resource_attributes) { attributes_for(:question) }
 
-  let(:resource) { instance_double Question, valid?: true }
+  let(:resource) { build(:question, **resource_attributes) }
 
   subject { ResourceUpdator.new resource, resource_attributes }
 
@@ -50,17 +50,9 @@ RSpec.describe ResourceUpdator do
   end
 
   describe '#serialized_resource' do
-    let(:serialized_resource) { double }
+    let(:serialized_resource) { ActiveModelSerializers::SerializableResource.new(resource).as_json }
 
     before { allow(subject).to receive(:resource).and_return resource }
-
-    before do
-      allow(ActiveModelSerializers::SerializableResource).to receive(:new) do
-        double.tap do |serialized_instance|
-          allow(serialized_instance).to receive(:as_json).and_return serialized_resource
-        end
-      end
-    end
 
     it('resturns serialized resource') { expect(subject.send :serialized_resource).to eq serialized_resource }
   end

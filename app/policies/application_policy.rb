@@ -7,9 +7,8 @@ class ApplicationPolicy
   end
 
   private
-
   def user_valid?
-    user&.confirmed?
+    user.confirmed?
   end
 
   def requested_by_author?

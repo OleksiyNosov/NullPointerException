@@ -8,6 +8,6 @@ class UserPolicy < ApplicationPolicy
   end
 
   def confirm?
-    user&.not_confirmed?
+    user.not_confirmed?
   end
 end

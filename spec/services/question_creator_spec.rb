@@ -58,6 +58,6 @@ RSpec.describe QuestionCreator do
 
     before { allow(subject).to receive(:resource).and_return resource }
 
-    it('resturns serialized resource') { expect(subject.send :serialized_resource).to eq serialized_resource }
+    it('resturns serialized question') { expect(subject.send :serialized_resource).to eq serialized_resource }
   end
 end

@@ -36,6 +36,10 @@ class Api::UsersController < ApplicationController
   end
 
   def authenticate_to_confirm
-    authenticate_or_request_with_http_token { current_user_from_token(params[:token]) }
+    unless current_user_from_token(params[:token])
+      headers['WWW-Authenticate'] = 'Token realm="Application"'
+
+      head 401
+    end
   end
 end

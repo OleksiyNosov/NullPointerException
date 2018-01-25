@@ -174,12 +174,20 @@ RSpec.describe Api::UsersController, type: :controller do
       before { get :confirm, format: :json }
 
       it('returns status 401') { expect(response).to have_http_status 401 }
+
+      it('returns header "WWW-Authenticate"') do
+        expect(response.header['WWW-Authenticate']).to eq 'Token realm="Application"'
+      end
     end
 
     context 'when passed empty token' do
       before { get :confirm, params: { token: '' }, format: :json }
 
       it('returns status 401') { expect(response).to have_http_status 401 }
+
+      it('returns header "WWW-Authenticate"') do
+        expect(response.header['WWW-Authenticate']).to eq 'Token realm="Application"'
+      end
     end
 
     context 'when passed expired token' do
@@ -188,6 +196,10 @@ RSpec.describe Api::UsersController, type: :controller do
       before { get :confirm, params: { token: token }, format: :json }
 
       it('returns status 401') { expect(response).to have_http_status 401 }
+
+      it('returns header "WWW-Authenticate"') do
+        expect(response.header['WWW-Authenticate']).to eq 'Token realm="Application"'
+      end
     end
 
     context 'with authentication' do

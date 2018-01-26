@@ -1,10 +1,7 @@
-class Api::AuthTokensController < ActionController::API
-  include ErrorHandable
-  include Pundit
+class Api::AuthTokensController < ApplicationController
+  include ActionController::HttpAuthentication::Basic::ControllerMethods
 
   def create
-    authenticate_with_password
-
     authorize(:auth_token, :create?)
 
     render json: { token: JWTWorker.encode(user_id: current_user.id) }, status: 201
@@ -15,11 +12,9 @@ class Api::AuthTokensController < ActionController::API
     params.require(:sign_in).permit(:email, :password)
   end
 
-  def current_user
-    @current_user ||= User.find_by(email: resource_params[:email].downcase)
-  end
-
-  def authenticate_with_password
-    current_user&.authenticate(resource_params[:password]) || (raise Pundit::NotAuthorizedError)
+  def authenticate
+    authenticate_or_request_with_http_basic do |email, password|
+      @current_user = User.find_by!(email: email&.downcase).authenticate(password)
+    end
   end
 end

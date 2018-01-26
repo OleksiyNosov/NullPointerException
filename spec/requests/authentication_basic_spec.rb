@@ -1,9 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe 'Basic Authentication', type: :request do
+  let(:basic_auth) { ActionController::HttpAuthentication::Basic }
+
   let(:user) { create(:user) }
 
-  let(:auth_header) { ActionController::HttpAuthentication::Basic.encode_credentials(user.email, user.password) }
+  let(:auth_header) { basic_auth.encode_credentials(user.email, user.password) }
 
   let(:headers) { { 'Authorization' => auth_header, 'Content-type' => 'application/json' } }
 
@@ -15,13 +17,13 @@ RSpec.describe 'Basic Authentication', type: :request do
     before { post '/api/auth_tokens', headers: headers }
 
     context 'when email is not found' do
-      let(:auth_header) { ActionController::HttpAuthentication::Basic.encode_credentials('incorect', user.password) }
+      let(:auth_header) { basic_auth.encode_credentials('incorrect', user.password) }
 
       it('returns status 404') { expect(response).to have_http_status 404 }
     end
 
     context 'when password is invalid' do
-      let(:auth_header) { ActionController::HttpAuthentication::Basic.encode_credentials(user.email, 'incorect') }
+      let(:auth_header) { basic_auth.encode_credentials(user.email, 'incorrect') }
 
       it('returns status 401') { expect(response).to have_http_status 401 }
     end

@@ -12,7 +12,7 @@ RSpec.describe 'Authentication', type: :request do
     }.to_json
   end
 
-  let(:token) { JWTWorker.encode(user_id: user.id, intent: 'authentication') }
+  let(:token) { JWTWorker.encode(user_id: user.id) }
 
   let(:headers) { { 'Authorization' => "Bearer #{ token }", 'Content-type' => 'application/json' } }
 

@@ -7,13 +7,28 @@ end
 
 gem 'rails'
 
+# serialize models
 gem 'active_model_serializers'
+
+# encrypts password
 gem 'bcrypt'
+
+# implements observer logic in controlers
 gem 'homie'
+
+# creates tokens for authentication
 gem 'jwt'
+
+# orm for postgresql
 gem 'pg'
+
+# web server
 gem 'puma'
+
+# authorize users
 gem 'pundit'
+
+# publishes data
 gem 'redis'
 
 group :development, :test do

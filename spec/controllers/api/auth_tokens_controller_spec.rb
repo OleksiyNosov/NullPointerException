@@ -32,7 +32,7 @@ RSpec.describe Api::AuthTokensController, type: :controller do
       it('returns status 401') { expect(response).to have_http_status 401 }
 
       it('returns header "WWW-Authenticate"') do
-        expect(response.header['WWW-Authenticate']).to eq 'Token realm="Application"'
+        expect(response.header['WWW-Authenticate']).to eq 'Basic realm="Application"'
       end
     end
 

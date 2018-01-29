@@ -33,7 +33,7 @@ RSpec.describe ResourceUpdator do
 
       before { expect(subject).to receive(:broadcast).with(:succeeded, resource) }
 
-      it('broadcasts resource') { expect { subject.send :broadcast_resource }.to_not raise_error }
+      it('broadcasts serialized resource') { expect { subject.send :broadcast_resource }.to_not raise_error }
     end
 
     context 'when resource is invalid' do

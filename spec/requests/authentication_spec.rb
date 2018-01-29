@@ -19,12 +19,6 @@ RSpec.describe 'Authentication', type: :request do
   context 'GET /api/profile' do
     before { get '/api/profile', params: {}, headers: headers }
 
-    context 'with valid params' do
-      it('returns user profile') { expect(response.body).to eq user_json }
-
-      it('returns status 200') { expect(response).to have_http_status 200 }
-    end
-
     context 'with invalid params' do
       let(:token) { 'invalid token' }
 
@@ -35,6 +29,12 @@ RSpec.describe 'Authentication', type: :request do
       end
 
       it('returns status 401') { expect(response).to have_http_status 401 }
+    end
+
+    context 'with valid params' do
+      it('returns user profile') { expect(response.body).to eq user_json }
+
+      it('returns status 200') { expect(response).to have_http_status 200 }
     end
   end
 end

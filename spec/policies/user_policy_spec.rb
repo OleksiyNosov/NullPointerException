@@ -36,14 +36,14 @@ RSpec.describe UserPolicy do
   end
 
   permissions :confirm? do
+    context "when user's status is already confirmed" do
+      it('rejects user confirmation') { expect(subject).not_to permit(user, User) }
+    end
+
     context "when user's status is not_confirmed" do
       let(:user) { build(:user, status: :not_confirmed) }
 
       it('grants user confirmation') { expect(subject).to permit(user, User) }
-    end
-
-    context "when user's status is already confirmed" do
-      it('rejects user confirmation') { expect(subject).not_to permit(user, User) }
     end
   end
 end

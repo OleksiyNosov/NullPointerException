@@ -62,20 +62,6 @@ RSpec.describe Api::AnswersController, type: :controller do
           it('returns status 400') { expect(response).to have_http_status 400 }
         end
 
-        context 'when sent answer attributes are valid' do
-          before { allow(AnswerCreator).to receive(:new).and_return(creator) }
-
-          before { expect(creator).to receive(:on).twice.and_call_original }
-
-          before { broadcast_succeeded creator, answer_double }
-
-          before { post :create, params: { answer: answer_attrs }, format: :json }
-
-          it('returns status 201') { expect(response).to have_http_status 201 }
-
-          it('returns created answer') { expect(response.body).to eq answer_double.to_json }
-        end
-
         context 'when sent answer attributes are not valid' do
           before { allow(AnswerCreator).to receive(:new).and_return(creator) }
 
@@ -88,6 +74,20 @@ RSpec.describe Api::AnswersController, type: :controller do
           it('returns status 422') { expect(response).to have_http_status 422 }
 
           it('returns created answer') { expect(response.body).to eq answer_errors.to_json }
+        end
+
+        context 'when sent answer attributes are valid' do
+          before { allow(AnswerCreator).to receive(:new).and_return(creator) }
+
+          before { expect(creator).to receive(:on).twice.and_call_original }
+
+          before { broadcast_succeeded creator, answer_double }
+
+          before { post :create, params: { answer: answer_attrs }, format: :json }
+
+          it('returns status 201') { expect(response).to have_http_status 201 }
+
+          it('returns created answer') { expect(response.body).to eq answer_double.to_json }
         end
       end
     end
@@ -134,20 +134,6 @@ RSpec.describe Api::AnswersController, type: :controller do
           it('returns status 400') { expect(response).to have_http_status 400 }
         end
 
-        context 'when sent answer attributes are valid' do
-          before { allow(ResourceUpdator).to receive(:new).and_return(updator) }
-
-          before { expect(updator).to receive(:on).twice.and_call_original }
-
-          before { broadcast_succeeded updator, answer_double }
-
-          before { patch :update, params: { id: answer_double.id, answer: answer_attrs }, format: :json }
-
-          it('returns status 200') { expect(response).to have_http_status 200 }
-
-          it('returns updated answer') { expect(response.body).to eq answer_double.to_json }
-        end
-
         context 'when sent answer attributes are not valid' do
           before { allow(ResourceUpdator).to receive(:new).and_return(updator) }
 
@@ -160,6 +146,20 @@ RSpec.describe Api::AnswersController, type: :controller do
           it('returns status 422') { expect(response).to have_http_status 422 }
 
           it('returns errors') { expect(response.body).to eq answer_errors.to_json }
+        end
+
+        context 'when sent answer attributes are valid' do
+          before { allow(ResourceUpdator).to receive(:new).and_return(updator) }
+
+          before { expect(updator).to receive(:on).twice.and_call_original }
+
+          before { broadcast_succeeded updator, answer_double }
+
+          before { patch :update, params: { id: answer_double.id, answer: answer_attrs }, format: :json }
+
+          it('returns status 200') { expect(response).to have_http_status 200 }
+
+          it('returns updated answer') { expect(response.body).to eq answer_double.to_json }
         end
       end
     end
@@ -204,20 +204,20 @@ RSpec.describe Api::AnswersController, type: :controller do
 
         before { expect(destroyer).to receive(:on).twice.and_call_original }
 
-        context 'when sent data is valid' do
-          before { broadcast_succeeded destroyer, answer_double }
-
-          before { delete :destroy, params: { id: answer_double.id }, format: :json }
-
-          it('returns status 204') { expect(response).to have_http_status 204 }
-        end
-
         context 'when sent data is not valid' do
           before { broadcast_failed destroyer, answer_errors }
 
           before { delete :destroy, params: { id: answer_double.id }, format: :json }
 
           it('returns status 422') { expect(response).to have_http_status 422 }
+        end
+
+        context 'when sent data is valid' do
+          before { broadcast_succeeded destroyer, answer_double }
+
+          before { delete :destroy, params: { id: answer_double.id }, format: :json }
+
+          it('returns status 204') { expect(response).to have_http_status 204 }
         end
       end
     end

@@ -12,6 +12,14 @@ RSpec.describe Api::QuestionsController, type: :controller do
   let(:question_errors) { { attribute_name: %w[error1 error2] } }
 
   describe 'GET #show' do
+    context 'when requested question was not found' do
+      before { expect(Question).to receive(:find).and_raise ActiveRecord::RecordNotFound }
+
+      before { get :show, params: { id: question_double.id }, format: :json }
+
+      it('returns status 404') { expect(response).to have_http_status 404 }
+    end
+
     context 'when requested question was found' do
       before { expect(subject).to receive(:resource).and_return question_double }
 
@@ -20,14 +28,6 @@ RSpec.describe Api::QuestionsController, type: :controller do
       it('returns status 200') { expect(response).to have_http_status 200 }
 
       it('returns question') { expect(response.body).to eq question_double.to_json }
-    end
-
-    context 'when requested question was not found' do
-      before { expect(Question).to receive(:find).and_raise ActiveRecord::RecordNotFound }
-
-      before { get :show, params: { id: question_double.id }, format: :json }
-
-      it('returns status 404') { expect(response).to have_http_status 404 }
     end
   end
 
@@ -60,20 +60,6 @@ RSpec.describe Api::QuestionsController, type: :controller do
           it('returns status 400') { expect(response).to have_http_status 400 }
         end
 
-        context 'when sent question attributes are valid' do
-          before { allow(QuestionCreator).to receive(:new).and_return(creator) }
-
-          before { expect(creator).to receive(:on).twice.and_call_original }
-
-          before { broadcast_succeeded creator, question_double }
-
-          before { post :create, params: { question: question_attrs }, format: :json }
-
-          it('returns status 201') { expect(response).to have_http_status 201 }
-
-          it('returns created question') { expect(response.body).to eq question_double.to_json }
-        end
-
         context 'when sent question attributes are not valid' do
           before { allow(QuestionCreator).to receive(:new).and_return(creator) }
 
@@ -86,6 +72,20 @@ RSpec.describe Api::QuestionsController, type: :controller do
           it('returns status 422') { expect(response).to have_http_status 422 }
 
           it('returns created question') { expect(response.body).to eq question_errors.to_json }
+        end
+
+        context 'when sent question attributes are valid' do
+          before { allow(QuestionCreator).to receive(:new).and_return(creator) }
+
+          before { expect(creator).to receive(:on).twice.and_call_original }
+
+          before { broadcast_succeeded creator, question_double }
+
+          before { post :create, params: { question: question_attrs }, format: :json }
+
+          it('returns status 201') { expect(response).to have_http_status 201 }
+
+          it('returns created question') { expect(response.body).to eq question_double.to_json }
         end
       end
     end
@@ -134,20 +134,6 @@ RSpec.describe Api::QuestionsController, type: :controller do
           it('returns status 400') { expect(response).to have_http_status 400 }
         end
 
-        context 'when sent question attributes are valid' do
-          before { allow(ResourceUpdator).to receive(:new).and_return(updator) }
-
-          before { expect(updator).to receive(:on).twice.and_call_original }
-
-          before { broadcast_succeeded updator, question_double }
-
-          before { patch :update, params: params, format: :json }
-
-          it('returns status 200') { expect(response).to have_http_status 200 }
-
-          it('returns updated question') { expect(response.body).to eq question_double.to_json }
-        end
-
         context 'when sent question attributes are not valid' do
           before { allow(ResourceUpdator).to receive(:new).and_return(updator) }
 
@@ -160,6 +146,20 @@ RSpec.describe Api::QuestionsController, type: :controller do
           it('returns status 422') { expect(response).to have_http_status 422 }
 
           it('returns errors') { expect(response.body).to eq question_errors.to_json }
+        end
+
+        context 'when sent question attributes are valid' do
+          before { allow(ResourceUpdator).to receive(:new).and_return(updator) }
+
+          before { expect(updator).to receive(:on).twice.and_call_original }
+
+          before { broadcast_succeeded updator, question_double }
+
+          before { patch :update, params: params, format: :json }
+
+          it('returns status 200') { expect(response).to have_http_status 200 }
+
+          it('returns updated question') { expect(response.body).to eq question_double.to_json }
         end
       end
     end
@@ -204,20 +204,20 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
         before { expect(destroyer).to receive(:on).twice.and_call_original }
 
-        context 'when sent data is valid' do
-          before { broadcast_succeeded destroyer, question_double }
-
-          before { delete :destroy, params: { id: question_double.id }, format: :json }
-
-          it('returns status 204') { expect(response).to have_http_status 204 }
-        end
-
         context 'when sent data in not valid' do
           before { broadcast_failed destroyer, question_errors }
 
           before { delete :destroy, params: { id: question_double.id }, format: :json }
 
           it('returns status 422') { expect(response).to have_http_status 422 }
+        end
+
+        context 'when sent data is valid' do
+          before { broadcast_succeeded destroyer, question_double }
+
+          before { delete :destroy, params: { id: question_double.id }, format: :json }
+
+          it('returns status 204') { expect(response).to have_http_status 204 }
         end
       end
     end

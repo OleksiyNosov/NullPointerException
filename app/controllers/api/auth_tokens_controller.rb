@@ -8,13 +8,9 @@ class Api::AuthTokensController < ApplicationController
   end
 
   private
-  def resource_params
-    params.require(:sign_in).permit(:email, :password)
-  end
-
   def authenticate
     authenticate_or_request_with_http_basic do |email, password|
-      @current_user = User.find_by!(email: email&.downcase).authenticate(password)
+      @current_user = User.find_by!(email: email.downcase).authenticate(password)
     end
   end
 end

@@ -63,5 +63,5 @@ group :test do
   gem 'simplecov', require: false
 end
 
-  # compatibility with windows platforms
+# compatibility with windows platforms
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]

@@ -3,7 +3,9 @@ require 'rails_helper'
 RSpec.describe Api::AuthTokensController, type: :controller do
   it { is_expected.to be_an ActionController::API }
 
-  it { is_expected.to be_kind_of ActionController::HttpAuthentication::Basic::ControllerMethods }
+  it 'authenticate with basic' do
+    is_expected.to be_kind_of ActionController::HttpAuthentication::Basic::ControllerMethods
+  end
 
   it('handles exceptions') { is_expected.to be_kind_of ErrorHandable }
 

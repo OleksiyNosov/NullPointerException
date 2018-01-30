@@ -234,8 +234,6 @@ RSpec.describe Api::AnswersController, type: :controller do
   end
 
   describe '#resource' do
-    let(:id) { answer_double.id }
-
     before { delete :destroy, params: { id: 3 }, format: :json }
 
     before { allow(Answer).to receive(:find).with('3').and_return answer_double }

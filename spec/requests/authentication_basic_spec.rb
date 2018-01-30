@@ -11,8 +11,6 @@ RSpec.describe 'Basic Authentication', type: :request do
 
   let(:token) { JWTWorker.encode(user_id: user.id) }
 
-  let(:token_json) { { 'token' => token }.to_json }
-
   context 'POST /api/auth_tokens' do
     before { post '/api/auth_tokens', headers: headers }
 
@@ -29,7 +27,9 @@ RSpec.describe 'Basic Authentication', type: :request do
     end
 
     context 'when email and password are valid' do
-      it('returns token') { expect(response.body).to eq token_json }
+      let(:result) { { 'token' => token }.to_json }
+
+      it('returns token') { expect(response.body).to eq result }
 
       it('returns status 201') { expect(response).to have_http_status 201 }
     end

@@ -170,30 +170,8 @@ RSpec.describe Api::UsersController, type: :controller do
   describe 'GET #confirm' do
     let(:token) { JWTWorker.encode(user_id: user_double.id) }
 
-    context 'when no token passed' do
-      before { get :confirm, format: :json }
-
-      it('returns status 401') { expect(response).to have_http_status 401 }
-
-      it('returns header "WWW-Authenticate"') do
-        expect(response.header['WWW-Authenticate']).to eq 'Token realm="Application"'
-      end
-    end
-
-    context 'when passed empty token' do
-      before { get :confirm, params: { token: '' }, format: :json }
-
-      it('returns status 401') { expect(response).to have_http_status 401 }
-
-      it('returns header "WWW-Authenticate"') do
-        expect(response.header['WWW-Authenticate']).to eq 'Token realm="Application"'
-      end
-    end
-
-    context 'when passed expired token' do
-      let(:token) { JWTWorker.encode(user_id: user_double.id, exp: Time.zone.now.to_i - 5.minutes.to_i) }
-
-      before { get :confirm, params: { token: token }, format: :json }
+    context 'when passed invalid token' do
+      before { get :confirm, params: { token: 'invalid_token' }, format: :json }
 
       it('returns status 401') { expect(response).to have_http_status 401 }
 

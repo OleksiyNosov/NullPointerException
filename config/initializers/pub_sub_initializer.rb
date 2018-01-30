@@ -1,1 +1,1 @@
-PubSub.instance
+PubSub.client

@@ -1,6 +1,6 @@
 class PubSub
   class << self
-    def instance
+    def client
       Redis.current
     end
   end

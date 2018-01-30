@@ -3,7 +3,7 @@ class UserPublisher
 
   class << self
     def publish attributes
-      PubSub.instance.publish CHANNEL, attributes.to_json
+      PubSub.client.publish CHANNEL, attributes.to_json
     end
   end
 end

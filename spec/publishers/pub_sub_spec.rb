@@ -8,6 +8,6 @@ RSpec.describe PubSub do
   describe '.instance' do
     before { allow(Redis).to receive(:current).and_return redis }
 
-    it('returns instance of redis') { expect(subject.instance).to eq redis }
+    it('returns instance of redis') { expect(subject.client).to eq redis }
   end
 end

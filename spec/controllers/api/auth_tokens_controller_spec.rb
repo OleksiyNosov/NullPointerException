@@ -3,6 +3,8 @@ require 'rails_helper'
 RSpec.describe Api::AuthTokensController, type: :controller do
   it { is_expected.to be_an ActionController::API }
 
+  it { is_expected.to be_kind_of ActionController::HttpAuthentication::Basic::ControllerMethods }
+
   it('handles exceptions') { is_expected.to be_kind_of ErrorHandable }
 
   it('authorize current user') { is_expected.to be_kind_of Pundit }
@@ -36,30 +38,28 @@ RSpec.describe Api::AuthTokensController, type: :controller do
       end
     end
 
-    context 'when not authorized' do
-      before { expect(subject).to receive(:authenticate) }
+    context 'with authentication' do
+      before { sign_in user }
 
-      before { expect(subject).to receive(:authorize).and_raise Pundit::NotAuthorizedError }
+      context 'when not authorized' do
+        before { expect(subject).to receive(:authorize).and_raise Pundit::NotAuthorizedError }
 
-      before { post :create, format: :json }
+        before { post :create, format: :json }
 
-      it('returns status 403') { expect(response).to have_http_status 403 }
-    end
+        it('returns status 403') { expect(response).to have_http_status 403 }
+      end
 
-    context 'when email and password are valid' do
-      let(:token_json) { { 'token' => token }.to_json }
+      context 'when email and password are valid' do
+        let(:result) { { 'token' => token }.to_json }
 
-      before { allow(subject).to receive(:current_user).and_return user }
+        before { expect(subject).to receive(:authorize) }
 
-      before { expect(subject).to receive(:authenticate) }
+        before { post :create, format: :json }
 
-      before { expect(subject).to receive(:authorize) }
+        it('returns status 201') { expect(response).to have_http_status 201 }
 
-      before { post :create, format: :json }
-
-      it('returns status 201') { expect(response).to have_http_status 201 }
-
-      it('returns token') { expect(response.body).to eq token_json }
+        it('returns token') { expect(response.body).to eq result }
+      end
     end
   end
 end

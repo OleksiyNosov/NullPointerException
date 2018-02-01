@@ -3,13 +3,13 @@ require 'rails_helper'
 RSpec.describe UserPolicy do
   subject { described_class }
 
-  let(:user) { build(:user, id: 5) }
+  let(:user) { user_valid_double(id: 5) }
 
-  let(:other_user) { instance_double User, id: 7 }
+  let(:other_user) { user_invalid_double(id: 7)}
 
   permissions :show? do
     context "when user's status is not_confirmed" do
-      let(:user) { build(:user, status: :not_confirmed) }
+      let(:user) { user_invalid_double }
 
       it('rejects to show requested user') { expect(subject).not_to permit(user, other_user) }
     end
@@ -21,7 +21,7 @@ RSpec.describe UserPolicy do
 
   permissions :update? do
     context "when user's status is not_confirmed" do
-      let(:user) { build(:user, status: :not_confirmed) }
+      let(:user) { user_invalid_double }
 
       it('rejects update of user') { expect(subject).not_to permit(user, user) }
     end
@@ -41,7 +41,7 @@ RSpec.describe UserPolicy do
     end
 
     context "when user's status is not_confirmed" do
-      let(:user) { build(:user, status: :not_confirmed) }
+      let(:user) { instance_double(User, not_confirmed?: true) }
 
       it('grants user confirmation') { expect(subject).to permit(user, User) }
     end

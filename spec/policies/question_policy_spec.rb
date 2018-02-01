@@ -3,15 +3,15 @@ require 'rails_helper'
 RSpec.describe QuestionPolicy do
   subject { described_class }
 
-  let(:user) { build(:user, id: 5) }
+  let(:user) { user_valid_double(id: 5) }
 
-  let(:other_user) { build(:user, id: 6) }
+  let(:other_user) { user_valid_double(id: 6) }
 
-  let(:question) { build(:question, id: 7, user: user) }
+  let(:question) { question_double(id: 7, user_id: user.id) }
 
   permissions :create? do
     context "when user's status is not_confirmed" do
-      let(:user) { build(:user, status: :not_confirmed) }
+      let(:user) { user_invalid_double }
 
       it('rejects question create') { expect(subject).not_to permit(user, nil) }
     end
@@ -23,7 +23,7 @@ RSpec.describe QuestionPolicy do
 
   permissions :update? do
     context "when user's status is not_confirmed" do
-      let(:user) { build(:user, status: :not_confirmed) }
+      let(:user) { user_invalid_double }
 
       it('rejects question destroy') { expect(subject).not_to permit(user, question) }
     end
@@ -39,7 +39,7 @@ RSpec.describe QuestionPolicy do
 
   permissions :destroy? do
     context "when user's status is not_confirmed" do
-      let(:user) { build(:user, status: :not_confirmed) }
+      let(:user) { user_invalid_double }
 
       it('rejects question destroy') { expect(subject).not_to permit(user, question) }
     end

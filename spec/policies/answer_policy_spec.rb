@@ -3,27 +3,27 @@ require 'rails_helper'
 RSpec.describe AnswerPolicy do
   subject { described_class }
 
-  let(:user) { build(:user, id: 5) }
+  let(:user) { user_valid_double(id: 5) }
 
-  let(:other_user) { build(:user, id: 6) }
+  let(:other_user) { user_valid_double(id: 6) }
 
-  let(:answer) { build(:answer, user: user) }
+  let(:answer) { answer_double(user_id: user.id) }
 
   permissions :create? do
     context "when user's status is not_confirmed" do
-      let(:user) { build(:user, status: :not_confirmed) }
+      let(:user) { user_invalid_double }
 
-      it('rejects answer create') { expect(subject).not_to permit(user, nil) }
+      it('rejects answer create') { expect(subject).not_to permit(user) }
     end
 
     context 'when requested by valid user' do
-      it('grants answer create') { expect(subject).to permit(user, nil) }
+      it('grants answer create') { expect(subject).to permit(user) }
     end
   end
 
   permissions :update? do
     context "when user's status is not_confirmed" do
-      let(:user) { build(:user, status: :not_confirmed) }
+      let(:user) { user_invalid_double }
 
       it('rejects answer update') { expect(subject).not_to permit(user, answer) }
     end
@@ -39,7 +39,7 @@ RSpec.describe AnswerPolicy do
 
   permissions :destroy? do
     context "when user's status is not_confirmed" do
-      let(:user) { build(:user, status: :not_confirmed) }
+      let(:user) { user_invalid_double }
 
       it('rejects answer destroy') { expect(subject).not_to permit(user, answer) }
     end

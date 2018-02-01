@@ -5,7 +5,7 @@ RSpec.describe Api::ProfilesController, type: :controller do
 
   let(:user_attrs) { attributes_for(:user) }
 
-  let(:user_double) { instance_double(User, id: 5, as_json: user_attrs, **user_attrs) }
+  let(:user) { instance_double(User, id: 5, as_json: user_attrs, **user_attrs) }
 
   let(:user_errors) { { attribute_name: %w[error1 error2] } }
 
@@ -17,9 +17,9 @@ RSpec.describe Api::ProfilesController, type: :controller do
     end
 
     context 'with authentication' do
-      before { sign_in user_double }
+      before { sign_in user }
 
-      before { allow(subject).to receive(:resource).and_return user_double }
+      before { allow(subject).to receive(:resource).and_return user }
 
       context 'when not authorized' do
         before { expect(subject).to receive(:authorize).and_raise Pundit::NotAuthorizedError }
@@ -36,14 +36,14 @@ RSpec.describe Api::ProfilesController, type: :controller do
 
         it('returns status 200') { expect(response).to have_http_status 200 }
 
-        it('returns user profile') { expect(response.body).to eq user_double.to_json }
+        it('returns user profile') { expect(response.body).to eq user.to_json }
       end
     end
   end
 
   describe '#resource' do
-    before { allow(subject).to receive(:current_user).and_return user_double }
+    before { allow(subject).to receive(:current_user).and_return user }
 
-    it('returns user') { expect(subject.send :resource).to eq user_double }
+    it('returns user') { expect(subject.send :resource).to eq user }
   end
 end

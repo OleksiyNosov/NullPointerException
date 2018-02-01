@@ -19,7 +19,7 @@ RSpec.describe ResourceDestroyer do
     end
 
     context 'when passed invalid params' do
-      let(:resource) { instance_double Question, errors: { errors: %w[error1 error2] } }
+      let(:resource) { question_invalid_double }
 
       before { be_broadcasted_failed resource }
 

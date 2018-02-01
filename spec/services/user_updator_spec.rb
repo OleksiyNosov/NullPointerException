@@ -27,7 +27,7 @@ RSpec.describe UserUpdator do
     end
 
     context 'when passed invalid params' do
-      let(:resource) { instance_double User, errors: { errors: %w[error1 error2] } }
+      let(:resource) { user_invalid_double }
 
       before { be_broadcasted_failed resource }
 

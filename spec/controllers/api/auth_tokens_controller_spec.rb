@@ -25,7 +25,7 @@ RSpec.describe Api::AuthTokensController, type: :controller do
     before { request.env['HTTP_AUTHORIZATION'] = basic_auth.encode_credentials(user.email, user_password) }
 
     context 'when user not found' do
-      before { expect(subject).to receive(:authenticate).and_raise ActiveRecord::RecordNotFound }
+      before { expect(User).to receive(:find_by!).and_raise ActiveRecord::RecordNotFound }
 
       before { post :create, format: :json }
 

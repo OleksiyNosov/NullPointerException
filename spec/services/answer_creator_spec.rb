@@ -31,7 +31,7 @@ RSpec.describe AnswerCreator do
     end
 
     context 'when passed invalid params' do
-      let(:resource) { instance_double Answer, errors: { errors: %w[error1 error2] } }
+      let(:resource) { answer_invalid_double }
 
       before { be_broadcasted_failed resource }
 

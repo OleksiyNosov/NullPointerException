@@ -11,13 +11,19 @@ RSpec.describe Api::AuthTokensController, type: :controller do
 
   it('authorize current user') { is_expected.to be_kind_of Pundit }
 
+  let(:basic_auth) { ActionController::HttpAuthentication::Basic }
+
   let(:user_attrs) { attributes_for :user }
 
-  let(:user) { instance_double User, id: 7, **user_attrs }
+  let(:user) { build_stubbed(:user, **user_attrs) }
+
+  let(:user_password) { user.password }
 
   let(:token) { JWTWorker.encode user_id: user.id }
 
   describe 'POST #create' do
+    before { request.env['HTTP_AUTHORIZATION'] = basic_auth.encode_credentials(user.email, user_password) }
+
     context 'when user not found' do
       before { expect(subject).to receive(:authenticate).and_raise ActiveRecord::RecordNotFound }
 
@@ -26,10 +32,10 @@ RSpec.describe Api::AuthTokensController, type: :controller do
       it('returns status 404') { expect(response).to have_http_status 404 }
     end
 
-    context 'when user not authenticated' do
-      before { allow(User).to receive(:find_by!).and_return user }
+    context 'when user passed invalid password' do
+      let(:user_password) { 'incorrect' }
 
-      before { allow(user).to receive(:authenticate).and_return false }
+      before { allow(User).to receive(:find_by!).and_return user }
 
       before { post :create, format: :json }
 
@@ -41,9 +47,11 @@ RSpec.describe Api::AuthTokensController, type: :controller do
     end
 
     context 'with authentication' do
-      before { sign_in user }
+      let(:user) { build_stubbed(:user) }
 
-      context 'when not authorized' do
+      before { allow(User).to receive(:find_by!).and_return user }
+
+      context 'when user is invalid' do
         before { expect(subject).to receive(:authorize).and_raise Pundit::NotAuthorizedError }
 
         before { post :create, format: :json }

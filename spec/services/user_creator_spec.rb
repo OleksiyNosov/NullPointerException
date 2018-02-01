@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe UserCreator do
-  let(:resource_attrs) { attributes_for :user }
+  let(:resource_attrs) { attributes_for :user, status: :not_confirmed }
 
   let(:resource) { instance_double User, id: 5, as_json: resource_attrs, **resource_attrs }
 
@@ -9,9 +9,7 @@ RSpec.describe UserCreator do
 
   it('behaves as resource dispatcher') { is_expected.to be_an ResourceCrudWorker }
 
-  it_behaves_like 'a ResourceCrudWorker'
-
-  describe '#process action' do
+  describe '#call' do
     before { allow(User).to receive(:new).with(resource_attrs).and_return resource }
 
     before do
@@ -20,7 +18,7 @@ RSpec.describe UserCreator do
       end
     end
 
-    context 'when user attributes are valid' do
+    context 'when passed valid params' do
       let(:additional_attrs) { { notification: :registration, token: 'user_token' } }
 
       before { allow(resource).to receive(:save).and_return true }
@@ -29,7 +27,7 @@ RSpec.describe UserCreator do
 
       before do
         allow(subject).to receive(:serialized_resource) do
-          double.tap do |serialized_resource|
+          resource.as_json.tap do |serialized_resource|
             allow(serialized_resource).to receive(:merge).with(additional_attrs).and_return :attrs_for_publish
           end
         end
@@ -37,13 +35,19 @@ RSpec.describe UserCreator do
 
       before { expect(UserPublisher).to receive(:publish).with(:attrs_for_publish) }
 
-      it('creates user and publish their attributes') { expect { subject.send :process_action }.to_not raise_error }
+      before { be_broadcasted_succeeded resource }
+
+      it('creates broacasts and publish user') { expect { subject.call }.to_not raise_error }
     end
 
-    context 'when user attributes are invalid' do
+    context 'when passed invalid params' do
+      let(:resource) { instance_double User, errors: { errors: %w[error1 error2] } }
+
       before { allow(resource).to receive(:save).and_return false }
 
-      it('do not saves user to db and skips publish') { expect { subject.send :process_action }.to_not raise_error }
+      before { be_broadcasted_failed resource }
+
+      it('broacasts user errors') { expect { subject.call }.to_not raise_error }
     end
   end
 end

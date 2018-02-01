@@ -9,9 +9,7 @@ RSpec.describe UserUpdator do
 
   it('behaves as resource dispatcher') { is_expected.to be_an ResourceCrudWorker }
 
-  it_behaves_like 'a ResourceCrudWorker'
-
-  describe '#process action' do
+  describe '#call' do
     before { allow(subject).to receive(:resource).and_return resource }
 
     before do
@@ -22,6 +20,18 @@ RSpec.describe UserUpdator do
 
     before { expect(resource).to receive(:update).with(resource_attrs) }
 
-    it('updates user') { expect { subject.send :process_action }.to_not raise_error }
+    context 'when passed valid params' do
+      before { be_broadcasted_succeeded resource }
+
+      it('updates and broadcasts user') { expect { subject.call }.to_not raise_error }
+    end
+
+    context 'when passed invalid params' do
+      let(:resource) { instance_double User, errors: { errors: %w[error1 error2] } }
+
+      before { be_broadcasted_failed resource }
+
+      it('broadcasts user errors') { expect { subject.call }.to_not raise_error }
+    end
   end
 end

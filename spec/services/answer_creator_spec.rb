@@ -13,9 +13,7 @@ RSpec.describe AnswerCreator do
 
   it('behaves as resource dispatcher') { is_expected.to be_an ResourceCrudWorker }
 
-  it_behaves_like 'a ResourceCrudWorker'
-
-  describe '#process_action' do
+  describe '#call' do
     before { allow(Question).to receive(:find).and_return question }
 
     before { allow(resource_attrs).to receive(:merge).with(user: user).and_return resource_attrs }
@@ -26,6 +24,18 @@ RSpec.describe AnswerCreator do
       end
     end
 
-    it('creates answer') { expect { subject.send :process_action }.to_not raise_error }
+    context 'when passed valid params' do
+      before { be_broadcasted_succeeded resource }
+
+      it('creates and broadcasts answer') { expect { subject.call }.to_not raise_error }
+    end
+
+    context 'when passed invalid params' do
+      let(:resource) { instance_double Answer, errors: { errors: %w[error1 error2] } }
+
+      before { be_broadcasted_failed resource }
+
+      it('broadcasts question errors') { expect { subject.call }.to_not raise_error }
+    end
   end
 end

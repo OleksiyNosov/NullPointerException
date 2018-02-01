@@ -14,12 +14,10 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
 
   config.include FactoryBot::Syntax::Methods
-
   config.include Authentication
-
   config.include Dispatchable
-
   config.include ServiceHandler
+  config.include Factoriable
 end
 
 Shoulda::Matchers.configure do |config|

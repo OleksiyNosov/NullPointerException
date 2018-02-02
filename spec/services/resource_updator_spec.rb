@@ -1,49 +1,29 @@
 require 'rails_helper'
 
 RSpec.describe ResourceUpdator do
-  let(:resource_attributes) { attributes_for(:question) }
+  let(:resource_attrs) { attributes_for :question }
 
-  let(:resource) { instance_double Question, valid?: true }
+  let(:resource) { instance_double Question, as_json: resource_attrs, **resource_attrs }
 
-  subject { ResourceUpdator.new resource, resource_attributes }
+  subject { ResourceUpdator.new resource, resource_attrs }
 
   it('behaves as resource dispatcher') { is_expected.to be_an ResourceCrudWorker }
 
-  describe '#process_action' do
-    before { expect(resource).to receive(:update).with(resource_attributes) }
-
-    it('update resource') { expect { subject.send :process_action }.to_not raise_error }
-  end
-
   describe '#call' do
-    before { expect(subject).to receive(:process_action) }
+    before { allow(resource).to receive(:update).with(resource_attrs).and_return resource }
 
-    before { expect(subject).to receive(:broadcast_resource) }
+    context 'when passed valid params' do
+      before { be_broadcasted_succeeded resource }
 
-    it('update and broadcast resource') { expect { subject.call }.to_not raise_error }
-  end
-
-  describe  '#broadcast_resource' do
-    context 'when resource is valid' do
-      before { allow(subject).to receive_message_chain(:resource, :valid?).and_return true }
-
-      before { allow(subject).to receive(:resource).and_return resource }
-
-      before { expect(subject).to receive(:broadcast).with(:succeeded, resource) }
-
-      it('broadcast resource') { expect { subject.send :broadcast_resource }.to_not raise_error }
+      it('updates and broadcasts resource') { expect { subject.call }.to_not raise_error }
     end
 
-    context 'when resource is invalid' do
-      let(:resource_errors) { double }
+    context 'when passed invalid params' do
+      let(:resource) { question_invalid_double }
 
-      before { allow(subject).to receive_message_chain(:resource, :valid?).and_return false }
+      before { be_broadcasted_failed resource }
 
-      before { allow(subject).to receive_message_chain(:resource, :errors).and_return resource_errors }
-
-      before { expect(subject).to receive(:broadcast).with(:failed, resource_errors) }
-
-      it('broadcast resource errors') { expect { subject.send :broadcast_resource }.to_not raise_error }
+      it('broadcasts resource errors') { expect { subject.call }.to_not raise_error }
     end
   end
 end

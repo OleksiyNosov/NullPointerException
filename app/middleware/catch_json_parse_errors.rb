@@ -6,7 +6,7 @@ class CatchJsonParseErrors
   def call(env)
     @app.call(env)
   rescue ActionDispatch::Http::Parameters::ParseError => error
-    if env['HTTP_ACCEPT'].match?(%r{application\/json})
+    if env['HTTP_ACCEPT'].match?(%r{application/json})
       return [400, { 'Content-Type' => 'application/json' }, []]
     else
       raise error

@@ -1,16 +1,20 @@
 class Api::AnswersController < ApplicationController
   skip_before_action :authenticate, only: :index
 
+  before_action -> { authorize resource }, only: %i[update destroy]
+
   def create
-    AnswerCreator.new(question, resource_params)
-      .on(:succeeded) { |resource| render json: resource, status: 201 }
+    authorize(:answer, :create?)
+
+    AnswerCreator.new(current_user, create_params)
+      .on(:succeeded) { |serialized_resource| render json: serialized_resource, status: 201 }
       .on(:failed) { |errors| render json: errors, status: 422 }
       .call
   end
 
   def update
-    ResourceUpdator.new(resource, resource_params)
-      .on(:succeeded) { |resource| render json: resource }
+    ResourceUpdator.new(resource, update_params)
+      .on(:succeeded) { |serialized_resource| render json: serialized_resource }
       .on(:failed) { |errors| render json: errors, status: 422 }
       .call
   end
@@ -23,8 +27,12 @@ class Api::AnswersController < ApplicationController
   end
 
   private
-  def resource_params
+  def create_params
     params.require(:answer).permit(:question_id, :body)
+  end
+
+  def update_params
+    params.require(:answer).permit(:body)
   end
 
   def resource

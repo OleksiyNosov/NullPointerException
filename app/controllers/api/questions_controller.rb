@@ -1,16 +1,20 @@
 class Api::QuestionsController < ApplicationController
   skip_before_action :authenticate, only: %i[index show]
 
+  before_action -> { authorize resource }, only: %i[update destroy]
+
   def create
-    ResourceCreator.new(Question, resource_params)
-      .on(:succeeded) { |resource| render json: resource, status: 201 }
+    authorize(:question, :create?)
+
+    QuestionCreator.new(current_user, resource_params)
+      .on(:succeeded) { |serialized_resource| render json: serialized_resource, status: 201 }
       .on(:failed) { |errors| render json: errors, status: 422 }
       .call
   end
 
   def update
     ResourceUpdator.new(resource, resource_params)
-      .on(:succeeded) { |resource| render json: resource }
+      .on(:succeeded) { |serialized_resource| render json: serialized_resource }
       .on(:failed) { |errors| render json: errors, status: 422 }
       .call
   end

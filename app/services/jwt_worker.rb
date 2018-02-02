@@ -9,9 +9,13 @@ class JWTWorker
     end
 
     def decode token
-      JWT.decode token, SECRET_KEY
+      (decoded_token = JWT.decode(token, SECRET_KEY)) && symbolize_keys(decoded_token)
     rescue JWT::ExpiredSignature, JWT::DecodeError
       false
+    end
+
+    def symbolize_keys decoded_token
+      decoded_token.map { |h| h.transform_keys(&:to_sym) }
     end
   end
 end

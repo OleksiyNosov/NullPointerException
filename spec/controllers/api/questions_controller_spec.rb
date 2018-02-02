@@ -7,27 +7,27 @@ RSpec.describe Api::QuestionsController, type: :controller do
 
   let(:question_attrs) { attributes_for(:question) }
 
-  let(:question_double) { instance_double(Question, id: 2, as_json: question_attrs, **question_attrs) }
+  let(:question) { instance_double(Question, id: 2, as_json: question_attrs, **question_attrs) }
 
   let(:question_errors) { { attribute_name: %w[error1 error2] } }
 
   describe 'GET #show' do
-    context 'when requested question was found' do
-      before { expect(subject).to receive(:resource).and_return question_double }
-
-      before { get :show, params: { id: question_double.id }, format: :json }
-
-      it('returns status 200') { expect(response).to have_http_status 200 }
-
-      it('returns question') { expect(response.body).to eq question_double.to_json }
-    end
-
     context 'when requested question was not found' do
       before { expect(Question).to receive(:find).and_raise ActiveRecord::RecordNotFound }
 
-      before { get :show, params: { id: question_double.id }, format: :json }
+      before { get :show, params: { id: question.id }, format: :json }
 
       it('returns status 404') { expect(response).to have_http_status 404 }
+    end
+
+    context 'when requested question was found' do
+      before { expect(subject).to receive(:resource).and_return question }
+
+      before { get :show, params: { id: question.id }, format: :json }
+
+      it('returns status 200') { expect(response).to have_http_status 200 }
+
+      it('returns question') { expect(response.body).to eq question.to_json }
     end
   end
 
@@ -39,48 +39,60 @@ RSpec.describe Api::QuestionsController, type: :controller do
     end
 
     context 'with authentication' do
-      let(:creator) { ResourceCreator.new Question, question_attrs }
+      let(:creator) { QuestionCreator.new user, question_attrs }
 
       before { sign_in user }
 
-      context 'when request do not have requied keys' do
-        before { post :create, params: { invalid_key: question_attrs }, format: :json }
+      context 'when not authorized' do
+        before { expect(subject).to receive(:authorize).and_raise Pundit::NotAuthorizedError }
 
-        it('returns status 400') { expect(response).to have_http_status 400 }
+        before { post :create, params: { answer: question_attrs }, format: :json }
+
+        it('returns status 403') { expect(response).to have_http_status 403 }
       end
 
-      context 'when sent question attributes are valid' do
-        before { allow(ResourceCreator).to receive(:new).and_return(creator) }
+      context 'with authorization' do
+        before { allow(subject).to receive(:authorize).and_return true }
 
-        before { expect(creator).to receive(:on).twice.and_call_original }
+        context 'when request do not have requied keys' do
+          before { post :create, params: { invalid_key: question_attrs }, format: :json }
 
-        before { broadcast_succeeded creator, question_double }
+          it('returns status 400') { expect(response).to have_http_status 400 }
+        end
 
-        before { post :create, params: { question: question_attrs }, format: :json }
+        context 'when sent question attributes are not valid' do
+          before { allow(QuestionCreator).to receive(:new).and_return(creator) }
 
-        it('returns status 201') { expect(response).to have_http_status 201 }
+          before { expect(creator).to receive(:on).twice.and_call_original }
 
-        it('returns created question') { expect(response.body).to eq question_double.to_json }
-      end
+          before { broadcast_failed creator, question_errors }
 
-      context 'when sent question attributes are not valid' do
-        before { allow(ResourceCreator).to receive(:new).and_return(creator) }
+          before { post :create, params: { question: question_attrs }, format: :json }
 
-        before { expect(creator).to receive(:on).twice.and_call_original }
+          it('returns status 422') { expect(response).to have_http_status 422 }
 
-        before { broadcast_failed creator, question_errors }
+          it('returns created question') { expect(response.body).to eq question_errors.to_json }
+        end
 
-        before { post :create, params: { question: question_attrs }, format: :json }
+        context 'when sent question attributes are valid' do
+          before { allow(QuestionCreator).to receive(:new).and_return(creator) }
 
-        it('returns status 422') { expect(response).to have_http_status 422 }
+          before { expect(creator).to receive(:on).twice.and_call_original }
 
-        it('returns created question') { expect(response.body).to eq question_errors.to_json }
+          before { broadcast_succeeded creator, question }
+
+          before { post :create, params: { question: question_attrs }, format: :json }
+
+          it('returns status 201') { expect(response).to have_http_status 201 }
+
+          it('returns created question') { expect(response.body).to eq question.to_json }
+        end
       end
     end
   end
 
   describe 'PATCH #update' do
-    let(:params) { { id: question_double.id, question: question_attrs } }
+    let(:params) { { id: question.id, question: question_attrs } }
 
     context 'when not authenticated' do
       before { post :update, params: params, format: :json }
@@ -89,17 +101,9 @@ RSpec.describe Api::QuestionsController, type: :controller do
     end
 
     context 'with authentication' do
-      let(:updator) { ResourceUpdator.new question_double, question_attrs }
+      let(:updator) { ResourceUpdator.new question, question_attrs }
 
       before { sign_in user }
-
-      context 'when request do not have requied keys' do
-        before { expect(subject).to receive(:resource) }
-
-        before { post :update, params: { id: question_double.id, invalid_key: question_attrs }, format: :json }
-
-        it('returns status 400') { expect(response).to have_http_status 400 }
-      end
 
       context 'when requested question did not found' do
         before { expect(subject).to receive(:resource).and_raise ActiveRecord::RecordNotFound }
@@ -109,101 +113,127 @@ RSpec.describe Api::QuestionsController, type: :controller do
         it('returns status 404') { expect(response).to have_http_status 404 }
       end
 
-      context 'when sent question attributes are valid' do
-        before { allow(subject).to receive(:resource).and_return(question_double) }
+      context 'when not authorized' do
+        before { allow(subject).to receive(:resource).and_return(question) }
 
-        before { allow(ResourceUpdator).to receive(:new).and_return(updator) }
+        before { expect(subject).to receive(:authorize).and_raise Pundit::NotAuthorizedError }
 
-        before { expect(updator).to receive(:on).twice.and_call_original }
+        before { post :update, params: params, format: :json }
 
-        before { broadcast_succeeded updator, question_double }
-
-        before { patch :update, params: params, format: :json }
-
-        it('returns status 200') { expect(response).to have_http_status 200 }
-
-        it('returns updated question') { expect(response.body).to eq question_double.to_json }
+        it('returns status 403') { expect(response).to have_http_status 403 }
       end
 
-      context 'when sent question attributes are not valid' do
-        before { allow(subject).to receive(:resource).and_return(question_double) }
+      context 'with authorization' do
+        before { allow(subject).to receive(:resource).and_return(question) }
 
-        before { allow(ResourceUpdator).to receive(:new).and_return(updator) }
+        before { allow(subject).to receive(:authorize).with(question).and_return true }
 
-        before { expect(updator).to receive(:on).twice.and_call_original }
+        context 'when request do not have requied keys' do
+          before { post :update, params: { id: question.id, invalid_key: question_attrs }, format: :json }
 
-        before { broadcast_failed updator, question_errors }
+          it('returns status 400') { expect(response).to have_http_status 400 }
+        end
 
-        before { patch :update, params: params, format: :json }
+        context 'when sent question attributes are not valid' do
+          before { allow(ResourceUpdator).to receive(:new).and_return(updator) }
 
-        it('returns status 422') { expect(response).to have_http_status 422 }
+          before { expect(updator).to receive(:on).twice.and_call_original }
 
-        it('returns errors') { expect(response.body).to eq question_errors.to_json }
+          before { broadcast_failed updator, question_errors }
+
+          before { patch :update, params: params, format: :json }
+
+          it('returns status 422') { expect(response).to have_http_status 422 }
+
+          it('returns errors') { expect(response.body).to eq question_errors.to_json }
+        end
+
+        context 'when sent question attributes are valid' do
+          before { allow(ResourceUpdator).to receive(:new).and_return(updator) }
+
+          before { expect(updator).to receive(:on).twice.and_call_original }
+
+          before { broadcast_succeeded updator, question }
+
+          before { patch :update, params: params, format: :json }
+
+          it('returns status 200') { expect(response).to have_http_status 200 }
+
+          it('returns updated question') { expect(response.body).to eq question.to_json }
+        end
       end
     end
   end
 
   describe 'DELETE #destroy' do
     context 'when not authenticated' do
-      before { delete :destroy, params: { id: question_double.id }, format: :json }
+      before { delete :destroy, params: { id: question.id }, format: :json }
 
       it('returns status 401') { expect(response).to have_http_status 401 }
     end
 
     context 'with authentication' do
-      let(:destroyer) { ResourceDestroyer.new question_double }
+      let(:destroyer) { ResourceDestroyer.new question }
 
       before { sign_in user }
 
       context 'when requested question did not found' do
         before { expect(subject).to receive(:resource).and_raise ActiveRecord::RecordNotFound }
 
-        before { delete :destroy, params: { id: question_double.id }, format: :json }
+        before { delete :destroy, params: { id: question.id }, format: :json }
 
         it('returns status 404') { expect(response).to have_http_status 404 }
       end
 
-      context 'when sent data is valid' do
-        before { allow(subject).to receive(:resource).and_return question_double }
+      context 'when not authorized' do
+        before { allow(subject).to receive(:resource).and_return question }
 
-        before { allow(ResourceDestroyer).to receive(:new).and_return(destroyer) }
+        before { expect(subject).to receive(:authorize).and_raise Pundit::NotAuthorizedError }
 
-        before { expect(destroyer).to receive(:on).twice.and_call_original }
+        before { post :destroy, params: { id: question.id }, format: :json }
 
-        before { broadcast_succeeded destroyer, question_double }
-
-        before { delete :destroy, params: { id: question_double.id }, format: :json }
-
-        it('returns status 204') { expect(response).to have_http_status 204 }
+        it('returns status 403') { expect(response).to have_http_status 403 }
       end
 
-      context 'when sent data in not valid' do
-        before { allow(subject).to receive(:resource).and_return question_double }
+      context 'with authorization' do
+        before { allow(subject).to receive(:resource).and_return question }
+
+        before { expect(subject).to receive(:authorize).and_return true }
 
         before { allow(ResourceDestroyer).to receive(:new).and_return(destroyer) }
 
         before { expect(destroyer).to receive(:on).twice.and_call_original }
 
-        before { broadcast_failed destroyer, question_errors }
+        context 'when sent data in not valid' do
+          before { broadcast_failed destroyer, question_errors }
 
-        before { delete :destroy, params: { id: question_double.id }, format: :json }
+          before { delete :destroy, params: { id: question.id }, format: :json }
 
-        it('returns status 422') { expect(response).to have_http_status 422 }
+          it('returns status 422') { expect(response).to have_http_status 422 }
+        end
+
+        context 'when sent data is valid' do
+          before { broadcast_succeeded destroyer, question }
+
+          before { delete :destroy, params: { id: question.id }, format: :json }
+
+          it('returns status 204') { expect(response).to have_http_status 204 }
+        end
       end
     end
   end
 
   describe '#collection' do
-    before { allow(Question).to receive(:all).and_return [question_double] }
+    before { allow(Question).to receive(:all).and_return [question] }
 
-    it('returns collection of questions') { expect(subject.send :collection).to eq [question_double] }
+    it('returns collection of questions') { expect(subject.send :collection).to eq [question] }
   end
 
   describe '#resource' do
     before { get :show, params: { id: 2 }, format: :json }
 
-    before { allow(Question).to receive(:find).with('2').and_return question_double }
+    before { allow(Question).to receive(:find).with('2').and_return question }
 
-    it('returns question') { expect(subject.send :resource).to eq question_double }
+    it('returns question') { expect(subject.send :resource).to eq question }
   end
 end

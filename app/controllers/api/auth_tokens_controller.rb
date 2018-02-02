@@ -1,18 +1,16 @@
-class Api::AuthTokensController < ActionController::API
-  include ErrorHandable
+class Api::AuthTokensController < ApplicationController
+  include ActionController::HttpAuthentication::Basic::ControllerMethods
 
   def create
-    user = User.find_by email: resource_params[:email]
+    authorize(:auth_token, :create?)
 
-    if user&.authenticate resource_params[:password]
-      render json: { token: JWTWorker.encode(user_id: user.id) }, status: 201
-    else
-      render json: { email: ['invalid email'], password: ['invalid password'] }, status: 422
-    end
+    render json: { token: JWTWorker.encode(user_id: current_user.id) }, status: 201
   end
 
   private
-  def resource_params
-    params.require(:sign_in).permit(:email, :password)
+  def authenticate
+    authenticate_or_request_with_http_basic do |email, password|
+      @current_user = User.find_by!(email: email.downcase).authenticate(password)
+    end
   end
 end

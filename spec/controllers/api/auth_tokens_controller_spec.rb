@@ -3,61 +3,73 @@ require 'rails_helper'
 RSpec.describe Api::AuthTokensController, type: :controller do
   it { is_expected.to be_an ActionController::API }
 
+  it 'authenticate with basic' do
+    is_expected.to be_kind_of ActionController::HttpAuthentication::Basic::ControllerMethods
+  end
+
   it('handles exceptions') { is_expected.to be_kind_of ErrorHandable }
 
-  let(:password) { 'user_password' }
+  it('authorize current user') { is_expected.to be_kind_of Pundit }
 
-  let(:email) { 'test@example.com' }
+  let(:basic_auth) { ActionController::HttpAuthentication::Basic }
 
-  let(:user) { instance_double User, id: 7, email: 'test@example.com', password: 'user_password' }
+  let(:user_attrs) { attributes_for :user }
+
+  let(:user) { build_stubbed(:user, **user_attrs) }
+
+  let(:user_password) { user.password }
 
   let(:token) { JWTWorker.encode user_id: user.id }
 
   describe 'POST #create' do
-    let(:errors_json) { { 'email' => ['invalid email'], 'password' => ['invalid password'] }.to_json }
+    before { request.env['HTTP_AUTHORIZATION'] = basic_auth.encode_credentials(user.email, user_password) }
 
-    let(:params) { { sign_in: { email: email, password: password } } }
+    context 'when user not found' do
+      before { expect(User).to receive(:find_by!).and_raise ActiveRecord::RecordNotFound }
 
-    context 'when email and password are valid' do
-      let(:stringified_token) { { token: token }.stringify_keys }
+      before { post :create, format: :json }
 
-      let(:token_json) { { token: token }.to_json }
-
-      before { allow(User).to receive(:find_by).with(email: email).and_return user }
-
-      before { allow(user).to receive(:authenticate).and_return true }
-
-      before { post :create, params: params, format: :json }
-
-      it('returns status 201') { expect(response).to have_http_status 201 }
-
-      it('returns token') { expect(response.body).to eq token_json }
+      it('returns status 404') { expect(response).to have_http_status 404 }
     end
 
-    context 'request have invalid structure' do
-      before { post :create, params: { invalid_key: { email: email, password: password } }, format: :json }
+    context 'when user passed invalid password' do
+      let(:user_password) { 'incorrect' }
 
-      it('returns status 400') { expect(response).to have_http_status 400 }
+      before { allow(User).to receive(:find_by!).and_return user }
+
+      before { post :create, format: :json }
+
+      it('returns status 401') { expect(response).to have_http_status 401 }
+
+      it('returns header "WWW-Authenticate"') do
+        expect(response.header['WWW-Authenticate']).to eq 'Basic realm="Application"'
+      end
     end
 
-    context 'when email is invalid' do
-      let(:email) { 'wrong_user_email' }
+    context 'with authentication' do
+      let(:user) { build_stubbed(:user) }
 
-      before { post :create, params: params, format: :json }
+      before { allow(User).to receive(:find_by!).and_return user }
 
-      it('returns status 422') { expect(response).to have_http_status 422 }
+      context 'when user is invalid' do
+        before { expect(subject).to receive(:authorize).and_raise Pundit::NotAuthorizedError }
 
-      it('returns errors') { expect(response.body).to eq errors_json }
-    end
+        before { post :create, format: :json }
 
-    context 'when password is invalid' do
-      let(:password) { 'wrong_user_password' }
+        it('returns status 403') { expect(response).to have_http_status 403 }
+      end
 
-      before { post :create, params: params, format: :json }
+      context 'when email and password are valid' do
+        let(:result) { { 'token' => token }.to_json }
 
-      it('returns status 422') { expect(response).to have_http_status 422 }
+        before { expect(subject).to receive(:authorize) }
 
-      it('returns errors') { expect(response.body).to eq errors_json }
+        before { post :create, format: :json }
+
+        it('returns status 201') { expect(response).to have_http_status 201 }
+
+        it('returns token') { expect(response.body).to eq result }
+      end
     end
   end
 end

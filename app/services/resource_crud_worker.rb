@@ -1,5 +1,5 @@
 class ResourceCrudWorker
-  include Wisper::Publisher
+  include Homie
 
   attr_reader :resource
 
@@ -16,9 +16,13 @@ class ResourceCrudWorker
   private
   def broadcast_resource
     if resource.valid?
-      broadcast :succeeded, resource
+      broadcast :succeeded, serialized_resource
     else
       broadcast :failed, resource.errors
     end
+  end
+
+  def serialized_resource
+    @serialized_resource ||= ActiveModelSerializers::SerializableResource.new(resource).as_json
   end
 end

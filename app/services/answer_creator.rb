@@ -1,11 +1,13 @@
 class AnswerCreator < ResourceCrudWorker
-  def initialize question, params
-    @question = question
+  def initialize user, params
+    @user = user
     @params = params
   end
 
   private
   def process_action
-    @resource = @question.answers.create @params
+    question = Question.find @params[:question_id]
+
+    @resource = question.answers.create @params.merge(user: @user)
   end
 end

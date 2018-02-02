@@ -17,7 +17,7 @@ RSpec.configure do |config|
   config.include Authentication
   config.include Dispatchable
   config.include ServiceHandler
-  config.include Factoriable
+  config.include Factoryable
 end
 
 Shoulda::Matchers.configure do |config|

@@ -1,4 +1,4 @@
-module Factoriable
+module Factoryable
   def user_valid_double params = {}
     instance_double(User, id: 0, confirmed?: true, not_confirmed?: false, **params)
   end
